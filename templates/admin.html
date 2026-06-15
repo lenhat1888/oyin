@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản trị Menu - Ngoại Ngữ OYin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #ff7e5f;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .menu-tree {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .menu-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .menu-item.level-0 {
+            margin-left: 0;
+            background: #fff;
+        }
+
+        .menu-item.level-1 {
+            margin-left: 30px;
+            background: #f9f9f9;
+        }
+
+        .menu-item.level-2 {
+            margin-left: 60px;
+            background: #f3f3f3;
+        }
+
+        .item-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .item-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .item-url {
+            color: #666;
+            font-size: 12px;
+            margin-left: 10px;
+            word-break: break-all;
+        }
+
+        .actions button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .edit-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .add-form {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .submit-btn {
+            background: #ff7e5f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .submit-btn:hover {
+            background: #ff6b81;
+        }
+
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #ff7e5f;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .refresh-btn {
+            background: #2196F3;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        .info-note {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📋 Quản trị Menu Navigation</h1>
+
+        <div class="info-note">
+            💡 <strong>Hướng dẫn:</strong> Click vào nút Sửa để đổi tên, Xóa để xóa mục.
+            Thêm mục mới bằng form bên dưới.
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <button class="refresh-btn" onclick="loadMenu()">🔄 Làm mới</button>
+
+        <div class="menu-tree" id="menuTree">
+            <p>Đang tải menu...</p>
+        </div>
+
+        <div class="add-form">
+            <h3>➕ Thêm mục mới</h3>
+            <form id="addForm">
+                <div class="form-group">
+                    <label>Tên hiển thị:</label>
+                    <input type="text" id="itemName" required placeholder="VD: Khóa học mới">
+                </div>
+                <div class="form-group">
+                    <label>Đường dẫn (URL):</label>
+                    <input type="text" id="itemUrl" value="#" placeholder="VD: /html/khoahocmoi.html">
+                </div>
+                <div class="form-group">
+                    <label>Mục cha (để trống nếu là menu chính):</label>
+                    <select id="parentId">
+                        <option value="">-- Không có (menu chính) --</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn">➕ Thêm mục</button>
+            </form>
+        </div>
+
+        <a href="/" class="back-link">← Về trang chủ</a>
+        <div style="margin-top: 20px; text-align: center;">
+            <a href="/admin/courses"
+                style="background: linear-gradient(135deg, #e67e22, #d35400); color: white; padding: 12px 30px; border-radius: 40px; text-decoration: none; font-weight: 700;">
+                ✨ Tạo Khóa Học Mới
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let currentMenu = [];
+
+        async function loadMenu() {
+            const menuTree = document.getElementById('menuTree');
+            menuTree.innerHTML = '<p>Đang tải menu...</p>';
+
+            try {
+                const res = await fetch('/api/menu');
+                if (!res.ok) throw new Error('Lỗi tải menu');
+                const data = await res.json();
+                currentMenu = data.items || [];
+                renderMenu();
+                updateParentSelect();
+            } catch (error) {
+                menuTree.innerHTML = '<p style="color: red;">❌ Lỗi tải menu. Vui lòng refresh trang.</p>';
+                console.error(error);
+            }
+        }
+
+        function renderMenu() {
+            const container = document.getElementById('menuTree');
+            if (!currentMenu || currentMenu.length === 0) {
+                container.innerHTML = '<p>📭 Chưa có mục menu nào. Hãy thêm mới bên dưới.</p>';
+                return;
+            }
+
+            container.innerHTML = '<h3>📁 Cấu trúc Menu hiện tại</h3>';
+            renderMenuItems(currentMenu, container, 0);
+        }
+
+        function renderMenuItems(items, parentElement, level) {
+            if (!items || items.length === 0) return;
+
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `menu-item level-${Math.min(level, 2)}`;
+                div.innerHTML = `
+                    <div class="item-info">
+                        <div>
+                            <span class="item-name">📁 ${escapeHtml(item.name)}</span>
+                            <span class="item-url">(${escapeHtml(item.url || '#')})</span>
+                        </div>
+                        <div class="actions">
+                            <button class="edit-btn" onclick="editItem('${item.id}')">✏️ Sửa</button>
+                            <button class="delete-btn" onclick="deleteItem('${item.id}')">🗑️ Xóa</button>
+                        </div>
+                    </div>
+                `;
+                parentElement.appendChild(div);
+                if (item.children && item.children.length > 0) {
+                    renderMenuItems(item.children, parentElement, level + 1);
+                }
+            });
+        }
+
+        function updateParentSelect() {
+            const select = document.getElementById('parentId');
+            select.innerHTML = '<option value="">-- Không có (menu chính) --</option>';
+
+            function addOptions(items, prefix = '') {
+                if (!items) return;
+                items.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = prefix + item.name;
+                    select.appendChild(option);
+                    if (item.children && item.children.length > 0) {
+                        addOptions(item.children, prefix + '  └ ');
+                    }
+                });
+            }
+            addOptions(currentMenu);
+        }
+
+        document.getElementById('addForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('itemName').value.trim();
+            const url = document.getElementById('itemUrl').value.trim();
+            const parentId = document.getElementById('parentId').value;
+
+            if (!name) {
+                showMessage('Vui lòng nhập tên menu!', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/menu/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, url, parent_id: parentId || null })
+                });
+
+                if (res.ok) {
+                    showMessage('✅ Thêm thành công!', 'success');
+                    document.getElementById('addForm').reset();
+                    loadMenu();
+                } else {
+                    showMessage('❌ Thêm thất bại!', 'error');
+                }
+            } catch (error) {
+                showMessage('❌ Lỗi kết nối!', 'error');
+            }
+        });
+
+        async function deleteItem(id) {
+            if (confirm('Bạn có chắc muốn xóa mục này?\nHành động này không thể hoàn tác!')) {
+                try {
+                    const res = await fetch(`/api/menu/delete/${id}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        showMessage('✅ Xóa thành công!', 'success');
+                        loadMenu();
+                    } else {
+                        showMessage('❌ Xóa thất bại!', 'error');
+                    }
+                } catch (error) {
+                    showMessage('❌ Lỗi kết nối!', 'error');
+                }
+            }
+        }
+
+        async function editItem(id) {
+            const newName = prompt('✏️ Nhập tên mới cho mục này:', '');
+            if (newName && newName.trim()) {
+                try {
+                    const res = await fetch(`/api/menu/update/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: newName.trim() })
+                    });
+                    if (res.ok) {
+                        showMessage('✅ Cập nhật thành công!', 'success');
+                        loadMenu();
+                    } else {
+                        showMessage('❌ Cập nhật thất bại!', 'error');
+                    }
+                } catch (error) {
+                    showMessage('❌ Lỗi kết nối!', 'error');
+                }
+            }
+        }
+
+        function showMessage(msg, type) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.textContent = msg;
+            msgDiv.className = `message ${type}`;
+            setTimeout(() => {
+                msgDiv.className = 'message';
+            }, 3000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Tải menu khi trang vừa mở
+        loadMenu();
+    </script>
+</body>
+
+</html>
