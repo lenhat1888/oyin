@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản trị - Ngoại Ngữ OYin</title>
+    <link rel="stylesheet" href="/static/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h2>🎯 OYin Admin</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#nav" class="active" data-tab="nav">
+                    <i class="fas fa-bars"></i> Thanh Nav
+                </a>
+                <a href="#slides" data-tab="slides">
+                    <i class="fas fa-images"></i> Ảnh Slider
+                </a>
+                <a href="#categories" data-tab="categories">
+                    <i class="fas fa-tags"></i> Danh mục
+                </a>
+                <a href="#courses" data-tab="courses">
+                    <i class="fas fa-book"></i> Khóa học
+                </a>
+                <a href="#documents" data-tab="documents">
+                    <i class="fas fa-file-alt"></i> Tài liệu
+                </a>
+                <a href="#news" data-tab="news">
+                    <i class="fas fa-newspaper"></i> Tin tức
+                </a>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1 id="pageTitle">📋 Quản lý thanh Navigation</h1>
+            </header>
+            <div class="admin-content" id="tabContent">
+                <div id="loading">Đang tải...</div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/admin.js"></script>
+</body>
+
+</html>
