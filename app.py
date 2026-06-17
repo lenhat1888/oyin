@@ -98,23 +98,27 @@ def get_default_categories():
 def load_data(collection_name):
     """
     Đọc dữ liệu từ MongoDB hoặc JSON
-    collection_name: tên collection (slides, categories, documents, news)
     """
     # Ưu tiên dùng MongoDB nếu có kết nối
     if db is not None:
         try:
             collection = db[collection_name]
             items = list(collection.find({}))
-            
-            # 👈 CHUYỂN ĐỔI OBJECTID THÀNH STRING
             items = convert_objectid(items)
             
             if collection_name == 'categories':
                 if items:
                     return {"categories": items}
                 else:
-                    # Trả về categories mặc định nếu chưa có
                     return {"categories": get_default_categories()}
+            
+            # 👈 NẾU KHÔNG CÓ DỮ LIỆU, THỬ ĐỌC TỪ JSON
+            if not items:
+                json_data = load_data_json(collection_name)
+                if json_data and json_data.get('items'):
+                    # Lưu vào MongoDB để lần sau không bị lỗi
+                    save_data(collection_name, json_data)
+                    return json_data
             
             return {"items": items} if items else {"items": []}
             
@@ -122,7 +126,7 @@ def load_data(collection_name):
             print(f"⚠️ Lỗi đọc MongoDB {collection_name}: {e}")
     
     # Fallback sang JSON
-    return load_data_json(collection_name)  
+    return load_data_json(collection_name)
 
 def save_data_json(filename, data):
     """Ghi dữ liệu vào file JSON trong thư mục data/"""
