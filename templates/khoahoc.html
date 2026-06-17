@@ -137,7 +137,6 @@
                         <li><a href="#">Chính sách bảo mật</a></li>
                         <li><a href="#">Hướng dẫn thanh toán</a></li>
                         <li><a href="#">Câu hỏi thường gặp</a></li>
-                        <li><a href="/admin/dashboard">Quản trị website</a></li>
                     </ul>
                 </div>
             </div>
@@ -149,7 +148,7 @@
     </footer>
 
     <script>
-        // Menu
+        // ===== THAY THẾ HÀM loadMenu() =====
         async function loadMenu() {
             try {
                 const response = await fetch('/api/menu');
@@ -157,16 +156,78 @@
                 const menuItems = data.items;
                 const menuContainer = document.getElementById('dynamic-menu');
                 if (!menuContainer) return;
+
                 menuContainer.innerHTML = '';
+
                 menuItems.forEach(item => {
                     const li = document.createElement('li');
                     li.className = 'nav-item';
-                    li.innerHTML = `<a href="${item.url}">${item.name}</a>`;
+
+                    if (item.children && item.children.length > 0) {
+                        li.classList.add('has-dropdown');
+                        li.innerHTML = `
+                    <a href="${item.url}">${item.name}</a>
+                    <ul class="dropdown">
+                        ${renderChildren(item.children)}
+                    </ul>
+                `;
+                    } else {
+                        li.innerHTML = `<a href="${item.url}">${item.name}</a>`;
+                    }
+
                     menuContainer.appendChild(li);
                 });
+
+                // Thêm sự kiện click cho dropdown trên mobile
+                if (window.innerWidth <= 768) {
+                    document.querySelectorAll('.has-dropdown > a').forEach(link => {
+                        link.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            const dropdown = this.nextElementSibling;
+                            if (dropdown) {
+                                dropdown.classList.toggle('show');
+                            }
+                        });
+                    });
+
+                    document.querySelectorAll('.dropdown-sub > span').forEach(span => {
+                        span.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            const subDropdown = this.nextElementSibling;
+                            if (subDropdown) {
+                                subDropdown.classList.toggle('show');
+                            }
+                        });
+                    });
+                }
+
             } catch (error) {
                 console.error('Lỗi tải menu:', error);
+                const menuContainer = document.getElementById('dynamic-menu');
+                if (menuContainer) {
+                    menuContainer.innerHTML = '<li>Lỗi tải menu</li>';
+                }
             }
+        }
+
+        // ===== THÊM HÀM renderChildren() VÀO khoahoc.html =====
+        function renderChildren(children) {
+            let html = '';
+            children.forEach(child => {
+                if (child.children && child.children.length > 0) {
+                    html += `
+                <li class="dropdown-sub">
+                    <span>${child.name}</span>
+                    <ul class="sub-dropdown">
+                        ${renderChildren(child.children)}
+                    </ul>
+                </li>
+            `;
+                } else {
+                    html += `<li><a href="${child.url}">${child.name}</a></li>`;
+                }
+            });
+            return html;
         }
 
         // ========== KHÓA HỌC ==========

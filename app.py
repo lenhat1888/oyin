@@ -1,58 +1,169 @@
+# app.py
 from flask import Flask, render_template, jsonify, request, send_from_directory
 import json
 import os
 import re
 from datetime import datetime
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
+from pymongo import MongoClient
+from bson import ObjectId
+
+# ============================================
+# LOAD ENV & INIT FLASK
+# ============================================
+
+load_dotenv()
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 
 # ============================================
-# HÀM DÙNG CHUNG CHO DỮ LIỆU JSON
+# KẾT NỐI MONGODB
 # ============================================
-def load_data(filename):
-    """Đọc dữ liệu từ file JSON trong thư mục data/"""
-    path = os.path.join('data', filename)
-    if not os.path.exists(path):
-        default_data = {}
-        if filename == 'categories.json':
-            default_data = {
-                "categories": [
-                    {"id": "hsk", "name": "HSK", "icon": "fa-graduation-cap", "description": "Luyện thi HSK", "slug": "hsk", "active": True},
-                    {"id": "hsk30", "name": "HSK 3.0", "icon": "fa-star", "description": "HSK 3.0", "slug": "hsk30", "active": True},
-                    {"id": "tre-em", "name": "Tiếng Trung Trẻ Em", "icon": "fa-child", "description": "Tiếng Trung trẻ em", "slug": "tre-em", "active": True},
-                    {"id": "nguoi-lon", "name": "Tiếng Trung Người Lớn", "icon": "fa-user-tie", "description": "Tiếng Trung người lớn", "slug": "nguoi-lon", "active": True}
-                ]
-            }
-        elif filename == 'slides.json':
-            default_data = {"items": []}
-        else:
-            default_data = {"items": []}
-        save_data(filename, default_data)
-        return default_data
-    with open(path, 'r', encoding='utf-8') as f:
-        return json.load(f)
 
-def save_data(filename, data):
+MONGO_URI = os.environ.get('MONGO_URI')
+MONGO_DB = os.environ.get('MONGO_DB', 'oyin_db')
+
+# Biến toàn cục để dùng cho MongoDB
+mongo_client = None
+db = None
+
+try:
+    if MONGO_URI:
+        mongo_client = MongoClient(MONGO_URI)
+        # Kiểm tra kết nối
+        mongo_client.admin.command('ping')
+        db = mongo_client[MONGO_DB]
+        print(f"✅ Kết nối MongoDB thành công! Database: {MONGO_DB}")
+    else:
+        print("⚠️ MONGO_URI không có trong .env, sử dụng JSON fallback")
+except Exception as e:
+    print(f"❌ Lỗi kết nối MongoDB: {e}")
+    print("⚠️ Sử dụng JSON fallback")
+
+# ============================================
+# HÀM DÙNG CHUNG - HỖ TRỢ CẢ MONGODB VÀ JSON
+# ============================================
+
+def save_data(collection_name, data):
+    """Lưu dữ liệu vào MongoDB và JSON"""
+    if db is not None:
+        try:
+            collection = db[collection_name]
+            collection.delete_many({})
+            
+            if collection_name == 'categories':
+                items = data.get('categories', [])
+            else:
+                items = data.get('items', [])
+            
+            if items:
+                # 👈 LOẠI BỎ _id TRƯỚC KHI LƯU
+                for item in items:
+                    if '_id' in item:
+                        del item['_id']
+                collection.insert_many(items)
+                print(f"✅ Đã lưu {len(items)} items vào MongoDB: {collection_name}")
+            
+            return True
+        except Exception as e:
+            print(f"⚠️ Lỗi lưu MongoDB {collection_name}: {e}")
+    
+    # Fallback sang JSON
+    try:
+        os.makedirs('data', exist_ok=True)
+        # 👈 CHUYỂN ĐỔI OBJECTID TRƯỚC KHI LƯU JSON
+        data = convert_objectid(data)
+        path = os.path.join('data', f'{collection_name}.json')
+        with open(path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        return True
+    except Exception as e:
+        print(f"⚠️ Lỗi lưu JSON {collection_name}: {e}")
+        return False
+    
+def get_default_categories():
+    """Danh mục mặc định"""
+    return [
+        {"id": "hsk", "name": "HSK", "icon": "fa-graduation-cap", "description": "Luyện thi HSK", "slug": "hsk", "active": True, "order": 1},
+        {"id": "hsk30", "name": "HSK 3.0", "icon": "fa-star", "description": "HSK 3.0", "slug": "hsk30", "active": True, "order": 2},
+        {"id": "tre-em", "name": "Tiếng Trung Trẻ Em", "icon": "fa-child", "description": "Tiếng Trung trẻ em", "slug": "tre-em", "active": True, "order": 3},
+        {"id": "nguoi-lon", "name": "Tiếng Trung Người Lớn", "icon": "fa-user-tie", "description": "Tiếng Trung người lớn", "slug": "nguoi-lon", "active": True, "order": 4}
+    ]
+
+# ============================================
+# HÀM LƯU JSON (FALLBACK)
+# ============================================
+
+def load_data(collection_name):
+    """
+    Đọc dữ liệu từ MongoDB hoặc JSON
+    collection_name: tên collection (slides, categories, documents, news)
+    """
+    # Ưu tiên dùng MongoDB nếu có kết nối
+    if db is not None:
+        try:
+            collection = db[collection_name]
+            items = list(collection.find({}))
+            
+            # 👈 CHUYỂN ĐỔI OBJECTID THÀNH STRING
+            items = convert_objectid(items)
+            
+            if collection_name == 'categories':
+                if items:
+                    return {"categories": items}
+                else:
+                    # Trả về categories mặc định nếu chưa có
+                    return {"categories": get_default_categories()}
+            
+            return {"items": items} if items else {"items": []}
+            
+        except Exception as e:
+            print(f"⚠️ Lỗi đọc MongoDB {collection_name}: {e}")
+    
+    # Fallback sang JSON
+    return load_data_json(collection_name)  
+
+def save_data_json(filename, data):
     """Ghi dữ liệu vào file JSON trong thư mục data/"""
     os.makedirs('data', exist_ok=True)
     path = os.path.join('data', filename)
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
-# Đường dẫn file
+# ============================================
+# HÀM CHUYỂN ĐỔI OBJECTID THÀNH STRING
+# ============================================
+
+def convert_objectid(data):
+    """
+    Đệ quy chuyển đổi tất cả ObjectId trong dict/list thành string
+    """
+    if isinstance(data, list):
+        return [convert_objectid(item) for item in data]
+    elif isinstance(data, dict):
+        result = {}
+        for key, value in data.items():
+            if key == '_id' and isinstance(value, ObjectId):
+                result[key] = str(value)
+            else:
+                result[key] = convert_objectid(value)
+        return result
+    elif isinstance(data, ObjectId):
+        return str(data)
+    else:
+        return data
+
+# ============================================
+# MENU (VẪN DÙNG JSON VÌ CÓ CẤU TRÚC PHỨC TẠP)
+# ============================================
+
 MENU_FILE = 'data/menu.json'
 COURSES_FILE = 'data/courses.json'
 
-# Menu mặc định
 DEFAULT_MENU = {
     "items": [
-        {
-            "id": "home",
-            "name": "Trang Chủ",
-            "url": "/index.html",
-            "children": []
-        },
+        {"id": "home", "name": "Trang Chủ", "url": "/index.html", "children": []},
         {
             "id": "gioi-thieu",
             "name": "GIỚI THIỆU",
@@ -63,18 +174,8 @@ DEFAULT_MENU = {
                 {"id": "su-kien", "name": "Sự Kiện", "url": "/html/gioithieuhtml/sukienhtml.html", "children": []}
             ]
         },
-        {
-            "id": "lich-khai-giang",
-            "name": "LỊCH KHAI GIẢNG",
-            "url": "/html/lichkhaigianghtml/lichkhaigianghtml.html",
-            "children": []
-        },
-        {
-            "id": "khoa-hoc",
-            "name": "KHÓA HỌC",
-            "url": "/khoa-hoc",
-            "children": []
-        },
+        {"id": "lich-khai-giang", "name": "LỊCH KHAI GIẢNG", "url": "/html/lichkhaigianghtml/lichkhaigianghtml.html", "children": []},
+        {"id": "khoa-hoc", "name": "KHÓA HỌC", "url": "/khoa-hoc", "children": []},
         {
             "id": "thu-vien",
             "name": "THƯ VIỆN",
@@ -89,16 +190,12 @@ DEFAULT_MENU = {
     ]
 }
 
-# ==================== HÀM ĐỌC/GHI FILE ====================
-
 def load_menu():
     """Đọc menu từ file JSON"""
     os.makedirs('data', exist_ok=True)
-    
     if not os.path.exists(MENU_FILE):
         save_menu(DEFAULT_MENU)
         return DEFAULT_MENU
-    
     try:
         with open(MENU_FILE, 'r', encoding='utf-8') as f:
             content = f.read().strip()
@@ -118,6 +215,19 @@ def save_menu(menu_data):
 
 def load_courses():
     """Đọc danh sách khóa học - LUÔN TRẢ VỀ LIST"""
+    # Ưu tiên MongoDB
+    if db is not None:
+        try:
+            collection = db['courses']
+            courses = list(collection.find({}))
+            # 👈 CHUYỂN ĐỔI OBJECTID THÀNH STRING
+            courses = convert_objectid(courses)
+            if courses:
+                return courses
+        except Exception as e:
+            print(f"⚠️ Lỗi đọc courses từ MongoDB: {e}")
+    
+    # Fallback sang JSON
     if not os.path.exists(COURSES_FILE):
         save_courses([])
         return []
@@ -141,14 +251,83 @@ def load_courses():
         return []
 
 def save_courses(courses):
-    """Lưu danh sách khóa học"""
-    os.makedirs('data', exist_ok=True)
-    if not isinstance(courses, list):
-        courses = []
-    with open(COURSES_FILE, 'w', encoding='utf-8') as f:
-        json.dump(courses, f, ensure_ascii=False, indent=2)
+    """Lưu danh sách khóa học vào MongoDB và JSON"""
+    if db is not None:
+        try:
+            collection = db['courses']
+            collection.delete_many({})
+            if courses:
+                # 👈 LOẠI BỎ _id TRƯỚC KHI LƯU
+                for course in courses:
+                    if '_id' in course:
+                        del course['_id']
+                collection.insert_many(courses)
+                print(f"✅ Đã lưu {len(courses)} courses vào MongoDB")
+        except Exception as e:
+            print(f"⚠️ Lỗi lưu courses vào MongoDB: {e}")
+    
+    # Lưu vào JSON (giữ nguyên)
+    try:
+        os.makedirs('data', exist_ok=True)
+        if not isinstance(courses, list):
+            courses = []
+        # 👈 CHUYỂN ĐỔI OBJECTID TRƯỚC KHI LƯU JSON
+        courses = convert_objectid(courses)
+        with open(COURSES_FILE, 'w', encoding='utf-8') as f:
+            json.dump(courses, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"⚠️ Lỗi lưu courses.json: {e}")
 
-# ==================== TRANG WEB ====================
+# ============================================
+# API MIGRATE - CHUYỂN DỮ LIỆU SANG MONGODB
+# ============================================
+
+@app.route('/api/migrate', methods=['POST'])
+def api_migrate():
+    """API chuyển dữ liệu từ JSON sang MongoDB"""
+    try:
+        if db is None:
+            return jsonify({"success": False, "error": "Không có kết nối MongoDB"}), 400
+        
+        collections = ['slides', 'categories', 'documents', 'news']
+        migrated = []
+        
+        for name in collections:
+            # Đọc từ JSON
+            json_data = load_data_json(f'{name}.json')
+            
+            # Lưu vào MongoDB
+            collection = db[name]
+            collection.delete_many({})
+            
+            if name == 'categories':
+                items = json_data.get('categories', [])
+            else:
+                items = json_data.get('items', [])
+            
+            if items:
+                collection.insert_many(items)
+                migrated.append(f"{name}: {len(items)} items")
+        
+        # Migrate courses
+        courses_data = load_courses()
+        if courses_data:
+            collection = db['courses']
+            collection.delete_many({})
+            collection.insert_many(courses_data)
+            migrated.append(f"courses: {len(courses_data)} items")
+        
+        return jsonify({
+            "success": True,
+            "message": f"Đã migrate: {', '.join(migrated)}"
+        })
+        
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# ============================================
+# TRANG WEB
+# ============================================
 
 @app.route('/')
 def index():
@@ -183,14 +362,18 @@ def admin_dashboard():
     """Trang quản trị tập trung"""
     return render_template('admin/dashboard.html')
 
-# ==================== PHỤC VỤ FILE TĨNH ====================
+# ============================================
+# PHỤC VỤ FILE TĨNH
+# ============================================
 
 @app.route('/static/<path:filename>')
 def serve_static_file(filename):
     """Phục vụ file tĩnh từ thư mục static/"""
     return send_from_directory('static', filename)
 
-# ==================== API ====================
+# ============================================
+# API
+# ============================================
 
 @app.route('/api/menu', methods=['GET'])
 def get_menu():
@@ -205,6 +388,8 @@ def get_courses():
     """API lấy danh sách khóa học"""
     try:
         courses = load_courses()
+        # 👈 CHUYỂN ĐỔI OBJECTID
+        courses = convert_objectid(courses)
         return jsonify(courses)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -212,25 +397,35 @@ def get_courses():
 @app.route('/api/data/<string:type>', methods=['GET'])
 def api_get_data(type):
     """Lấy dữ liệu theo loại"""
-    allowed = ['menu', 'slides', 'categories', 'documents', 'news']
+    allowed = ['menu', 'slides', 'categories', 'documents', 'news', 'reviews']
     if type not in allowed:
         return jsonify({"error": "Invalid type"}), 400
     
     if type == 'menu':
         return jsonify(load_menu())
     
-    return jsonify(load_data(f"{type}.json"))
+    data = load_data(type)
+    # 👈 CHUYỂN ĐỔI OBJECTID (nếu cần)
+    data = convert_objectid(data)
+    return jsonify(data)
 
 @app.route('/api/data/<string:type>', methods=['POST'])
 def api_save_data(type):
     """Lưu dữ liệu theo loại"""
-    allowed = ['menu', 'slides', 'courses', 'categories', 'documents', 'news']
+    allowed = ['menu', 'slides', 'courses', 'categories', 'documents', 'news', 'reviews']
     if type not in allowed:
         return jsonify({"error": "Invalid type"}), 400
     
     data = request.get_json()
-    save_data(f"{type}.json", data)
+    if type == 'menu':
+        save_menu(data)
+    else:
+        save_data(type, data)
     return jsonify({"success": True})
+
+# ============================================
+# API MENU - THÊM/XÓA/SỬA
+# ============================================
 
 @app.route('/api/menu/add', methods=['POST'])
 def add_menu_item():
@@ -431,6 +626,10 @@ def create_course():
             "html_file": html_filename
         }
         courses.append(new_course)
+        
+        # 👈 CHUYỂN ĐỔI OBJECTID TRƯỚC KHI LƯU
+        courses = convert_objectid(courses)
+        
         save_courses(courses)
         
         return jsonify({
@@ -447,13 +646,17 @@ def create_course():
         return jsonify({"success": False, "error": str(e)}), 500
 
 # ============================================
-# API UPLOAD ẢNH CHO KHÓA HỌC
+# API UPLOAD ẢNH
 # ============================================
 
 UPLOAD_FOLDER_COURSES = 'static/img/courses'
+UPLOAD_FOLDER_SLIDES = 'static/img/slides'
+UPLOAD_FOLDER_REVIEWS = 'static/img/reviews'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'}
 
 os.makedirs(UPLOAD_FOLDER_COURSES, exist_ok=True)
+os.makedirs(UPLOAD_FOLDER_SLIDES, exist_ok=True)
+os.makedirs(UPLOAD_FOLDER_REVIEWS, exist_ok=True)
 
 def allowed_file(filename):
     """Kiểm tra định dạng file cho phép"""
@@ -471,7 +674,7 @@ def upload_course_image():
             return jsonify({"error": "Tên file rỗng"}), 400
         
         if not allowed_file(file.filename):
-            return jsonify({"error": "Định dạng không hỗ trợ. Chỉ chấp nhận: png, jpg, jpeg, gif, webp, svg"}), 400
+            return jsonify({"error": "Định dạng không hỗ trợ"}), 400
         
         filename = secure_filename(file.filename)
         name, ext = os.path.splitext(filename)
@@ -493,6 +696,74 @@ def upload_course_image():
         print(f"❌ Upload course image error: {e}")
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/upload/slide', methods=['POST'])
+def upload_slide():
+    """Upload ảnh slide"""
+    try:
+        if 'file' not in request.files:
+            return jsonify({"success": False, "error": "Không có file"}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({"success": False, "error": "Tên file rỗng"}), 400
+        
+        if not allowed_file(file.filename):
+            return jsonify({"success": False, "error": "Định dạng không hỗ trợ"}), 400
+        
+        filename = secure_filename(file.filename)
+        name, ext = os.path.splitext(filename)
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        new_filename = f"{name}_{timestamp}{ext}"
+        
+        file_path = os.path.join(UPLOAD_FOLDER_SLIDES, new_filename)
+        file.save(file_path)
+        
+        image_url = f"/static/img/slides/{new_filename}"
+        
+        return jsonify({
+            "success": True,
+            "image_url": image_url,
+            "filename": new_filename
+        })
+        
+    except Exception as e:
+        print(f"❌ Upload slide error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/upload/review-avatar', methods=['POST'])
+def upload_review_avatar():
+    """Upload ảnh đại diện đánh giá"""
+    try:
+        if 'file' not in request.files:
+            return jsonify({"success": False, "error": "Không có file"}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({"success": False, "error": "Tên file rỗng"}), 400
+        
+        if not allowed_file(file.filename):
+            return jsonify({"success": False, "error": "Định dạng không hỗ trợ"}), 400
+        
+        filename = secure_filename(file.filename)
+        name, ext = os.path.splitext(filename)
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        new_filename = f"{name}_{timestamp}{ext}"
+        
+        file_path = os.path.join(UPLOAD_FOLDER_REVIEWS, new_filename)
+        file.save(file_path)
+        
+        image_url = f"/static/img/reviews/{new_filename}"
+        
+        return jsonify({
+            "success": True,
+            "image_url": image_url,
+            "filename": new_filename
+        })
+        
+    except Exception as e:
+        print(f"❌ Upload review avatar error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+    
 # ============================================
 # API THÊM/XÓA/SỬA CHO ADMIN
 # ============================================
@@ -500,11 +771,11 @@ def upload_course_image():
 @app.route('/api/data/<string:type>/add', methods=['POST'])
 def api_add_item(type):
     """Thêm một mục vào dữ liệu"""
-    allowed = ['slides', 'courses', 'documents', 'news']
+    allowed = ['slides', 'courses', 'documents', 'news', 'reviews']
     if type not in allowed:
         return jsonify({"error": "Invalid type"}), 400
     
-    data = load_data(f"{type}.json")
+    data = load_data(type)
     if 'items' not in data:
         data['items'] = []
     
@@ -513,33 +784,54 @@ def api_add_item(type):
     new_item['created_at'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     data['items'].append(new_item)
-    save_data(f"{type}.json", data)
+    save_data(type, data)
+    
+    # 👈 CHUYỂN ĐỔI OBJECTID TRƯỚC KHI TRẢ VỀ
+    new_item = convert_objectid(new_item)
+    
     return jsonify({"success": True, "item": new_item})
 
 @app.route('/api/data/<string:type>/<string:item_id>', methods=['DELETE'])
 def api_delete_item(type, item_id):
     """Xóa một mục khỏi dữ liệu"""
-    allowed = ['slides', 'courses', 'documents', 'news']
-    if type not in allowed:
-        return jsonify({"error": "Invalid type"}), 400
-    
-    data = load_data(f"{type}.json")
-    if 'items' not in data:
-        return jsonify({"error": "No items"}), 404
-    
-    data['items'] = [item for item in data['items'] if item.get('id') != item_id]
-    save_data(f"{type}.json", data)
-    return jsonify({"success": True})
-
-@app.route('/api/data/<string:type>/<string:item_id>', methods=['PUT'])
-def api_update_item(type, item_id):
-    """Cập nhật một mục trong dữ liệu"""
-    allowed = ['slides', 'courses', 'documents', 'news']
+    allowed = ['slides', 'courses', 'documents', 'news', 'reviews']
     if type not in allowed:
         return jsonify({"error": "Invalid type"}), 400
     
     try:
-        data = load_data(f"{type}.json")
+        data = load_data(type)
+        if 'items' not in data:
+            return jsonify({"error": "No items"}), 404
+        
+        # Tìm và xóa item
+        original_count = len(data['items'])
+        data['items'] = [item for item in data['items'] if item.get('id') != item_id and str(item.get('_id')) != item_id]
+        
+        if len(data['items']) == original_count:
+            return jsonify({"error": "Item not found"}), 404
+        
+        save_data(type, data)
+        
+        # 👈 CHUYỂN ĐỔI OBJECTID TRƯỚC KHI TRẢ VỀ
+        data = convert_objectid(data)
+        
+        return jsonify({"success": True, "message": "Đã xóa thành công", "data": data})
+        
+    except Exception as e:
+        print(f"❌ Lỗi xóa {type}: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/api/data/<string:type>/<string:item_id>', methods=['PUT'])
+def api_update_item(type, item_id):
+    """Cập nhật một mục trong dữ liệu"""
+    allowed = ['slides', 'courses', 'documents', 'news', 'reviews']
+    if type not in allowed:
+        return jsonify({"error": "Invalid type"}), 400
+    
+    try:
+        data = load_data(type)
         if 'items' not in data:
             data['items'] = []
         
@@ -557,7 +849,11 @@ def api_update_item(type, item_id):
                     updated['order'] = i + 1
                     
                 data['items'][i] = updated
-                save_data(f"{type}.json", data)
+                save_data(type, data)
+                
+                # 👈 CHUYỂN ĐỔI OBJECTID TRƯỚC KHI TRẢ VỀ
+                updated = convert_objectid(updated)
+                
                 return jsonify({"success": True, "item": updated})
         
         return jsonify({"error": f"Item {item_id} not found"}), 404
@@ -575,7 +871,7 @@ def api_update_item(type, item_id):
 @app.route('/api/data/categories/add', methods=['POST'])
 def api_add_category():
     """Thêm danh mục khóa học"""
-    data = load_data('categories.json')
+    data = load_data('categories')
     if 'categories' not in data:
         data['categories'] = []
     
@@ -583,24 +879,38 @@ def api_add_category():
     new_category['id'] = re.sub(r'[^a-z0-9]+', '-', new_category.get('name', 'category').lower().strip('-'))
     
     data['categories'].append(new_category)
-    save_data('categories.json', data)
+    save_data('categories', data)
+    
+    # 👈 CHUYỂN ĐỔI OBJECTID TRƯỚC KHI TRẢ VỀ
+    new_category = convert_objectid(new_category)
+    
     return jsonify({"success": True, "item": new_category})
 
 @app.route('/api/data/categories/<string:cat_id>', methods=['DELETE'])
 def api_delete_category(cat_id):
     """Xóa danh mục khóa học"""
-    data = load_data('categories.json')
-    if 'categories' not in data:
-        return jsonify({"error": "No categories"}), 404
-    
-    data['categories'] = [c for c in data['categories'] if c.get('id') != cat_id]
-    save_data('categories.json', data)
-    return jsonify({"success": True})
+    try:
+        data = load_data('categories')
+        if 'categories' not in data:
+            return jsonify({"error": "No categories"}), 404
+        
+        original_count = len(data['categories'])
+        data['categories'] = [c for c in data['categories'] if c.get('id') != cat_id and str(c.get('_id')) != cat_id]
+        
+        if len(data['categories']) == original_count:
+            return jsonify({"error": "Category not found"}), 404
+        
+        save_data('categories', data)
+        return jsonify({"success": True, "message": "Đã xóa danh mục thành công"})
+        
+    except Exception as e:
+        print(f"❌ Lỗi xóa category: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/data/categories/<string:cat_id>', methods=['PUT'])
 def api_update_category(cat_id):
     """Cập nhật danh mục khóa học"""
-    data = load_data('categories.json')
+    data = load_data('categories')
     if 'categories' not in data:
         return jsonify({"error": "No categories"}), 404
     
@@ -609,13 +919,17 @@ def api_update_category(cat_id):
         if cat.get('id') == cat_id:
             updated['id'] = cat_id
             data['categories'][i] = updated
-            save_data('categories.json', data)
+            save_data('categories', data)
+            
+            # 👈 CHUYỂN ĐỔI OBJECTID TRƯỚC KHI TRẢ VỀ
+            updated = convert_objectid(updated)
+            
             return jsonify({"success": True, "item": updated})
     
     return jsonify({"error": "Category not found"}), 404
 
 # ============================================
-# API COURSES - LẤY DANH SÁCH
+# API COURSES
 # ============================================
 
 @app.route('/api/data/courses', methods=['GET'])
@@ -632,9 +946,6 @@ def get_courses_data():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ============================================
-# API COURSES - THÊM MỚI
-# ============================================
 
 @app.route('/api/data/courses/add', methods=['POST'])
 def add_course():
@@ -675,13 +986,14 @@ def add_course():
         }
         courses.append(new_course)
         save_courses(courses)
+        
+        # 👈 CHUYỂN ĐỔI OBJECTID TRƯỚC KHI TRẢ VỀ
+        new_course = convert_objectid(new_course)
+        
         return jsonify({"success": True, "item": new_course})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
-# ============================================
-# API COURSES - CẬP NHẬT
-# ============================================
 
 @app.route('/api/data/courses/<string:course_id>', methods=['PUT'])
 def update_course(course_id):
@@ -694,7 +1006,7 @@ def update_course(course_id):
         updated = request.get_json()
         
         for i, course in enumerate(courses):
-            if course.get('id') == course_id:
+            if course.get('id') == course_id or str(course.get('_id')) == course_id:
                 updated['id'] = course_id
                 if 'created_at' in course:
                     updated['created_at'] = course['created_at']
@@ -702,16 +1014,19 @@ def update_course(course_id):
                     updated['html_file'] = course['html_file']
                 courses[i] = updated
                 save_courses(courses)
+                
+                # 👈 CHUYỂN ĐỔI OBJECTID TRƯỚC KHI TRẢ VỀ
+                updated = convert_objectid(updated)
+                
                 return jsonify({"success": True, "item": updated})
         
         return jsonify({"error": "Course not found"}), 404
     except Exception as e:
+        print(f"❌ Lỗi update course: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
-
-# ============================================
-# API COURSES - XÓA (XÓA CẢ FILE HTML)
-# ============================================
-
+    
 @app.route('/api/data/courses/<string:course_id>', methods=['DELETE'])
 def delete_course(course_id):
     """API xóa khóa học - Xóa cả file HTML"""
@@ -720,15 +1035,18 @@ def delete_course(course_id):
         if not isinstance(courses, list):
             return jsonify({"error": "No courses"}), 404
         
+        # Tìm khóa học cần xóa
         course_to_delete = None
         for c in courses:
-            if c.get('id') == course_id:
+            # So sánh cả id và _id (nếu có)
+            if c.get('id') == course_id or str(c.get('_id')) == course_id:
                 course_to_delete = c
                 break
         
         if not course_to_delete:
             return jsonify({"error": "Course not found"}), 404
         
+        # Xóa file HTML
         html_file = course_to_delete.get('html_file')
         if html_file:
             html_path = os.path.join('html', 'khoahochtml', html_file)
@@ -736,6 +1054,7 @@ def delete_course(course_id):
                 os.remove(html_path)
                 print(f"✅ Đã xóa file HTML: {html_path}")
         
+        # Xóa ảnh
         image_url = course_to_delete.get('image_url') or course_to_delete.get('image')
         if image_url:
             image_path = image_url.lstrip('/')
@@ -743,12 +1062,27 @@ def delete_course(course_id):
                 os.remove(image_path)
                 print(f"✅ Đã xóa ảnh: {image_path}")
         
-        courses = [c for c in courses if c.get('id') != course_id]
+        # Xóa khỏi danh sách
+        courses = [c for c in courses if c.get('id') != course_id and str(c.get('_id')) != course_id]
         save_courses(courses)
         
         return jsonify({"success": True, "message": "Đã xóa khóa học và file HTML"})
+        
     except Exception as e:
         print(f"❌ Lỗi xóa khóa học: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+# ============================================
+# ĐÁNH GIÁ CỦA HỌC VIÊN
+# ============================================   
+@app.route('/api/data/reviews', methods=['GET'])
+def get_reviews():
+    """API lấy danh sách đánh giá"""
+    try:
+        return jsonify(load_data('reviews'))
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 # ============================================
@@ -775,6 +1109,7 @@ def delete_image():
             
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+    
 
 # ============================================
 # HÀM TẠO HTML CHO KHÓA HỌC
@@ -848,7 +1183,6 @@ def generate_course_html(name, level, description, image_url, price, duration, s
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* ========== STICKY NAV ========== */
         .nav-wrapper {{
             position: sticky;
             top: 0;
@@ -856,31 +1190,17 @@ def generate_course_html(name, level, description, image_url, price, duration, s
             background: linear-gradient(135deg, #e67e22, #d35400);
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
         }}
-        
-        /* Animation cho nav khi dính */
         @keyframes slideDown {{
-            from {{
-                transform: translateY(-100%);
-                opacity: 0;
-            }}
-            to {{
-                transform: translateY(0);
-                opacity: 1;
-            }}
+            from {{ transform: translateY(-100%); opacity: 0; }}
+            to {{ transform: translateY(0); opacity: 1; }}
         }}
-        
         .nav-wrapper {{
             animation: slideDown 0.3s ease-out;
         }}
-        
-        /* Đảm bảo header không ảnh hưởng */
         header {{
             position: relative;
             z-index: 99;
         }}
-        
-        /* Phần còn lại của CSS giữ nguyên ... */
-        
         :root {{
             --primary: #e67e22;
             --primary-dark: #d35400;
@@ -888,13 +1208,204 @@ def generate_course_html(name, level, description, image_url, price, duration, s
             --gradient: linear-gradient(135deg, #e67e22, #d35400);
             --shadow: 0 10px 40px rgba(0,0,0,0.08);
         }}
-        
-        /* ... CSS còn lại giữ nguyên ... */
-        
+        .course-detail-wrapper {{
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }}
+        .course-hero {{
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            padding: 50px 40px;
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 30px;
+        }}
+        .course-hero h1 {{
+            font-size: 36px;
+            margin-bottom: 10px;
+        }}
+        .course-hero .subtitle {{
+            font-size: 18px;
+            opacity: 0.9;
+        }}
+        .badge-group {{
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }}
+        .badge {{
+            background: rgba(255,255,255,0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+        }}
+        .quick-info {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }}
+        .quick-info-item {{
+            text-align: center;
+        }}
+        .quick-info-item i {{
+            font-size: 28px;
+            color: #e67e22;
+        }}
+        .quick-info-item .value {{
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+        }}
+        .quick-info-item .label {{
+            font-size: 13px;
+            color: #999;
+        }}
+        .course-content-grid {{
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }}
+        .course-main {{
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }}
+        .course-main h2 {{
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }}
+        .description {{
+            line-height: 1.8;
+            color: #444;
+            white-space: pre-wrap;
+        }}
+        .benefits-grid ul, .benefits-grid {{
+            list-style: none;
+            padding: 0;
+        }}
+        .benefits-grid li {{
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }}
+        .benefits-grid li i {{
+            color: #4CAF50;
+            font-size: 18px;
+        }}
+        .curriculum-list {{
+            margin-top: 10px;
+        }}
+        .curriculum-item {{
+            display: flex;
+            gap: 20px;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }}
+        .curriculum-week {{
+            font-weight: 700;
+            color: #e67e22;
+            min-width: 80px;
+        }}
+        .curriculum-content h4 {{
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }}
+        .curriculum-content p {{
+            color: #666;
+            font-size: 14px;
+        }}
+        .course-sidebar {{
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }}
+        .sidebar-card {{
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+        }}
+        .course-image img {{
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+        }}
+        .price {{
+            font-size: 28px;
+            font-weight: 800;
+            color: #e67e22;
+            display: block;
+            margin: 15px 0 5px;
+        }}
+        .price-original {{
+            font-size: 16px;
+            color: #999;
+            text-decoration: line-through;
+        }}
+        .btn-register {{
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }}
+        .btn-register:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(230,126,34,0.3);
+        }}
+        .info-row {{
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }}
+        .info-row .label {{
+            color: #999;
+        }}
+        .info-row .value {{
+            font-weight: 600;
+            color: #2c3e50;
+        }}
+        @media (max-width: 768px) {{
+            .course-content-grid {{
+                grid-template-columns: 1fr;
+            }}
+            .course-hero {{
+                padding: 30px 20px;
+            }}
+            .course-hero h1 {{
+                font-size: 28px;
+            }}
+            .quick-info {{
+                grid-template-columns: 1fr;
+            }}
+            .curriculum-item {{
+                flex-direction: column;
+                gap: 5px;
+            }}
+        }}
     </style>
 </head>
 <body>
-    <!-- HEADER -->
     <header>
         <div class="information">
             <div class="informationtext informationtextlogo">
@@ -925,10 +1436,8 @@ def generate_course_html(name, level, description, image_url, price, duration, s
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
     <main>
         <div class="course-detail-wrapper">
-            <!-- Hero -->
             <div class="course-hero">
                 <h1>{display_name}</h1>
                 <p class="subtitle">{subtitle or description[:100] if description else ''}</p>
@@ -940,7 +1449,6 @@ def generate_course_html(name, level, description, image_url, price, duration, s
                 </div>
             </div>
 
-            <!-- Quick Info -->
             <div class="quick-info">
                 <div class="quick-info-item">
                     <i class="fas fa-clock"></i>
@@ -959,15 +1467,14 @@ def generate_course_html(name, level, description, image_url, price, duration, s
                 </div>
             </div>
 
-            <!-- Content Grid -->
             <div class="course-content-grid">
                 <div class="course-main">
                     <h2>📖 Giới thiệu khóa học</h2>
                     <div class="description">{detailed_description or description}</div>
 
                     {f'''
-                    <div class="video-section">
-                        <iframe src="{video_intro}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <div class="video-section" style="margin-top:20px;">
+                        <iframe src="{video_intro}" style="width:100%;height:400px;border:none;border-radius:12px;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     </div>
                     ''' if video_intro else ''}
 
@@ -997,7 +1504,6 @@ def generate_course_html(name, level, description, image_url, price, duration, s
                     ''' if curriculum_html else ''}
                 </div>
 
-                <!-- Sidebar -->
                 <div class="course-sidebar">
                     <div class="sidebar-card">
                         <div class="course-image">
@@ -1048,7 +1554,6 @@ def generate_course_html(name, level, description, image_url, price, duration, s
         </div>
     </main>
 
-    <!-- FOOTER -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-row">
@@ -1084,7 +1589,6 @@ def generate_course_html(name, level, description, image_url, price, duration, s
                         <li><a href="#">Chính sách & Điều khoản</a></li>
                         <li><a href="#">Chính sách bảo mật</a></li>
                         <li><a href="#">Hướng dẫn thanh toán</a></li>
-                        <li><a href="/admin/dashboard">Quản trị website</a></li>
                     </ul>
                 </div>
             </div>
@@ -1094,28 +1598,88 @@ def generate_course_html(name, level, description, image_url, price, duration, s
         </div>
     </footer>
 
-    <!-- ========== JAVASCRIPT ========== -->
     <script>
-        // ===== LOAD MENU =====
+        // ===== LOAD MENU VỚI DROPDOWN =====
         async function loadMenu() {{
             try {{
                 const response = await fetch('/api/menu');
                 const data = await response.json();
+                const menuItems = data.items;
                 const menuContainer = document.getElementById('dynamic-menu');
                 if (!menuContainer) return;
+                
                 menuContainer.innerHTML = '';
-                data.items.forEach(item => {{
+                
+                menuItems.forEach(item => {{
                     const li = document.createElement('li');
                     li.className = 'nav-item';
-                    li.innerHTML = `<a href="${{item.url}}">${{item.name}}</a>`;
+                    
+                    if (item.children && item.children.length > 0) {{
+                        li.classList.add('has-dropdown');
+                        li.innerHTML = `
+                            <a href="${{item.url}}">${{item.name}}</a>
+                            <ul class="dropdown">
+                                ${{renderChildren(item.children)}}
+                            </ul>
+                        `;
+                    }} else {{
+                        li.innerHTML = `<a href="${{item.url}}">${{item.name}}</a>`;
+                    }}
+                    
                     menuContainer.appendChild(li);
                 }});
+                
+                // Thêm sự kiện click cho dropdown trên mobile
+                if (window.innerWidth <= 768) {{
+                    document.querySelectorAll('.has-dropdown > a').forEach(link => {{
+                        link.addEventListener('click', function(e) {{
+                            e.preventDefault();
+                            const dropdown = this.nextElementSibling;
+                            if (dropdown) {{
+                                dropdown.classList.toggle('show');
+                            }}
+                        }});
+                    }});
+                    
+                    document.querySelectorAll('.dropdown-sub > span').forEach(span => {{
+                        span.addEventListener('click', function(e) {{
+                            e.preventDefault();
+                            const subDropdown = this.nextElementSibling;
+                            if (subDropdown) {{
+                                subDropdown.classList.toggle('show');
+                            }}
+                        }});
+                    }});
+                }}
+                
             }} catch (error) {{
                 console.error('Lỗi tải menu:', error);
+                const menuContainer = document.getElementById('dynamic-menu');
+                if (menuContainer) {{
+                    menuContainer.innerHTML = '<li>Lỗi tải menu</li>';
+                }}
             }}
         }}
 
-        // ===== LOAD FOOTER CATEGORIES =====
+        function renderChildren(children) {{
+            let html = '';
+            children.forEach(child => {{
+                if (child.children && child.children.length > 0) {{
+                    html += `
+                        <li class="dropdown-sub">
+                            <span>${{child.name}}</span>
+                            <ul class="sub-dropdown">
+                                ${{renderChildren(child.children)}}
+                            </ul>
+                        </li>
+                    `;
+                }} else {{
+                    html += `<li><a href="${{child.url}}">${{child.name}}</a></li>`;
+                }}
+            }});
+            return html;
+        }}
+
         async function loadFooterCategories() {{
             try {{
                 const response = await fetch('/api/data/categories');
@@ -1131,7 +1695,6 @@ def generate_course_html(name, level, description, image_url, price, duration, s
             }}
         }}
 
-        // ===== MOBILE MENU TOGGLE =====
         function initMobileMenu() {{
             const menuToggle = document.querySelector('.menu-toggle');
             const navMain = document.querySelector('.nav-main');
@@ -1152,13 +1715,10 @@ def generate_course_html(name, level, description, image_url, price, duration, s
             }}
         }}
 
-        // ===== STICKY NAVIGATION =====
         function initStickyNav() {{
             const navWrapper = document.querySelector('.nav-wrapper');
             const header = document.querySelector('header');
-            
             if (!navWrapper || !header) return;
-            
             let navHeight = navWrapper.offsetHeight;
             let stickyOffset = header.offsetHeight;
             
@@ -1178,7 +1738,6 @@ def generate_course_html(name, level, description, image_url, price, duration, s
                 }}
             }}
             
-            // Thêm CSS cho class js-sticky
             const style = document.createElement('style');
             style.textContent = `
                 .nav-wrapper.js-sticky {{
@@ -1197,18 +1756,15 @@ def generate_course_html(name, level, description, image_url, price, duration, s
                 }}
             `;
             document.head.appendChild(style);
-            
             window.addEventListener('scroll', handleSticky);
             window.addEventListener('resize', function() {{
                 stickyOffset = header.offsetHeight;
                 navHeight = navWrapper.offsetHeight;
                 handleSticky();
             }});
-            
             handleSticky();
         }}
 
-        // ===== DOM READY =====
         document.addEventListener('DOMContentLoaded', function() {{
             loadMenu();
             loadFooterCategories();
@@ -1219,8 +1775,10 @@ def generate_course_html(name, level, description, image_url, price, duration, s
 </body>
 </html>"""
 
-# ==================== MAIN ====================
+# ============================================
+# MAIN
+# ============================================
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(debug=True, host='0.0.0.0', port=port) 
