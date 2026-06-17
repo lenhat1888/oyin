@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác nhận đăng ký</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 15px;
+        }
+
+        .content {
+            padding: 35px 40px;
+        }
+
+        .content h2 {
+            color: #2c3e50;
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .content .greeting {
+            color: #666;
+            font-size: 15px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 20px 0;
+            border-left: 4px solid #e67e22;
+        }
+
+        .info-box h3 {
+            color: #2c3e50;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .info-row {
+            display: flex;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #2c3e50;
+            width: 110px;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: #555;
+            font-size: 14px;
+            flex: 1;
+        }
+
+        .btn-group {
+            text-align: center;
+            margin: 25px 0 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 35px;
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: white;
+            text-decoration: none;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(230, 126, 34, 0.35);
+        }
+
+        .contact-info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .contact-info p {
+            color: #666;
+            font-size: 14px;
+            margin: 4px 0;
+        }
+
+        .contact-info i {
+            color: #e67e22;
+            width: 20px;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+
+        .footer p {
+            color: #999;
+            font-size: 12px;
+            margin: 3px 0;
+        }
+
+        .footer .brand {
+            color: #e67e22;
+            font-weight: 600;
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .info-row {
+                flex-direction: column;
+                padding: 6px 0;
+            }
+
+            .info-label {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>✅ Xác nhận đăng ký</h1>
+            <p>Ngoại Ngữ O-Yin</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <h2>Kính gửi {{ full_name }},</h2>
+            <p class="greeting">
+                Cảm ơn bạn đã tin tưởng và đăng ký khóa học tại
+                <strong>Ngoại Ngữ O-Yin</strong>!
+                Chúng tôi rất vui được đồng hành cùng bạn trên hành trình chinh phục tiếng Trung.
+            </p>
+
+            <div class="info-box">
+                <h3>📋 Thông tin đăng ký</h3>
+                <div class="info-row">
+                    <span class="info-label">Khóa học</span>
+                    <span class="info-value"><strong>{{ course }}</strong></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Họ tên</span>
+                    <span class="info-value">{{ full_name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Số điện thoại</span>
+                    <span class="info-value">{{ phone }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email</span>
+                    <span class="info-value">{{ email }}</span>
+                </div>
+                {% if message %}
+                <div class="info-row">
+                    <span class="info-label">Ghi chú</span>
+                    <span class="info-value">{{ message }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <p style="color:#666;font-size:15px;line-height:1.6;">
+                Chúng tôi sẽ liên hệ với bạn trong vòng <strong>24 giờ</strong> tới
+                để tư vấn chi tiết về khóa học và lịch học phù hợp nhất.
+            </p>
+
+            <div class="btn-group">
+                <a href="https://zalo.me/0971306143" class="btn">
+                    💬 Liên hệ qua Zalo
+                </a>
+            </div>
+
+            <div class="contact-info">
+                <p><i>📞</i> Hotline: <strong>0971 306 143</strong></p>
+                <p><i>💬</i> Zalo: <strong>0971 306 143</strong></p>
+                <p><i>📧</i> Email: <strong>info@oyin.edu.vn</strong></p>
+                <p><i>📍</i> Địa chỉ: <strong>Sầm Sơn, Thanh Hóa</strong></p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2024 <span class="brand">Ngoại Ngữ O-Yin</span></p>
+            <p>Trung tâm đào tạo tiếng Trung uy tín hàng đầu</p>
+            <p>Email này được gửi tự động, vui lòng không trả lời.</p>
+        </div>
+    </div>
+</body>
+
+</html>

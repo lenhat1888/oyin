@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký - Ngoại Ngữ OYin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chungcss.css') }}">
+    <link rel="stylesheet" href="../static/css/dangky.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="information">
+            <div class="informationtext informationtextlogo">
+                <a href="{{ url_for('index') }}">
+                    <img src="{{ url_for('static', filename='img/logooyin.png') }}" alt="Logo" class="informationimg" />
+                </a>
+            </div>
+            <div class="informationtext informationtextname">
+                <strong class="informationtextname2">NGOẠI NGỮ O-YIN</strong>
+            </div>
+            <div class="informationtext informationtextcall">
+                <div class="informationtextcallimg">
+                    <img src="{{ url_for('static', filename='img/dienthoai.png') }}" alt="Liên Hệ" class="callimg" />
+                </div>
+                <div class="informationtextcall12">
+                    <div class="informationtextcall1">LIÊN HỆ ZALO</div>
+                    <div class="informationtextcall2">0971 306 143(Hoàng Ngân)</div>
+                </div>
+            </div>
+            <div class="informationtext informationtextsupport">
+                <div class="informationtextsupportimg">
+                    <img src="{{ url_for('static', filename='img/dongho.jpg') }}" alt="Hỗ trợ" class="supportimg" />
+                </div>
+                <div class="informationtextsupport12">
+                    <div class="informationtextsupport1">HỖ TRỢ</div>
+                    <div class="informationtextsupport2">24/7</div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-wrapper">
+            <div class="mobile-menu">
+                <div class="menu-toggle">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+            </div>
+            <div class="nav-main">
+                <ul class="nav-list" id="dynamic-menu">
+                    <li>Đang tải menu...</li>
+                </ul>
+            </div>
+            <div class="register-btn">
+                <a href="{{ url_for('dang_ky') }}">ĐĂNG KÝ</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- ===== HERO ===== -->
+        <section class="dangky-hero">
+            <div class="hero-content">
+                <h1>📝 Đăng Ký <span>Khóa Học</span></h1>
+                <p>Điền thông tin bên dưới để đăng ký khóa học tại O-Yin</p>
+                <div class="hero-deco">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== FORM ===== -->
+        <section class="dangky-section">
+            <div class="dangky-container">
+                <div class="form-wrapper">
+                    <div class="form-header">
+                        <h2>📋 Thông tin đăng ký</h2>
+                        <p>Chúng tôi sẽ liên hệ với bạn trong vòng 24 giờ</p>
+                    </div>
+
+                    <div id="formMessage" class="form-message" style="display:none;"></div>
+
+                    <form id="dangkyForm">
+                        <!-- Họ tên -->
+                        <div class="form-group">
+                            <label for="full_name">Họ và tên <span class="required">*</span></label>
+                            <input type="text" id="full_name" name="full_name" placeholder="VD: Nguyễn Văn A" required>
+                        </div>
+
+                        <!-- Số điện thoại -->
+                        <div class="form-group">
+                            <label for="phone">Số điện thoại <span class="required">*</span></label>
+                            <input type="tel" id="phone" name="phone" placeholder="VD: 0987654321" required>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-group">
+                            <label for="email">Email <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" placeholder="VD: email@example.com" required>
+                        </div>
+
+                        <!-- Khóa học muốn đăng ký -->
+                        <div class="form-group">
+                            <label for="course">Khóa học muốn đăng ký <span class="required">*</span></label>
+                            <select id="course" name="course" required>
+                                <option value="">-- Chọn khóa học --</option>
+                            </select>
+                        </div>
+
+                        <!-- Ghi chú -->
+                        <div class="form-group">
+                            <label for="message">Ghi chú (tùy chọn)</label>
+                            <textarea id="message" name="message" rows="4"
+                                placeholder="Thông tin thêm về nhu cầu học tập của bạn..."></textarea>
+                        </div>
+
+                        <!-- Nút submit -->
+                        <button type="submit" class="btn-submit" id="submitBtn">
+                            <i class="fas fa-paper-plane"></i> Gửi đăng ký
+                        </button>
+                    </form>
+
+                    <div class="form-footer">
+                        <p><i class="fas fa-shield-alt"></i> Thông tin của bạn được bảo mật tuyệt đối</p>
+                        <p><i class="fas fa-clock"></i> Chúng tôi sẽ phản hồi trong vòng 24 giờ</p>
+                    </div>
+                </div>
+
+                <!-- Sidebar thông tin -->
+                <div class="form-sidebar">
+                    <div class="sidebar-card">
+                        <h3>📞 Liên hệ nhanh</h3>
+                        <p><i class="fas fa-phone-alt"></i> 0971 306 143</p>
+                        <p><i class="fas fa-zalo"></i> Zalo: 0971 306 143</p>
+                        <p><i class="fas fa-envelope"></i> info@oyin.edu.vn</p>
+                    </div>
+                    <div class="sidebar-card">
+                        <h3>📍 Địa chỉ</h3>
+                        <p><i class="fas fa-map-marker-alt"></i> Sầm Sơn, Thanh Hóa</p>
+                    </div>
+                    <div class="sidebar-card">
+                        <h3>🕐 Giờ làm việc</h3>
+                        <p><i class="fas fa-clock"></i> Thứ 2 - Chủ Nhật</p>
+                        <p>8:00 - 21:00</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-row">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <img src="{{ url_for('static', filename='img/logooyin.png') }}" alt="Logo">
+                        <h3>NGOẠI NGỮ O-YIN</h3>
+                    </div>
+                    <p class="footer-desc">Trung tâm đào tạo tiếng Trung uy tín hàng đầu.</p>
+                    <div class="footer-social">
+                        <a href="#" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon zalo"><i class="fab fa-zalo"></i></a>
+                        <a href="#" class="social-icon youtube"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-icon tiktok"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>📞 LIÊN HỆ</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-map-marker-alt"></i> Sầm Sơn, Thanh Hóa</li>
+                        <li><i class="fas fa-phone-alt"></i> 0971 306 143</li>
+                        <li><i class="fas fa-envelope"></i> info@oyin.edu.vn</li>
+                        <li><i class="fas fa-clock"></i> Thứ 2 - Chủ Nhật: 8:00 - 21:00</li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>📚 KHÓA HỌC</h4>
+                    <ul class="footer-links" id="footerCategories"></ul>
+                </div>
+                <div class="footer-col">
+                    <h4>🛡️ HỖ TRỢ</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Chính sách & Điều khoản</a></li>
+                        <li><a href="#">Chính sách bảo mật</a></li>
+                        <li><a href="#">Hướng dẫn thanh toán</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Ngoại Ngữ O-Yin. Tất cả các quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ===== LOAD MENU =====
+        async function loadMenu() {
+            try {
+                const response = await fetch('/api/menu');
+                const data = await response.json();
+                const menuItems = data.items;
+                const menuContainer = document.getElementById('dynamic-menu');
+                if (!menuContainer) return;
+                menuContainer.innerHTML = '';
+                menuItems.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'nav-item';
+                    if (item.children && item.children.length > 0) {
+                        li.classList.add('has-dropdown');
+                        li.innerHTML = `
+                            <a href="${item.url}">${item.name}</a>
+                            <ul class="dropdown">
+                                ${renderChildren(item.children)}
+                            </ul>
+                        `;
+                    } else {
+                        li.innerHTML = `<a href="${item.url}">${item.name}</a>`;
+                    }
+                    menuContainer.appendChild(li);
+                });
+                if (window.innerWidth <= 768) {
+                    document.querySelectorAll('.has-dropdown > a').forEach(link => {
+                        link.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            const dropdown = this.nextElementSibling;
+                            if (dropdown) dropdown.classList.toggle('show');
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error('Lỗi tải menu:', error);
+            }
+        }
+
+        function renderChildren(children) {
+            let html = '';
+            children.forEach(child => {
+                if (child.children && child.children.length > 0) {
+                    html += `<li class="dropdown-sub"><span>${child.name}</span><ul class="sub-dropdown">${renderChildren(child.children)}</ul></li>`;
+                } else {
+                    html += `<li><a href="${child.url}">${child.name}</a></li>`;
+                }
+            });
+            return html;
+        }
+
+        // ===== LOAD COURSES CHO SELECT =====
+        async function loadCourses() {
+            try {
+                const response = await fetch('/api/data/courses');
+                const data = await response.json();
+                const courses = Array.isArray(data) ? data : (data.items || []);
+
+                const select = document.getElementById('course');
+                if (!select) return;
+
+                // Xóa các option cũ (giữ lại option đầu tiên)
+                while (select.options.length > 1) {
+                    select.remove(1);
+                }
+
+                courses.forEach(course => {
+                    const option = document.createElement('option');
+                    option.value = course.id || course.name;
+                    option.textContent = course.name + (course.level ? ` - ${course.level}` : '');
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Lỗi tải khóa học:', error);
+            }
+        }
+
+        // ===== LOAD FOOTER CATEGORIES =====
+        async function loadFooterCategories() {
+            try {
+                const response = await fetch('/api/data/categories');
+                const data = await response.json();
+                const container = document.getElementById('footerCategories');
+                if (!container) return;
+                container.innerHTML = (data.categories || []).map(cat =>
+                    `<li><a href="/khoa-hoc?category=${cat.slug}">${cat.name}</a></li>`
+                ).join('');
+                container.innerHTML += `<li><a href="/khoa-hoc">Tất cả khóa học</a></li>`;
+            } catch (error) {
+                console.error('Lỗi tải footer:', error);
+            }
+        }
+
+        // ===== MOBILE MENU =====
+        function initMobileMenu() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navMain = document.querySelector('.nav-main');
+            if (menuToggle && navMain) {
+                menuToggle.addEventListener('click', function () {
+                    navMain.classList.toggle('active');
+                    const bars = document.querySelectorAll('.bar');
+                    if (navMain.classList.contains('active')) {
+                        bars[0].style.transform = 'rotate(-45deg) translate(-5px, 6px)';
+                        bars[1].style.opacity = '0';
+                        bars[2].style.transform = 'rotate(45deg) translate(-5px, -6px)';
+                    } else {
+                        bars[0].style.transform = 'rotate(0) translate(0, 0)';
+                        bars[1].style.opacity = '1';
+                        bars[2].style.transform = 'rotate(0) translate(0, 0)';
+                    }
+                });
+            }
+        }
+
+        // ===== STICKY NAV =====
+        function initStickyNav() {
+            const navWrapper = document.querySelector('.nav-wrapper');
+            const header = document.querySelector('header');
+            if (!navWrapper || !header) return;
+            let navHeight = navWrapper.offsetHeight;
+            let stickyOffset = header.offsetHeight;
+            function handleSticky() {
+                if (window.scrollY >= stickyOffset) {
+                    navWrapper.classList.add('js-sticky');
+                    if (!document.querySelector('.sticky-spacer')) {
+                        const spacer = document.createElement('div');
+                        spacer.className = 'sticky-spacer';
+                        spacer.style.height = navHeight + 'px';
+                        navWrapper.parentNode.insertBefore(spacer, navWrapper);
+                    }
+                } else {
+                    navWrapper.classList.remove('js-sticky');
+                    const spacer = document.querySelector('.sticky-spacer');
+                    if (spacer) spacer.remove();
+                }
+            }
+            const style = document.createElement('style');
+            style.textContent = `
+                .nav-wrapper.js-sticky {
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                    width: 100% !important;
+                    z-index: 10000 !important;
+                    animation: slideDown 0.3s ease !important;
+                    box-shadow: 0 4px 25px rgba(0,0,0,0.2) !important;
+                }
+                @keyframes slideDown {
+                    from { transform: translateY(-100%); }
+                    to { transform: translateY(0); }
+                }
+            `;
+            document.head.appendChild(style);
+            window.addEventListener('scroll', handleSticky);
+            window.addEventListener('resize', function () {
+                stickyOffset = header.offsetHeight;
+                navHeight = navWrapper.offsetHeight;
+                handleSticky();
+            });
+            handleSticky();
+        }
+
+        // ===== SUBMIT FORM =====
+        document.addEventListener('DOMContentLoaded', function () {
+            loadMenu();
+            loadCourses();
+            loadFooterCategories();
+            initMobileMenu();
+            initStickyNav();
+
+            const form = document.getElementById('dangkyForm');
+            const messageDiv = document.getElementById('formMessage');
+            const submitBtn = document.getElementById('submitBtn');
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                // Lấy dữ liệu
+                const data = {
+                    full_name: document.getElementById('full_name').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    course: document.getElementById('course').value,
+                    course_id: document.getElementById('course').value,
+                    message: document.getElementById('message').value.trim()
+                };
+
+                // Validation
+                if (!data.full_name) {
+                    showMessage('Vui lòng nhập họ tên!', 'error');
+                    return;
+                }
+                if (!data.phone) {
+                    showMessage('Vui lòng nhập số điện thoại!', 'error');
+                    return;
+                }
+                if (!data.email) {
+                    showMessage('Vui lòng nhập email!', 'error');
+                    return;
+                }
+                if (!data.course) {
+                    showMessage('Vui lòng chọn khóa học!', 'error');
+                    return;
+                }
+
+                // Kiểm tra email
+                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                if (!emailRegex.test(data.email)) {
+                    showMessage('Email không hợp lệ!', 'error');
+                    return;
+                }
+
+                // Kiểm tra số điện thoại
+                const phoneRegex = /^[0-9]{10,11}$/;
+                if (!phoneRegex.test(data.phone)) {
+                    showMessage('Số điện thoại không hợp lệ (10-11 số)!', 'error');
+                    return;
+                }
+
+                // Disable button
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+
+                try {
+                    const response = await fetch('/api/dang-ky', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showMessage(result.message, 'success');
+                        form.reset();
+                    } else {
+                        showMessage(result.error || 'Có lỗi xảy ra!', 'error');
+                    }
+                } catch (error) {
+                    showMessage('Lỗi kết nối! Vui lòng thử lại.', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Gửi đăng ký';
+                }
+            });
+
+            function showMessage(msg, type) {
+                messageDiv.textContent = msg;
+                messageDiv.className = 'form-message ' + type;
+                messageDiv.style.display = 'block';
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+
+</html>

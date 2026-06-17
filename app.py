@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from bson import ObjectId
+from flask_mail import Mail, Message
 
 # ============================================
 # LOAD ENV & INIT FLASK
@@ -103,7 +104,8 @@ def load_data(collection_name):
     if db is not None:
         try:
             collection = db[collection_name]
-            items = list(collection.find({}))
+            # 👈 LOẠI BỎ _id KHI ĐỌC
+            items = list(collection.find({}, {'_id': 0}))  # Không lấy _id
             items = convert_objectid(items)
             
             if collection_name == 'categories':
@@ -112,11 +114,9 @@ def load_data(collection_name):
                 else:
                     return {"categories": get_default_categories()}
             
-            # 👈 NẾU KHÔNG CÓ DỮ LIỆU, THỬ ĐỌC TỪ JSON
             if not items:
                 json_data = load_data_json(collection_name)
                 if json_data and json_data.get('items'):
-                    # Lưu vào MongoDB để lần sau không bị lỗi
                     save_data(collection_name, json_data)
                     return json_data
             
@@ -134,6 +134,21 @@ def save_data_json(filename, data):
     path = os.path.join('data', filename)
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+        
+def load_data_json(filename):
+    """Đọc dữ liệu từ file JSON trong thư mục data/"""
+    path = os.path.join('data', filename)
+    if not os.path.exists(path):
+        # Nếu file không tồn tại, tạo file mặc định
+        default_data = {"items": []}
+        if filename == 'categories.json':
+            default_data = {"categories": get_default_categories()}
+        elif filename == 'schedules.json':
+            default_data = {"items": []}
+        save_data_json(filename, default_data)
+        return default_data
+    with open(path, 'r', encoding='utf-8') as f:
+        return json.load(f)
 
 # ============================================
 # HÀM CHUYỂN ĐỔI OBJECTID THÀNH STRING
@@ -157,6 +172,199 @@ def convert_objectid(data):
         return str(data)
     else:
         return data
+
+
+# ============================================
+# LOAD ENV & INIT FLASK
+# ============================================
+
+load_dotenv()
+
+# ============================================
+# CẤU HÌNH EMAIL
+# ============================================
+
+# Cấu hình Gmail
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
+app.config['MAIL_MAX_EMAILS'] = None
+app.config['MAIL_ASCII_ATTACHMENTS'] = False
+
+mail = Mail(app)
+
+# Kiểm tra cấu hình email
+print(f"📧 Email: {app.config['MAIL_USERNAME']}")
+print(f"📧 Password: {'*' * len(app.config['MAIL_PASSWORD']) if app.config['MAIL_PASSWORD'] else 'Không có'}")
+
+# ============================================
+# HÀM GỬI EMAIL
+# ============================================
+
+def send_registration_email(data):
+    """
+    Gửi email xác nhận đăng ký
+    data: dict chứa thông tin đăng ký
+    """
+    try:
+        # ----- 1. Email xác nhận cho học viên -----
+        user_msg = Message(
+            subject="✅ Xác nhận đăng ký khóa học - Ngoại Ngữ O-Yin",
+            recipients=[data.get('email')]
+        )
+        user_msg.body = f"""
+Kính gửi {data.get('full_name')},
+
+Cảm ơn bạn đã đăng ký khóa học tại Ngoại Ngữ O-Yin!
+
+📋 THÔNG TIN ĐĂNG KÝ:
+─────────────────────────────
+Khóa học: {data.get('course')}
+Họ tên: {data.get('full_name')}
+Số điện thoại: {data.get('phone')}
+Email: {data.get('email')}
+Ghi chú: {data.get('message', 'Không có')}
+─────────────────────────────
+
+✅ Chúng tôi sẽ liên hệ với bạn trong vòng 24 giờ tới.
+
+📞 Mọi thắc mắc vui lòng liên hệ:
+- Hotline: 0971 306 143
+- Zalo: 0971 306 143
+- Email: info@oyin.edu.vn
+
+🌐 Website: https://oyin.edu.vn
+
+Trân trọng,
+Ngoại Ngữ O-Yin
+Sầm Sơn, Thanh Hóa
+"""
+        mail.send(user_msg)
+        print(f"✅ Đã gửi email xác nhận cho {data.get('email')}")
+
+        # ----- 2. Email thông báo cho Admin -----
+        admin_email = os.environ.get('ADMIN_EMAIL', 'admin@oyin.edu.vn')
+        if admin_email:
+            admin_msg = Message(
+                subject=f"📝 Đăng ký mới từ {data.get('full_name')}",
+                recipients=[admin_email]
+            )
+            admin_msg.body = f"""
+📋 THÔNG BÁO ĐĂNG KÝ MỚI
+─────────────────────────────
+Họ tên: {data.get('full_name')}
+Số điện thoại: {data.get('phone')}
+Email: {data.get('email')}
+Khóa học: {data.get('course')}
+Ghi chú: {data.get('message', 'Không có')}
+Ngày đăng ký: {data.get('created_at')}
+─────────────────────────────
+
+👉 Vui lòng liên hệ với học viên sớm nhất!
+"""
+            mail.send(admin_msg)
+            print(f"✅ Đã gửi email thông báo cho admin: {admin_email}")
+
+        return True
+
+    except Exception as e:
+        print(f"❌ Lỗi gửi email: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+    
+# ============================================
+# API ĐĂNG KÝ KHÓA HỌC
+# ============================================
+
+@app.route('/api/dang-ky', methods=['POST'])
+def submit_registration():
+    """API nhận đăng ký từ form"""
+    try:
+        data = request.get_json()
+        print("📥 Dữ liệu nhận được:", data)  # Debug
+        
+        # Validate dữ liệu
+        required_fields = ['full_name', 'phone', 'email', 'course']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({
+                    "success": False,
+                    "error": f"Vui lòng nhập {field}"
+                }), 400
+        
+        # Kiểm tra email hợp lệ
+        email = data.get('email', '').strip()
+        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+            return jsonify({
+                "success": False,
+                "error": "Email không hợp lệ"
+            }), 400
+        
+        # Kiểm tra số điện thoại
+        phone = data.get('phone', '').strip()
+        if not re.match(r'^[0-9]{10,11}$', phone):
+            return jsonify({
+                "success": False,
+                "error": "Số điện thoại không hợp lệ (10-11 số)"
+            }), 400
+        
+        # 👈 ĐỌC DỮ LIỆU VÀ LOẠI BỎ _id
+        registrations = load_data('registrations')
+        if 'items' not in registrations:
+            registrations['items'] = []
+        
+        # Tạo ID duy nhất
+        reg_count = len(registrations['items']) + 1
+        reg_id = f"REG-{datetime.now().strftime('%Y%m')}-{str(reg_count).zfill(3)}"
+        
+        # Tạo bản ghi đăng ký
+        new_registration = {
+            "id": reg_id,
+            "full_name": data.get('full_name', '').strip(),
+            "phone": phone,
+            "email": email,
+            "course": data.get('course', '').strip(),
+            "course_id": data.get('course_id', ''),
+            "message": data.get('message', '').strip(),
+            "status": "pending",
+            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        
+        # Lưu vào JSON
+        registrations['items'].append(new_registration)
+        save_data('registrations', registrations)
+        print("✅ Đã lưu đăng ký thành công!")
+        
+        # Gửi email
+        email_sent = False
+        try:
+            send_registration_email(new_registration)
+            email_sent = True
+            print("✅ Đã gửi email thành công!")
+        except Exception as e:
+            print(f"⚠️ Lỗi gửi email: {e}")
+        
+        # 👈 QUAN TRỌNG: Chỉ trả về dữ liệu cần thiết, KHÔNG trả về data
+        return jsonify({
+            "success": True,
+            "message": "Đăng ký thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất.",
+            "email_sent": email_sent
+        })
+        
+    except Exception as e:
+        print(f"❌ Lỗi đăng ký: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            "success": False,
+            "error": "Có lỗi xảy ra, vui lòng thử lại sau"
+        }), 500
 
 # ============================================
 # MENU (VẪN DÙNG JSON VÌ CÓ CẤU TRÚC PHỨC TẠP)
@@ -347,6 +555,15 @@ def khoa_hoc_page():
     except Exception as e:
         return f"Lỗi: {e}", 500
 
+@app.route('/lich-khai-giang')
+def lich_khai_giang():
+    """Trang lịch khai giảng"""
+    try:
+        return render_template('lichkhaigiang.html')
+    except Exception as e:
+        return f"Lỗi: {e}", 500
+
+
 @app.route('/admin/menu')
 def admin_menu():
     """Trang quản trị menu"""
@@ -365,6 +582,11 @@ def admin_courses():
 def admin_dashboard():
     """Trang quản trị tập trung"""
     return render_template('admin/dashboard.html')
+
+@app.route('/dang-ky')
+def dang_ky():
+    """Trang đăng ký khóa học"""
+    return render_template('dangky.html')
 
 # ============================================
 # PHỤC VỤ FILE TĨNH
@@ -401,7 +623,7 @@ def get_courses():
 @app.route('/api/data/<string:type>', methods=['GET'])
 def api_get_data(type):
     """Lấy dữ liệu theo loại"""
-    allowed = ['menu', 'slides', 'categories', 'documents', 'news', 'reviews']
+    allowed = ['menu', 'slides', 'categories', 'documents', 'news', 'reviews', 'schedules', 'registrations']
     if type not in allowed:
         return jsonify({"error": "Invalid type"}), 400
     
@@ -416,7 +638,7 @@ def api_get_data(type):
 @app.route('/api/data/<string:type>', methods=['POST'])
 def api_save_data(type):
     """Lưu dữ liệu theo loại"""
-    allowed = ['menu', 'slides', 'courses', 'categories', 'documents', 'news', 'reviews']
+    allowed = ['menu', 'slides', 'courses', 'categories', 'documents', 'news', 'reviews', 'schedules', 'registrations']
     if type not in allowed:
         return jsonify({"error": "Invalid type"}), 400
     
@@ -775,7 +997,7 @@ def upload_review_avatar():
 @app.route('/api/data/<string:type>/add', methods=['POST'])
 def api_add_item(type):
     """Thêm một mục vào dữ liệu"""
-    allowed = ['slides', 'courses', 'documents', 'news', 'reviews']
+    allowed = ['slides', 'courses', 'documents', 'news', 'reviews', 'schedules', 'registrations']
     if type not in allowed:
         return jsonify({"error": "Invalid type"}), 400
     
@@ -798,7 +1020,7 @@ def api_add_item(type):
 @app.route('/api/data/<string:type>/<string:item_id>', methods=['DELETE'])
 def api_delete_item(type, item_id):
     """Xóa một mục khỏi dữ liệu"""
-    allowed = ['slides', 'courses', 'documents', 'news', 'reviews']
+    allowed = ['slides', 'courses', 'documents', 'news', 'reviews', 'schedules', 'registrations']
     if type not in allowed:
         return jsonify({"error": "Invalid type"}), 400
     
@@ -830,7 +1052,7 @@ def api_delete_item(type, item_id):
 @app.route('/api/data/<string:type>/<string:item_id>', methods=['PUT'])
 def api_update_item(type, item_id):
     """Cập nhật một mục trong dữ liệu"""
-    allowed = ['slides', 'courses', 'documents', 'news', 'reviews']
+    allowed = ['slides', 'courses', 'documents', 'news', 'reviews', 'schedules', 'registrations']
     if type not in allowed:
         return jsonify({"error": "Invalid type"}), 400
     
@@ -1436,7 +1658,7 @@ def generate_course_html(name, level, description, image_url, price, duration, s
         <div class="nav-wrapper">
             <div class="mobile-menu"><div class="menu-toggle"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
             <div class="nav-main"><ul class="nav-list" id="dynamic-menu"><li>Đang tải menu...</li></ul></div>
-            <div class="register-btn"><a href="../../../html/dangkyhtml/dangkyhtml.html">ĐĂNG KÝ</a></div>
+            <div class="register-btn"><a href="/dang-ky">ĐĂNG KÝ</a></div>
         </div>
     </header>
 
@@ -1517,7 +1739,7 @@ def generate_course_html(name, level, description, image_url, price, duration, s
                             <span class="price">{price}</span>
                             {f'<span class="price-original">{price_original}</span>' if price_original else ''}
                         </div>
-                        <a href="../../../html/dangkyhtml/dangkyhtml.html" class="btn-register">
+                        <a href="/dang-ky" class="btn-register">
                             <i class="fas fa-arrow-right"></i> Đăng ký ngay
                         </a>
                     </div>

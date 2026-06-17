@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Khai Giảng - Ngoại Ngữ OYin</title>
+    <link rel="stylesheet" href="../../css/chungcss.css">
+    <link rel="stylesheet" href="../../css/lichkhaigiang.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="information">
+            <div class="informationtext informationtextlogo">
+                <a href="../../index.html"><img src="../../img/logooyin.png" alt="Logo" class="informationimg" /></a>
+            </div>
+            <div class="informationtext informationtextname">
+                <strong class="informationtextname2">NGOẠI NGỮ O-YIN</strong>
+            </div>
+            <div class="informationtext informationtextcall">
+                <div class="informationtextcallimg"><img src="../../img/dienthoai.png" alt="Liên Hệ" class="callimg" />
+                </div>
+                <div class="informationtextcall12">
+                    <div class="informationtextcall1">LIÊN HỆ ZALO</div>
+                    <div class="informationtextcall2">0971 306 143(Hoàng Ngân)</div>
+                </div>
+            </div>
+            <div class="informationtext informationtextsupport">
+                <div class="informationtextsupportimg"><img src="../../img/dongho.jpg" alt="Hỗ trợ"
+                        class="supportimg" /></div>
+                <div class="informationtextsupport12">
+                    <div class="informationtextsupport1">HỖ TRỢ</div>
+                    <div class="informationtextsupport2">24/7</div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-wrapper">
+            <div class="mobile-menu">
+                <div class="menu-toggle">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+            </div>
+            <div class="nav-main">
+                <ul class="nav-list" id="dynamic-menu">
+                    <li>Đang tải menu...</li>
+                </ul>
+            </div>
+            <div class="register-btn"><a href="../../html/dangkyhtml/dangkyhtml.html">ĐĂNG KÝ</a></div>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO -->
+        <section class="schedule-hero">
+            <div class="hero-content">
+                <h1>📅 Lịch Khai Giảng</h1>
+                <p>Cập nhật lịch khai giảng các khóa học mới nhất, đăng ký ngay để nhận ưu đãi</p>
+                <div class="hero-deco">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCHEDULE LIST -->
+        <div class="schedule-container">
+            <div class="schedule-filters" id="scheduleFilters">
+                <button class="schedule-filter active" data-filter="all">📋 Tất cả</button>
+                <button class="schedule-filter" data-filter="HSK">📖 HSK</button>
+                <button class="schedule-filter" data-filter="HSK 3.0">🌟 HSK 3.0</button>
+                <button class="schedule-filter" data-filter="Tiếng Trung Trẻ Em">🧒 Trẻ Em</button>
+                <button class="schedule-filter" data-filter="Tiếng Trung Người Lớn">👤 Người Lớn</button>
+            </div>
+
+            <div class="schedule-list" id="scheduleList">
+                <!-- Schedules sẽ được load từ API -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-row">
+                <div class="footer-col">
+                    <div class="footer-logo"><img src="../../img/logooyin.png" alt="Logo">
+                        <h3>NGOẠI NGỮ O-YIN</h3>
+                    </div>
+                    <p class="footer-desc">Trung tâm đào tạo tiếng Trung uy tín hàng đầu.</p>
+                    <div class="footer-social">
+                        <a href="#" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon zalo"><i class="fab fa-zalo"></i></a>
+                        <a href="#" class="social-icon youtube"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-icon tiktok"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>📞 LIÊN HỆ</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-map-marker-alt"></i> Sầm Sơn, Thanh Hóa</li>
+                        <li><i class="fas fa-phone-alt"></i> 0971 306 143</li>
+                        <li><i class="fas fa-envelope"></i> info@oyin.edu.vn</li>
+                        <li><i class="fas fa-clock"></i> Thứ 2 - Chủ Nhật: 8:00 - 21:00</li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>📚 KHóa HỌC</h4>
+                    <ul class="footer-links" id="footerCategories"></ul>
+                </div>
+                <div class="footer-col">
+                    <h4>🛡️ HỖ TRỢ</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Chính sách & Điều khoản</a></li>
+                        <li><a href="#">Chính sách bảo mật</a></li>
+                        <li><a href="#">Hướng dẫn thanh toán</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Ngoại Ngữ O-Yin. Tất cả các quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ===== LOAD MENU =====
+        async function loadMenu() {
+            try {
+                const response = await fetch('/api/menu');
+                const data = await response.json();
+                const menuContainer = document.getElementById('dynamic-menu');
+                if (!menuContainer) return;
+                menuContainer.innerHTML = '';
+                data.items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'nav-item';
+                    if (item.children && item.children.length > 0) {
+                        li.classList.add('has-dropdown');
+                        li.innerHTML = `
+                            <a href="${item.url}">${item.name}</a>
+                            <ul class="dropdown">
+                                ${renderChildren(item.children)}
+                            </ul>
+                        `;
+                    } else {
+                        li.innerHTML = `<a href="${item.url}">${item.name}</a>`;
+                    }
+                    menuContainer.appendChild(li);
+                });
+                // Mobile dropdown
+                if (window.innerWidth <= 768) {
+                    document.querySelectorAll('.has-dropdown > a').forEach(link => {
+                        link.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            const dropdown = this.nextElementSibling;
+                            if (dropdown) dropdown.classList.toggle('show');
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error('Lỗi tải menu:', error);
+            }
+        }
+
+        function renderChildren(children) {
+            let html = '';
+            children.forEach(child => {
+                if (child.children && child.children.length > 0) {
+                    html += `<li class="dropdown-sub"><span>${child.name}</span><ul class="sub-dropdown">${renderChildren(child.children)}</ul></li>`;
+                } else {
+                    html += `<li><a href="${child.url}">${child.name}</a></li>`;
+                }
+            });
+            return html;
+        }
+
+        // ===== LOAD FOOTER CATEGORIES =====
+        async function loadFooterCategories() {
+            try {
+                const response = await fetch('/api/data/categories');
+                const data = await response.json();
+                const container = document.getElementById('footerCategories');
+                if (!container) return;
+                container.innerHTML = (data.categories || []).map(cat =>
+                    `<li><a href="/khoa-hoc?category=${cat.slug}">${cat.name}</a></li>`
+                ).join('');
+                container.innerHTML += `<li><a href="/khoa-hoc">Tất cả khóa học</a></li>`;
+            } catch (error) {
+                console.error('Lỗi tải footer:', error);
+            }
+        }
+
+        // ===== MOBILE MENU =====
+        function initMobileMenu() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navMain = document.querySelector('.nav-main');
+            if (menuToggle && navMain) {
+                menuToggle.addEventListener('click', function () {
+                    navMain.classList.toggle('active');
+                    const bars = document.querySelectorAll('.bar');
+                    if (navMain.classList.contains('active')) {
+                        bars[0].style.transform = 'rotate(-45deg) translate(-5px, 6px)';
+                        bars[1].style.opacity = '0';
+                        bars[2].style.transform = 'rotate(45deg) translate(-5px, -6px)';
+                    } else {
+                        bars[0].style.transform = 'rotate(0) translate(0, 0)';
+                        bars[1].style.opacity = '1';
+                        bars[2].style.transform = 'rotate(0) translate(0, 0)';
+                    }
+                });
+            }
+        }
+
+        // ===== STICKY NAV =====
+        function initStickyNav() {
+            const navWrapper = document.querySelector('.nav-wrapper');
+            const header = document.querySelector('header');
+            if (!navWrapper || !header) return;
+            let navHeight = navWrapper.offsetHeight;
+            let stickyOffset = header.offsetHeight;
+            function handleSticky() {
+                if (window.scrollY >= stickyOffset) {
+                    navWrapper.classList.add('js-sticky');
+                    if (!document.querySelector('.sticky-spacer')) {
+                        const spacer = document.createElement('div');
+                        spacer.className = 'sticky-spacer';
+                        spacer.style.height = navHeight + 'px';
+                        navWrapper.parentNode.insertBefore(spacer, navWrapper);
+                    }
+                } else {
+                    navWrapper.classList.remove('js-sticky');
+                    const spacer = document.querySelector('.sticky-spacer');
+                    if (spacer) spacer.remove();
+                }
+            }
+            const style = document.createElement('style');
+            style.textContent = `
+                .nav-wrapper.js-sticky {
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                    width: 100% !important;
+                    z-index: 10000 !important;
+                    animation: slideDown 0.3s ease !important;
+                    box-shadow: 0 4px 25px rgba(0,0,0,0.2) !important;
+                }
+                @keyframes slideDown {
+                    from { transform: translateY(-100%); }
+                    to { transform: translateY(0); }
+                }
+            `;
+            document.head.appendChild(style);
+            window.addEventListener('scroll', handleSticky);
+            window.addEventListener('resize', function () {
+                stickyOffset = header.offsetHeight;
+                navHeight = navWrapper.offsetHeight;
+                handleSticky();
+            });
+            handleSticky();
+        }
+
+        // ===== LOAD SCHEDULES =====
+        let allSchedules = [];
+        let categories = [];
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+        }
+
+        function getStatusBadge(status, remaining) {
+            if (remaining <= 0) {
+                return '<span class="badge badge-status full">🔴 Đã kín</span>';
+            }
+            switch (status) {
+                case 'open': return '<span class="badge badge-status">🟢 Còn chỗ</span>';
+                case 'upcoming': return '<span class="badge badge-status" style="background:#2196F320;color:#1976D2;">🟡 Sắp khai giảng</span>';
+                case 'closed': return '<span class="badge badge-status closed">⚫ Đã đóng</span>';
+                default: return '<span class="badge badge-status">🟢 Còn chỗ</span>';
+            }
+        }
+
+        function renderSchedules(filter) {
+            const container = document.getElementById('scheduleList');
+            if (!container) return;
+
+            let filtered = allSchedules;
+            if (filter !== 'all') {
+                filtered = allSchedules.filter(s => s.category === filter);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="schedule-empty">
+                        <div class="empty-icon">📅</div>
+                        <h3>Chưa có lịch khai giảng</h3>
+                        <p>Vui lòng quay lại sau để cập nhật lịch mới nhất</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(schedule => {
+                const remaining = schedule.remaining_slots || 0;
+                const total = schedule.total_slots || 0;
+                const statusBadge = getStatusBadge(schedule.status, remaining);
+
+                return `
+                    <div class="schedule-card">
+                        <div class="card-left">
+                            <div class="top-row">
+                                <span class="course-name">${schedule.course_name || 'Khóa học'}</span>
+                                <span class="badge badge-category">${schedule.category || 'Khóa học'}</span>
+                                ${statusBadge}
+                            </div>
+                            <div class="details">
+                                <span class="detail-item"><i class="fas fa-calendar-alt"></i> ${formatDate(schedule.start_date)} - ${formatDate(schedule.end_date)}</span>
+                                <span class="detail-item"><i class="fas fa-clock"></i> ${schedule.schedule_time || 'Linh hoạt'}</span>
+                                <span class="detail-item"><i class="fas fa-user-tie"></i> ${schedule.teacher || 'Giáo viên'}</span>
+                                <span class="detail-item"><i class="fas fa-map-marker-alt"></i> ${schedule.location || 'Online / Offline'}</span>
+                            </div>
+                        </div>
+                        <div class="card-right">
+                            <span class="price">${schedule.tuition || 'Liên hệ'}</span>
+                            <span class="slots">Còn <span>${remaining}</span> / ${total} chỗ</span>
+                            <a href="../../html/dangkyhtml/dangkyhtml.html" class="btn-register" ${remaining <= 0 ? 'disabled' : ''}>
+                                ${remaining <= 0 ? 'Đã kín chỗ' : 'Đăng ký ngay'}
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function loadSchedules() {
+            try {
+                const [schedulesRes, categoriesRes] = await Promise.all([
+                    fetch('/api/data/schedules'),
+                    fetch('/api/data/categories')
+                ]);
+
+                const schedulesData = await schedulesRes.json();
+                const categoriesData = await categoriesRes.json();
+
+                allSchedules = schedulesData.items || [];
+                categories = categoriesData.categories || [];
+
+                // Cập nhật filter tabs
+                const filterContainer = document.getElementById('scheduleFilters');
+                let filterHtml = `<button class="schedule-filter active" data-filter="all">📋 Tất cả</button>`;
+                categories.forEach(cat => {
+                    filterHtml += `<button class="schedule-filter" data-filter="${cat.name}">${cat.name}</button>`;
+                });
+                filterContainer.innerHTML = filterHtml;
+
+                // Sự kiện filter
+                filterContainer.querySelectorAll('.schedule-filter').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        filterContainer.querySelectorAll('.schedule-filter').forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        renderSchedules(this.dataset.filter);
+                    });
+                });
+
+                renderSchedules('all');
+            } catch (error) {
+                console.error('Lỗi tải lịch khai giảng:', error);
+                document.getElementById('scheduleList').innerHTML = `
+                    <div class="schedule-empty">
+                        <div class="empty-icon">❌</div>
+                        <h3>Lỗi tải dữ liệu</h3>
+                        <p>Vui lòng thử lại sau</p>
+                    </div>
+                `;
+            }
+        }
+
+        // ===== DOM READY =====
+        document.addEventListener('DOMContentLoaded', function () {
+            loadMenu();
+            loadFooterCategories();
+            loadSchedules();
+            initMobileMenu();
+            initStickyNav();
+        });
+    </script>
+</body>
+
+</html>

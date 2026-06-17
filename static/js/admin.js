@@ -46,6 +46,9 @@ function loadTabContent(tab) {
     case "reviews":
       renderReviewManager(container);
       break;
+    case "schedules":
+      renderScheduleManager(container);
+      break;
     default:
       container.innerHTML = "<p>Tab không hợp lệ</p>";
   }
@@ -1377,6 +1380,316 @@ async function editReview(id) {
     loadTabContent("reviews");
   } else {
     await Modal.show("❌ Cập nhật thất bại!", "error");
+  }
+}
+
+// ============================================
+// QUẢN LÝ LỊCH KHAI GIẢNG (SCHEDULES)
+// ============================================
+async function renderScheduleManager(container) {
+  try {
+    const response = await fetch("/api/data/schedules");
+    const data = await response.json();
+    const schedules = data.items || [];
+
+    container.innerHTML = `
+            <h3>📅 Quản lý Lịch Khai Giảng</h3>
+            <p style="color:#999;font-size:14px;">Tổng: ${schedules.length} lịch</p>
+            <button onclick="showAddScheduleForm()" class="btn-add">+ Thêm lịch</button>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:15px;margin-top:15px;">
+                ${
+                  schedules.length === 0
+                    ? "<p>Chưa có lịch nào</p>"
+                    : schedules
+                        .map(
+                          (s) => `
+                    <div style="background:white;border-radius:12px;padding:16px;border:1px solid #eee;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <strong>${s.course_name}</strong>
+                            <span style="font-size:12px;${s.status === "open" ? "color:#4CAF50" : s.status === "full" ? "color:#ff9800" : "color:#999"}">${s.status || "open"}</span>
+                        </div>
+                        <div style="font-size:13px;color:#666;margin:4px 0;">${s.category} • ${s.schedule_time}</div>
+                        <div style="font-size:13px;color:#e67e22;font-weight:700;">${s.tuition}</div>
+                        <div style="display:flex;gap:8px;margin-top:10px;">
+                            <button onclick="editSchedule('${s.id}')" class="btn-edit" style="flex:1;">✏️</button>
+                            <button onclick="deleteSchedule('${s.id}')" class="btn-delete" style="flex:1;">🗑️</button>
+                        </div>
+                    </div>
+                `,
+                        )
+                        .join("")
+                }
+            </div>
+        `;
+  } catch (error) {
+    container.innerHTML = `<p style="color:red;">❌ Lỗi: ${error.message}</p>`;
+  }
+}
+
+// ===== THÊM LỊCH KHAI GIẢNG =====
+async function showAddScheduleForm() {
+  const result = await Modal.form(
+    [
+      {
+        name: "course_name",
+        label: "📚 Tên khóa học *",
+        type: "text",
+        placeholder: "VD: HSK 1 - Cơ bản",
+        required: true,
+      },
+      {
+        name: "category",
+        label: "📁 Danh mục",
+        type: "text",
+        placeholder: "VD: HSK",
+        value: "HSK",
+      },
+      {
+        name: "start_date",
+        label: "📅 Ngày bắt đầu",
+        type: "text",
+        placeholder: "VD: 2025-01-15",
+      },
+      {
+        name: "end_date",
+        label: "📅 Ngày kết thúc",
+        type: "text",
+        placeholder: "VD: 2025-03-15",
+      },
+      {
+        name: "schedule_time",
+        label: "⏰ Lịch học",
+        type: "text",
+        placeholder: "VD: Tối T2-T4-T6 (18:30-20:30)",
+      },
+      {
+        name: "tuition",
+        label: "💰 Học phí",
+        type: "text",
+        placeholder: "VD: 2,500,000 VNĐ",
+        value: "Liên hệ",
+      },
+      {
+        name: "remaining_slots",
+        label: "🪑 Số chỗ còn",
+        type: "text",
+        placeholder: "VD: 5",
+        value: "5",
+      },
+      {
+        name: "total_slots",
+        label: "🪑 Tổng số chỗ",
+        type: "text",
+        placeholder: "VD: 10",
+        value: "10",
+      },
+      {
+        name: "status",
+        label: "📌 Trạng thái",
+        type: "select",
+        options: [
+          { value: "open", label: "🟢 Còn chỗ" },
+          { value: "full", label: "🔴 Đã kín" },
+          { value: "upcoming", label: "🟡 Sắp khai giảng" },
+          { value: "closed", label: "⚫ Đã đóng" },
+        ],
+        value: "open",
+      },
+      {
+        name: "teacher",
+        label: "👨‍🏫 Giáo viên",
+        type: "text",
+        placeholder: "VD: Cô Nguyễn Thị Lan",
+      },
+      {
+        name: "location",
+        label: "📍 Địa điểm",
+        type: "text",
+        placeholder: "VD: Online / Offline",
+        value: "Online / Offline",
+      },
+      { name: "active", label: "✅ Hiển thị", type: "checkbox", value: true },
+    ],
+    "📅 Thêm Lịch Khai Giảng Mới",
+    "Thêm lịch",
+  );
+
+  if (!result) return;
+  if (!result.course_name.trim()) {
+    await Modal.show("Vui lòng nhập tên khóa học!", "warning");
+    return showAddScheduleForm();
+  }
+
+  const response = await fetch("/api/data/schedules/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      course_name: result.course_name.trim(),
+      category: result.category?.trim() || "HSK",
+      start_date: result.start_date?.trim() || "",
+      end_date: result.end_date?.trim() || "",
+      schedule_time: result.schedule_time?.trim() || "Linh hoạt",
+      tuition: result.tuition?.trim() || "Liên hệ",
+      remaining_slots: parseInt(result.remaining_slots) || 0,
+      total_slots: parseInt(result.total_slots) || 10,
+      status: result.status || "open",
+      teacher: result.teacher?.trim() || "",
+      location: result.location?.trim() || "Online / Offline",
+      active: result.active !== false,
+    }),
+  });
+
+  if (response.ok) {
+    await Modal.show("✅ Thêm lịch khai giảng thành công!", "success");
+    loadTabContent("schedules");
+  } else {
+    const error = await response.json();
+    await Modal.show(
+      "❌ Thêm thất bại: " + (error.error || "Lỗi không xác định"),
+      "error",
+    );
+  }
+}
+
+// ===== SỬA LỊCH KHAI GIẢNG =====
+async function editSchedule(id) {
+  const data = await fetch("/api/data/schedules").then((r) => r.json());
+  const schedule = data.items.find((s) => s.id === id);
+  if (!schedule) {
+    await Modal.show("❌ Không tìm thấy lịch!", "error");
+    return;
+  }
+
+  const result = await Modal.form(
+    [
+      {
+        name: "course_name",
+        label: "📚 Tên khóa học *",
+        type: "text",
+        value: schedule.course_name || "",
+        required: true,
+      },
+      {
+        name: "category",
+        label: "📁 Danh mục",
+        type: "text",
+        value: schedule.category || "HSK",
+      },
+      {
+        name: "start_date",
+        label: "📅 Ngày bắt đầu",
+        type: "text",
+        value: schedule.start_date || "",
+      },
+      {
+        name: "end_date",
+        label: "📅 Ngày kết thúc",
+        type: "text",
+        value: schedule.end_date || "",
+      },
+      {
+        name: "schedule_time",
+        label: "⏰ Lịch học",
+        type: "text",
+        value: schedule.schedule_time || "Linh hoạt",
+      },
+      {
+        name: "tuition",
+        label: "💰 Học phí",
+        type: "text",
+        value: schedule.tuition || "Liên hệ",
+      },
+      {
+        name: "remaining_slots",
+        label: "🪑 Số chỗ còn",
+        type: "text",
+        value: schedule.remaining_slots || "0",
+      },
+      {
+        name: "total_slots",
+        label: "🪑 Tổng số chỗ",
+        type: "text",
+        value: schedule.total_slots || "10",
+      },
+      {
+        name: "status",
+        label: "📌 Trạng thái",
+        type: "select",
+        options: [
+          { value: "open", label: "🟢 Còn chỗ" },
+          { value: "full", label: "🔴 Đã kín" },
+          { value: "upcoming", label: "🟡 Sắp khai giảng" },
+          { value: "closed", label: "⚫ Đã đóng" },
+        ],
+        value: schedule.status || "open",
+      },
+      {
+        name: "teacher",
+        label: "👨‍🏫 Giáo viên",
+        type: "text",
+        value: schedule.teacher || "",
+      },
+      {
+        name: "location",
+        label: "📍 Địa điểm",
+        type: "text",
+        value: schedule.location || "Online / Offline",
+      },
+      {
+        name: "active",
+        label: "✅ Hiển thị",
+        type: "checkbox",
+        value: schedule.active !== false,
+      },
+    ],
+    "✏️ Sửa Lịch Khai Giảng",
+    "Cập nhật",
+  );
+
+  if (!result) return;
+
+  const response = await fetch(`/api/data/schedules/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      course_name: result.course_name.trim(),
+      category: result.category?.trim() || "HSK",
+      start_date: result.start_date?.trim() || "",
+      end_date: result.end_date?.trim() || "",
+      schedule_time: result.schedule_time?.trim() || "Linh hoạt",
+      tuition: result.tuition?.trim() || "Liên hệ",
+      remaining_slots: parseInt(result.remaining_slots) || 0,
+      total_slots: parseInt(result.total_slots) || 10,
+      status: result.status || "open",
+      teacher: result.teacher?.trim() || "",
+      location: result.location?.trim() || "Online / Offline",
+      active: result.active !== false,
+    }),
+  });
+
+  if (response.ok) {
+    await Modal.show("✅ Cập nhật thành công!", "success");
+    loadTabContent("schedules");
+  } else {
+    await Modal.show("❌ Cập nhật thất bại!", "error");
+  }
+}
+
+// ===== XÓA LỊCH KHAI GIẢNG =====
+async function deleteSchedule(id) {
+  const confirmed = await Modal.confirm(
+    "Bạn có chắc muốn xóa lịch này?",
+    "🗑️ Xác nhận xóa",
+  );
+  if (!confirmed) return;
+  const response = await fetch(`/api/data/schedules/${id}`, {
+    method: "DELETE",
+  });
+  if (response.ok) {
+    await Modal.show("✅ Xóa thành công!", "success");
+    loadTabContent("schedules");
+  } else {
+    await Modal.show("❌ Xóa thất bại!", "error");
   }
 }
 
