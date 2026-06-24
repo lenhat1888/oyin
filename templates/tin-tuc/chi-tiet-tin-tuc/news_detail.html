@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ news.title }} - Tin tức OYin</title>
+    <link rel="stylesheet" href="/static/css/chungcss.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="icon" href="/static/img/default/favicon.png" type="image/png">
+    <style>
+        .news-detail-wrapper {
+            max-width: 1300px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 40px;
+        }
+
+        .breadcrumb {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb a {
+            color: #e67e22;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb .sep {
+            color: #ddd;
+            font-size: 10px;
+        }
+
+        .news-main {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f0f0f0;
+        }
+
+        .news-main:hover {
+            border-color: #e67e22;
+        }
+
+        .news-main .news-title {
+            font-size: 34px;
+            font-weight: 800;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            font-family: 'Playfair Display', serif;
+            line-height: 1.2;
+        }
+
+        .news-main .news-title .badge-new {
+            display: inline-block;
+            font-size: 13px;
+            background: #4caf50;
+            color: white;
+            padding: 2px 14px;
+            border-radius: 20px;
+            margin-left: 12px;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            vertical-align: middle;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        .news-main .news-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f5f5f5;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .news-main .news-meta i {
+            color: #e67e22;
+            width: 18px;
+        }
+
+        .news-main .news-image {
+            width: 100%;
+            max-height: 400px;
+            overflow: hidden;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .news-main .news-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .news-main .news-content {
+            font-size: 16px;
+            line-height: 1.9;
+            color: #444;
+        }
+
+        .news-main .news-content p {
+            margin-bottom: 16px;
+        }
+
+        .news-main .news-content img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+
+        .news-main .news-content h2,
+        .news-main .news-content h3 {
+            color: #2c3e50;
+            margin: 24px 0 12px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .news-main .news-content blockquote {
+            border-left: 4px solid #e67e22;
+            padding: 16px 24px;
+            background: #fff9f5;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+            font-style: italic;
+            color: #555;
+        }
+
+        .news-main .news-content ul,
+        .news-main .news-content ol {
+            padding-left: 24px;
+            margin-bottom: 16px;
+        }
+
+        .news-main .news-content li {
+            margin-bottom: 6px;
+        }
+
+        .news-main .news-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px solid #f5f5f5;
+            flex-wrap: wrap;
+        }
+
+        .news-main .news-actions .btn {
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .news-main .news-actions .btn-back {
+            background: #f0f0f0;
+            color: #555;
+        }
+
+        .news-main .news-actions .btn-back:hover {
+            background: #e67e22;
+            color: white;
+        }
+
+        .news-main .news-actions .btn-zalo {
+            background: #0181f5;
+            color: white;
+        }
+
+        .news-main .news-actions .btn-zalo:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(1, 129, 245, 0.3);
+        }
+
+        .news-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .news-sidebar .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s;
+        }
+
+        .news-sidebar .sidebar-card:hover {
+            border-color: #e67e22;
+        }
+
+        .news-sidebar .sidebar-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .news-sidebar .sidebar-card h4 i {
+            color: #e67e22;
+        }
+
+        .news-sidebar .sidebar-card .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 14px;
+        }
+
+        .news-sidebar .sidebar-card .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .news-sidebar .sidebar-card .info-row .label {
+            color: #999;
+        }
+
+        .news-sidebar .sidebar-card .info-row .value {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .related-news {
+            margin-top: 40px;
+            padding: 0 20px 60px;
+            max-width: 1300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .related-news .related-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .related-news .related-title i {
+            color: #e67e22;
+            margin-right: 10px;
+        }
+
+        .related-news .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .related-news .related-item {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #f0f0f0;
+            transition: all 0.4s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .related-news .related-item:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(230, 126, 34, 0.12);
+            border-color: #e67e22;
+        }
+
+        .related-news .related-item .title {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .related-news .related-item .date {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+            display: block;
+        }
+
+        @media (max-width: 992px) {
+            .news-detail-wrapper {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .news-main {
+                padding: 24px;
+            }
+
+            .news-main .news-title {
+                font-size: 26px;
+            }
+
+            .news-main .news-image {
+                max-height: 250px;
+            }
+
+            .related-news .related-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .news-main {
+                padding: 16px;
+            }
+
+            .news-main .news-title {
+                font-size: 22px;
+            }
+
+            .news-main .news-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="information">
+            <div class="informationtext informationtextlogo">
+                <a href="/"><img src="/static/img/default/logooyin.png" alt="Logo" class="informationimg" /></a>
+            </div>
+            <div class="informationtext informationtextname">
+                <strong class="informationtextname2">NGOẠI NGỮ O-YIN</strong>
+            </div>
+            <div class="informationtext informationtextcall">
+                <div class="informationtextcallimg"><img src="/static/img/default/dienthoai.png" alt="Liên Hệ"
+                        class="callimg" /></div>
+                <div class="informationtextcall12">
+                    <div class="informationtextcall1">LIÊN HỆ ZALO</div>
+                    <div class="informationtextcall2">0971 306 143(Hoàng Ngân)</div>
+                </div>
+            </div>
+            <div class="informationtext informationtextsupport">
+                <div class="informationtextsupportimg"><img src="/static/img/default/dongho.jpg" alt="Hỗ trợ"
+                        class="supportimg" /></div>
+                <div class="informationtextsupport12">
+                    <div class="informationtextsupport1">HỖ TRỢ</div>
+                    <div class="informationtextsupport2">24/7</div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-wrapper">
+            <div class="mobile-menu">
+                <div class="menu-toggle">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+            </div>
+            <div class="nav-main">
+                <ul class="nav-list" id="dynamic-menu">
+                    <li>Đang tải menu...</li>
+                </ul>
+            </div>
+            <div class="register-btn"><a href="/dang-ky">ĐĂNG KÝ</a></div>
+        </div>
+    </header>
+
+    <main>
+        <div class="news-detail-wrapper">
+            <!-- MAIN CONTENT -->
+            <div class="news-main">
+                <!-- Breadcrumb -->
+                <div class="breadcrumb">
+                    <a href="/"><i class="fas fa-home"></i> Trang chủ</a>
+                    <span class="sep"><i class="fas fa-chevron-right" style="font-size:10px;"></i></span>
+                    <a href="/tin-tuc">Tin tức</a>
+                    <span class="sep"><i class="fas fa-chevron-right" style="font-size:10px;"></i></span>
+                    <span style="color:#555;">{{ news.title }}</span>
+                </div>
+
+                <!-- Title -->
+                <h1 class="news-title">
+                    {{ news.title }}
+                    {% if news.is_new %}
+                    <span class="badge-new"><i class="fas fa-star"></i> Mới</span>
+                    {% endif %}
+                </h1>
+
+                <!-- Meta -->
+                <div class="news-meta">
+                    <span><i class="fas fa-user"></i> {{ news.author or 'Admin' }}</span>
+                    <span><i class="fas fa-calendar-alt"></i> {{ news.created_at or 'Chưa cập nhật' }}</span>
+                    {% if news.category %}
+                    <span><i class="fas fa-tag"></i> {{ news.category }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Image -->
+                {% if news.image %}
+                <div class="news-image">
+                    <img src="{{ news.image }}" alt="{{ news.title }}"
+                        onerror="this.src='/static/img/news/default.jpg'">
+                </div>
+                {% endif %}
+
+                <!-- Content -->
+                <div class="news-content">
+                    {{ news.content|safe }}
+                </div>
+
+                <!-- Actions -->
+                <div class="news-actions">
+                    <a href="/tin-tuc" class="btn btn-back"><i class="fas fa-arrow-left"></i> Quay lại</a>
+                    <a href="https://zalo.me/0971306143" class="btn btn-zalo" target="_blank">
+                        <i class="fas fa-comment"></i> Tư vấn qua Zalo
+                    </a>
+                </div>
+            </div>
+
+            <!-- SIDEBAR -->
+            <div class="news-sidebar">
+                <div class="sidebar-card">
+                    <h4><i class="fas fa-info-circle"></i> Thông tin</h4>
+                    <div class="info-row">
+                        <span class="label">Tác giả</span>
+                        <span class="value">{{ news.author or 'Admin' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Ngày đăng</span>
+                        <span class="value">{{ news.created_at or 'Chưa cập nhật' }}</span>
+                    </div>
+                    {% if news.category %}
+                    <div class="info-row">
+                        <span class="label">Danh mục</span>
+                        <span class="value">{{ news.category }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="sidebar-card"
+                    style="background:linear-gradient(135deg,#fff9f5,#fff5e6);border-color:#e67e2220;">
+                    <h4 style="color:#e67e22;"><i class="fas fa-headset"></i> Cần hỗ trợ?</h4>
+                    <p style="font-size:14px;color:#666;margin-bottom:16px;line-height:1.6;">
+                        Có thắc mắc về tin tức? Liên hệ ngay để được giải đáp.
+                    </p>
+                    <a href="https://zalo.me/0971306143" target="_blank"
+                        style="display:block;width:100%;padding:12px;background:#0181f5;color:white;border:none;border-radius:12px;text-align:center;text-decoration:none;font-weight:600;transition:all 0.3s;">
+                        <i class="fas fa-comment"></i> Chat qua Zalo
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- RELATED NEWS -->
+        {% if related %}
+        <div class="related-news">
+            <h3 class="related-title"><i class="fas fa-newspaper"></i> Tin tức liên quan</h3>
+            <div class="related-grid">
+                {% for rel in related %}
+                <a href="/tin-tuc/chi-tiet/{{ rel.id }}" class="related-item">
+                    <div class="title">{{ rel.title }}</div>
+                    <span class="date"><i class="fas fa-calendar-alt"></i> {{ rel.created_at or 'Chưa có' }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-row">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <img src="/static/img/default/logooyin.png" alt="Logo">
+                        <h3>NGOẠI NGỮ O-YIN</h3>
+                    </div>
+                    <p class="footer-desc">
+                        Trung tâm đào tạo tiếng Trung uy tín hàng đầu, với đội ngũ giảng viên giàu kinh nghiệm,
+                        phương pháp giảng dạy hiện đại, cam kết đầu ra chất lượng.
+                    </p>
+                    <div class="footer-social">
+                        <a href="https://www.facebook.com/profile.php?id=61564711545051" class="social-icon facebook"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="https://zalo.me/0971306143" class="social-icon zalo"><i class="fas fa-comment"
+                                style="font-size:18px;"></i></a>
+                        <a href="#" class="social-icon youtube"><i class="fab fa-youtube"></i></a>
+                        <a href="http://tiktok.com/@ngoainguoyin_24" class="social-icon tiktok"><i
+                                class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>📞 LIÊN HỆ</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-map-marker-alt"></i> Sầm Sơn, Thanh Hóa</li>
+                        <li><i class="fas fa-phone-alt"></i> 0971 306 143 (Hoàng Ngân)</li>
+                        <li><i class="fas fa-envelope"></i> ngoainguoyin@gmail.com</li>
+                        <li><i class="fas fa-clock"></i> Mọi lúc</li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>📚 KHÓA HỌC</h4>
+                    <ul class="footer-links" id="footerCategories">
+                        <!-- Categories sẽ load từ API -->
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>🛡️ HỖ TRỢ</h4>
+                    <ul class="footer-links">
+                        <li><a href="/chinh-sach-dieu-khoan">Chính sách & Điều khoản</a></li>
+                        <li><a href="/chinh-sach-bao-mat">Chính sách bảo mật</a></li>
+                        <li><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Ngoại Ngữ O-Yin. Tất cả các quyền được bảo lưu.</p>
+                <p>Thiết kế và phát triển bởi <span>O-Yin Team</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ===== LOAD MENU =====
+        async function loadMenu() {
+            try {
+                const response = await fetch('/api/menu');
+                const data = await response.json();
+                const menuItems = data.items;
+                const menuContainer = document.getElementById('dynamic-menu');
+                if (!menuContainer) return;
+                menuContainer.innerHTML = '';
+                menuItems.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'nav-item';
+                    if (item.children && item.children.length > 0) {
+                        li.classList.add('has-dropdown');
+                        li.innerHTML = `
+                            <a href="${item.url}">${item.name}</a>
+                            <ul class="dropdown">
+                                ${renderChildren(item.children)}
+                            </ul>
+                        `;
+                    } else {
+                        li.innerHTML = `<a href="${item.url}">${item.name}</a>`;
+                    }
+                    menuContainer.appendChild(li);
+                });
+                if (window.innerWidth <= 768) {
+                    document.querySelectorAll('.has-dropdown > a').forEach(link => {
+                        link.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            const dropdown = this.nextElementSibling;
+                            if (dropdown) dropdown.classList.toggle('show');
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error('Lỗi tải menu:', error);
+            }
+        }
+
+        function renderChildren(children) {
+            let html = '';
+            children.forEach(child => {
+                if (child.children && child.children.length > 0) {
+                    html += `<li class="dropdown-sub"><span>${child.name}</span><ul class="sub-dropdown">${renderChildren(child.children)}</ul></li>`;
+                } else {
+                    html += `<li><a href="${child.url}">${child.name}</a></li>`;
+                }
+            });
+            return html;
+        }
+
+        // ===== STICKY NAV =====
+        (function () {
+            const nav = document.querySelector('.nav-wrapper');
+            const header = document.querySelector('header');
+            if (!nav) return;
+            let navHeight = nav.offsetHeight;
+            let stickyOffset = header.offsetHeight;
+            function handleSticky() {
+                if (window.scrollY >= stickyOffset) {
+                    nav.classList.add('js-sticky');
+                    if (!document.querySelector('.sticky-spacer')) {
+                        const spacer = document.createElement('div');
+                        spacer.className = 'sticky-spacer';
+                        spacer.style.height = navHeight + 'px';
+                        nav.parentNode.insertBefore(spacer, nav);
+                    }
+                } else {
+                    nav.classList.remove('js-sticky');
+                    const spacer = document.querySelector('.sticky-spacer');
+                    if (spacer) spacer.remove();
+                }
+            }
+            const style = document.createElement('style');
+            style.textContent = `
+                .nav-wrapper.js-sticky {
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                    width: 100% !important;
+                    z-index: 10000 !important;
+                    animation: slideDown 0.3s ease !important;
+                    box-shadow: 0 4px 25px rgba(0,0,0,0.2) !important;
+                }
+                @keyframes slideDown {
+                    from { transform: translateY(-100%); }
+                    to { transform: translateY(0); }
+                }
+            `;
+            document.head.appendChild(style);
+            window.addEventListener('scroll', handleSticky);
+            window.addEventListener('resize', function () {
+                stickyOffset = header.offsetHeight;
+                navHeight = nav.offsetHeight;
+                handleSticky();
+            });
+            handleSticky();
+        })();
+
+        // ===== MOBILE MENU =====
+        function initMobileMenu() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navMain = document.querySelector('.nav-main');
+            if (menuToggle && navMain) {
+                menuToggle.addEventListener('click', function () {
+                    navMain.classList.toggle('active');
+                    const bars = document.querySelectorAll('.bar');
+                    if (navMain.classList.contains('active')) {
+                        bars[0].style.transform = 'rotate(-45deg) translate(-5px, 6px)';
+                        bars[1].style.opacity = '0';
+                        bars[2].style.transform = 'rotate(45deg) translate(-5px, -6px)';
+                    } else {
+                        bars[0].style.transform = 'rotate(0) translate(0, 0)';
+                        bars[1].style.opacity = '1';
+                        bars[2].style.transform = 'rotate(0) translate(0, 0)';
+                    }
+                });
+            }
+        }
+
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', function () {
+            loadMenu();
+            initMobileMenu();
+
+            document.addEventListener('click', function (event) {
+                if (window.innerWidth <= 768) {
+                    const menuToggle = document.querySelector('.menu-toggle');
+                    const navMain = document.querySelector('.nav-main');
+                    const isClickInside = menuToggle?.contains(event.target) || navMain?.contains(event.target);
+                    if (!isClickInside && navMain?.classList.contains('active')) {
+                        navMain.classList.remove('active');
+                        const bars = document.querySelectorAll('.bar');
+                        bars[0].style.transform = 'rotate(0) translate(0, 0)';
+                        bars[1].style.opacity = '1';
+                        bars[2].style.transform = 'rotate(0) translate(0, 0)';
+                    }
+                }
+            });
+
+            window.addEventListener('resize', function () {
+                if (window.innerWidth > 768) {
+                    const navMain = document.querySelector('.nav-main');
+                    if (navMain) navMain.classList.remove('active');
+                    const bars = document.querySelectorAll('.bar');
+                    bars[0].style.transform = 'rotate(0) translate(0, 0)';
+                    bars[1].style.opacity = '1';
+                    bars[2].style.transform = 'rotate(0) translate(0, 0)';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -5,33 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lịch Khai Giảng - Ngoại Ngữ OYin</title>
-    <link rel="stylesheet" href="../../css/chungcss.css">
-    <link rel="stylesheet" href="../../css/lichkhaigiang.css">
+    <link rel="stylesheet" href="/static/css/chungcss.css">
+    <link rel="stylesheet" href="/static/css/trangchucss.css">
+    <link rel="stylesheet" href="/static/css/lichkhaigiang.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
+    <link rel="icon" href="/static/img/default/favicon.png" type="image/png">
 </head>
 
 <body>
     <header>
         <div class="information">
             <div class="informationtext informationtextlogo">
-                <a href="../../index.html"><img src="../../img/logooyin.png" alt="Logo" class="informationimg" /></a>
+                <a href="/"><img src="/static/img/default/logooyin.png" alt="Logo" class="informationimg" /></a>
             </div>
             <div class="informationtext informationtextname">
                 <strong class="informationtextname2">NGOẠI NGỮ O-YIN</strong>
             </div>
             <div class="informationtext informationtextcall">
-                <div class="informationtextcallimg"><img src="../../img/dienthoai.png" alt="Liên Hệ" class="callimg" />
-                </div>
+                <div class="informationtextcallimg"><img src="/static/img/default/dienthoai.png" alt="Liên Hệ"
+                        class="callimg" /></div>
                 <div class="informationtextcall12">
                     <div class="informationtextcall1">LIÊN HỆ ZALO</div>
                     <div class="informationtextcall2">0971 306 143(Hoàng Ngân)</div>
                 </div>
             </div>
             <div class="informationtext informationtextsupport">
-                <div class="informationtextsupportimg"><img src="../../img/dongho.jpg" alt="Hỗ trợ"
+                <div class="informationtextsupportimg"><img src="/static/img/default/dongho.jpg" alt="Hỗ trợ"
                         class="supportimg" /></div>
                 <div class="informationtextsupport12">
                     <div class="informationtextsupport1">HỖ TRỢ</div>
@@ -52,16 +54,41 @@
                     <li>Đang tải menu...</li>
                 </ul>
             </div>
-            <div class="register-btn"><a href="../../html/dangkyhtml/dangkyhtml.html">ĐĂNG KÝ</a></div>
+            <div class="register-btn"><a href="/dang-ky">ĐĂNG KÝ</a></div>
         </div>
     </header>
 
     <main>
         <!-- HERO -->
         <section class="schedule-hero">
+            <!-- Background Pattern -->
+            <div class="hero-bg-pattern"></div>
+
+            <!-- Decoration Circles -->
+            <div class="hero-circle c1"></div>
+            <div class="hero-circle c2"></div>
+            <div class="hero-circle c3"></div>
+
+            <!-- Floating Emojis -->
+            <div class="hero-emoji e1">📚</div>
+            <div class="hero-emoji e2">🎯</div>
+            <div class="hero-emoji e3">🌟</div>
+
+            <!-- Accent Line -->
+            <div class="hero-accent-line"></div>
+
+            <!-- Content -->
             <div class="hero-content">
-                <h1>📅 Lịch Khai Giảng</h1>
+                <h1>Lịch Khai Giảng</h1>
                 <p>Cập nhật lịch khai giảng các khóa học mới nhất, đăng ký ngay để nhận ưu đãi</p>
+
+                <!-- Search -->
+                <div class="hero-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Tìm kiếm lịch khai giảng..." id="searchInput">
+                    <button onclick="searchSchedule()"><i class="fas fa-arrow-right"></i></button>
+                </div>
+
                 <div class="hero-deco">
                     <span></span>
                     <span></span>
@@ -69,15 +96,10 @@
                 </div>
             </div>
         </section>
-
         <!-- SCHEDULE LIST -->
         <div class="schedule-container">
             <div class="schedule-filters" id="scheduleFilters">
                 <button class="schedule-filter active" data-filter="all">📋 Tất cả</button>
-                <button class="schedule-filter" data-filter="HSK">📖 HSK</button>
-                <button class="schedule-filter" data-filter="HSK 3.0">🌟 HSK 3.0</button>
-                <button class="schedule-filter" data-filter="Tiếng Trung Trẻ Em">🧒 Trẻ Em</button>
-                <button class="schedule-filter" data-filter="Tiếng Trung Người Lớn">👤 Người Lớn</button>
             </div>
 
             <div class="schedule-list" id="scheduleList">
@@ -90,41 +112,51 @@
         <div class="footer-container">
             <div class="footer-row">
                 <div class="footer-col">
-                    <div class="footer-logo"><img src="../../img/logooyin.png" alt="Logo">
+                    <div class="footer-logo">
+                        <img src="/static/img/default/logooyin.png" alt="Logo">
                         <h3>NGOẠI NGỮ O-YIN</h3>
                     </div>
-                    <p class="footer-desc">Trung tâm đào tạo tiếng Trung uy tín hàng đầu.</p>
+                    <p class="footer-desc">
+                        Trung tâm đào tạo tiếng Trung uy tín hàng đầu, với đội ngũ giảng viên giàu kinh nghiệm,
+                        phương pháp giảng dạy hiện đại, cam kết đầu ra chất lượng.
+                    </p>
                     <div class="footer-social">
-                        <a href="#" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-icon zalo"><i class="fab fa-zalo"></i></a>
+                        <a href="https://www.facebook.com/profile.php?id=61564711545051" class="social-icon facebook"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="https://zalo.me/0971306143" class="social-icon zalo"><i class="fas fa-comment"
+                                style="font-size:18px;"></i></a>
                         <a href="#" class="social-icon youtube"><i class="fab fa-youtube"></i></a>
-                        <a href="#" class="social-icon tiktok"><i class="fab fa-tiktok"></i></a>
+                        <a href="http://tiktok.com/@ngoainguoyin_24" class="social-icon tiktok"><i
+                                class="fab fa-tiktok"></i></a>
                     </div>
                 </div>
                 <div class="footer-col">
                     <h4>📞 LIÊN HỆ</h4>
                     <ul class="footer-contact">
                         <li><i class="fas fa-map-marker-alt"></i> Sầm Sơn, Thanh Hóa</li>
-                        <li><i class="fas fa-phone-alt"></i> 0971 306 143</li>
-                        <li><i class="fas fa-envelope"></i> info@oyin.edu.vn</li>
-                        <li><i class="fas fa-clock"></i> Thứ 2 - Chủ Nhật: 8:00 - 21:00</li>
+                        <li><i class="fas fa-phone-alt"></i> 0971 306 143 (Hoàng Ngân)</li>
+                        <li><i class="fas fa-envelope"></i> ngoainguoyin@gmail.com</li>
+                        <li><i class="fas fa-clock"></i> Mọi lúc</li>
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h4>📚 KHóa HỌC</h4>
-                    <ul class="footer-links" id="footerCategories"></ul>
+                    <h4>📚 KHÓA HỌC</h4>
+                    <ul class="footer-links" id="footerCategories">
+                        <!-- Categories sẽ load từ API -->
+                    </ul>
                 </div>
                 <div class="footer-col">
                     <h4>🛡️ HỖ TRỢ</h4>
                     <ul class="footer-links">
-                        <li><a href="#">Chính sách & Điều khoản</a></li>
-                        <li><a href="#">Chính sách bảo mật</a></li>
-                        <li><a href="#">Hướng dẫn thanh toán</a></li>
+                        <li><a href="/chinh-sach-dieu-khoan">Chính sách & Điều khoản</a></li>
+                        <li><a href="/chinh-sach-bao-mat">Chính sách bảo mật</a></li>
+                        <li><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2024 Ngoại Ngữ O-Yin. Tất cả các quyền được bảo lưu.</p>
+                <p>Thiết kế và phát triển bởi <span>O-Yin Team</span></p>
             </div>
         </div>
     </footer>
@@ -154,7 +186,6 @@
                     }
                     menuContainer.appendChild(li);
                 });
-                // Mobile dropdown
                 if (window.innerWidth <= 768) {
                     document.querySelectorAll('.has-dropdown > a').forEach(link => {
                         link.addEventListener('click', function (e) {
@@ -225,6 +256,7 @@
             if (!navWrapper || !header) return;
             let navHeight = navWrapper.offsetHeight;
             let stickyOffset = header.offsetHeight;
+
             function handleSticky() {
                 if (window.scrollY >= stickyOffset) {
                     navWrapper.classList.add('js-sticky');
@@ -240,6 +272,7 @@
                     if (spacer) spacer.remove();
                 }
             }
+
             const style = document.createElement('style');
             style.textContent = `
                 .nav-wrapper.js-sticky {
@@ -274,7 +307,7 @@
         function formatDate(dateStr) {
             if (!dateStr) return '';
             const d = new Date(dateStr);
-            return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+            return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
         }
 
         function getStatusBadge(status, remaining) {
@@ -282,13 +315,18 @@
                 return '<span class="badge badge-status full">🔴 Đã kín</span>';
             }
             switch (status) {
-                case 'open': return '<span class="badge badge-status">🟢 Còn chỗ</span>';
-                case 'upcoming': return '<span class="badge badge-status" style="background:#2196F320;color:#1976D2;">🟡 Sắp khai giảng</span>';
-                case 'closed': return '<span class="badge badge-status closed">⚫ Đã đóng</span>';
-                default: return '<span class="badge badge-status">🟢 Còn chỗ</span>';
+                case 'open':
+                    return '<span class="badge badge-status">🟢 Còn chỗ</span>';
+                case 'upcoming':
+                    return '<span class="badge badge-status" style="background:#2196F320;color:#1976D2;">🟡 Sắp khai giảng</span>';
+                case 'closed':
+                    return '<span class="badge badge-status closed">⚫ Đã đóng</span>';
+                default:
+                    return '<span class="badge badge-status">🟢 Còn chỗ</span>';
             }
         }
 
+        // ===== RENDER SCHEDULES =====
         function renderSchedules(filter) {
             const container = document.getElementById('scheduleList');
             if (!container) return;
@@ -300,12 +338,12 @@
 
             if (filtered.length === 0) {
                 container.innerHTML = `
-                    <div class="schedule-empty">
-                        <div class="empty-icon">📅</div>
-                        <h3>Chưa có lịch khai giảng</h3>
-                        <p>Vui lòng quay lại sau để cập nhật lịch mới nhất</p>
-                    </div>
-                `;
+            <div class="schedule-empty">
+                <div class="empty-icon">📅</div>
+                <h3>Chưa có lịch khai giảng</h3>
+                <p>Vui lòng quay lại sau để cập nhật lịch mới nhất</p>
+            </div>
+        `;
                 return;
             }
 
@@ -313,8 +351,93 @@
                 const remaining = schedule.remaining_slots || 0;
                 const total = schedule.total_slots || 0;
                 const statusBadge = getStatusBadge(schedule.status, remaining);
+                const hasCourse = schedule.has_course === true || schedule.course_info !== null;
+
+                // Nếu có liên kết khóa học, tạo link đến chi tiết khóa học
+                const courseLink = hasCourse && schedule.course_info ?
+                    `<a href="/khoa-hoc/chi-tiet/${schedule.course_info.id}" class="btn-detail">📖 Tìm hiểu thêm</a>` :
+                    '';
 
                 return `
+            <div class="schedule-card" data-course-id="${schedule.course_id || ''}">
+                <div class="card-left">
+                    <div class="top-row">
+                        <span class="course-name">${schedule.course_name || 'Khóa học'}</span>
+                        <span class="badge badge-category">${schedule.category || 'Khóa học'}</span>
+                        ${statusBadge}
+                        ${hasCourse ? '<span class="badge" style="background:#2196F320;color:#1976D2;"><i class="fas fa-link"></i> Có khóa học</span>' : ''}
+                    </div>
+                    <div class="details">
+                        <span class="detail-item"><i class="fas fa-calendar-alt"></i> ${formatDate(schedule.start_date)} - ${formatDate(schedule.end_date)}</span>
+                        <span class="detail-item"><i class="fas fa-clock"></i> ${schedule.schedule_time || 'Linh hoạt'}</span>
+                        <span class="detail-item"><i class="fas fa-user-tie"></i> ${schedule.teacher || 'Giáo viên'}</span>
+                        <span class="detail-item"><i class="fas fa-map-marker-alt"></i> ${schedule.location || 'Online / Offline'}</span>
+                    </div>
+                </div>
+                <div class="card-right">
+                    <span class="price">${schedule.tuition || 'Liên hệ'}</span>
+                    <span class="slots">Còn <span>${remaining}</span> / ${total} chỗ</span>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+                        ${courseLink}
+                        <a href="/dang-ky" class="btn-register" ${remaining <= 0 ? 'disabled' : ''}>
+                            ${remaining <= 0 ? 'Đã kín chỗ' : 'Đăng ký ngay'}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+            }).join('');
+        }
+
+        // ===== SEARCH FUNCTION =====
+        function searchSchedule() {
+            const input = document.getElementById('searchInput');
+            const keyword = input.value.trim().toLowerCase();
+            const container = document.getElementById('scheduleList');
+
+            if (!keyword) {
+                // Reset về filter hiện tại
+                const activeFilter = document.querySelector('.schedule-filter.active');
+                if (activeFilter) {
+                    renderSchedules(activeFilter.dataset.filter);
+                } else {
+                    renderSchedules('all');
+                }
+                return;
+            }
+
+            const filtered = allSchedules.filter(schedule => {
+                const name = (schedule.course_name || '').toLowerCase();
+                const category = (schedule.category || '').toLowerCase();
+                const teacher = (schedule.teacher || '').toLowerCase();
+                const location = (schedule.location || '').toLowerCase();
+                return name.includes(keyword) ||
+                    category.includes(keyword) ||
+                    teacher.includes(keyword) ||
+                    location.includes(keyword);
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="schedule-empty">
+                        <div class="empty-icon">🔍</div>
+                        <h3>Không tìm thấy lịch khai giảng</h3>
+                        <p>Không có lịch nào phù hợp với "<strong style="color:#e67e22;">${keyword}</strong>"</p>
+                        <button onclick="resetSearch()"><i class="fas fa-undo"></i> Xem tất cả</button>
+                    </div>
+                `;
+                return;
+            }
+
+            // Hiển thị kết quả tìm kiếm
+            let html = `<div class="search-result-info">Tìm thấy <strong style="color:#e67e22;">${filtered.length}</strong> lịch khai giảng phù hợp với "<strong style="color:#e67e22;">${keyword}</strong>"</div>`;
+
+            filtered.forEach(schedule => {
+                const remaining = schedule.remaining_slots || 0;
+                const total = schedule.total_slots || 0;
+                const statusBadge = getStatusBadge(schedule.status, remaining);
+
+                html += `
                     <div class="schedule-card">
                         <div class="card-left">
                             <div class="top-row">
@@ -332,13 +455,25 @@
                         <div class="card-right">
                             <span class="price">${schedule.tuition || 'Liên hệ'}</span>
                             <span class="slots">Còn <span>${remaining}</span> / ${total} chỗ</span>
-                            <a href="../../html/dangkyhtml/dangkyhtml.html" class="btn-register" ${remaining <= 0 ? 'disabled' : ''}>
+                            <a href="/dang-ky" class="btn-register" ${remaining <= 0 ? 'disabled' : ''}>
                                 ${remaining <= 0 ? 'Đã kín chỗ' : 'Đăng ký ngay'}
                             </a>
                         </div>
                     </div>
                 `;
-            }).join('');
+            });
+
+            container.innerHTML = html;
+        }
+
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            const activeFilter = document.querySelector('.schedule-filter.active');
+            if (activeFilter) {
+                renderSchedules(activeFilter.dataset.filter);
+            } else {
+                renderSchedules('all');
+            }
         }
 
         async function loadSchedules() {
@@ -354,7 +489,6 @@
                 allSchedules = schedulesData.items || [];
                 categories = categoriesData.categories || [];
 
-                // Cập nhật filter tabs
                 const filterContainer = document.getElementById('scheduleFilters');
                 let filterHtml = `<button class="schedule-filter active" data-filter="all">📋 Tất cả</button>`;
                 categories.forEach(cat => {
@@ -362,11 +496,12 @@
                 });
                 filterContainer.innerHTML = filterHtml;
 
-                // Sự kiện filter
                 filterContainer.querySelectorAll('.schedule-filter').forEach(btn => {
                     btn.addEventListener('click', function () {
                         filterContainer.querySelectorAll('.schedule-filter').forEach(b => b.classList.remove('active'));
                         this.classList.add('active');
+                        // Clear search input when filter changes
+                        document.getElementById('searchInput').value = '';
                         renderSchedules(this.dataset.filter);
                     });
                 });
@@ -384,8 +519,30 @@
             }
         }
 
-        // ===== DOM READY =====
+        // ===== SEARCH ON ENTER =====
         document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        searchSchedule();
+                    }
+                });
+
+                // Auto reset when input is cleared
+                searchInput.addEventListener('input', function () {
+                    if (this.value === '') {
+                        const activeFilter = document.querySelector('.schedule-filter.active');
+                        if (activeFilter) {
+                            renderSchedules(activeFilter.dataset.filter);
+                        } else {
+                            renderSchedules('all');
+                        }
+                    }
+                });
+            }
+
             loadMenu();
             loadFooterCategories();
             loadSchedules();

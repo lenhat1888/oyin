@@ -4,41 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng Ký - Ngoại Ngữ OYin</title>
-    <!-- ✅ SỬA: Đường dẫn CSS tuyệt đối -->
+    <title>Đội Ngũ Giảng Viên - Ngoại Ngữ OYin</title>
     <link rel="stylesheet" href="/static/css/chungcss.css">
-    <link rel="stylesheet" href="/static/css/dangky.css">
+    <link rel="stylesheet" href="/static/css/trangchucss.css">
+    <link rel="stylesheet" href="/static/css/doingugiangvien.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="icon" href="/static/img/default/favicon.png" type="image/png">
-    <style>
-        /* KHẨN CẤP: Fix input bị chặn */
-        .form-wrapper {
-            pointer-events: none !important;
-        }
-
-        .form-wrapper * {
-            pointer-events: auto !important;
-        }
-
-        .form-wrapper input,
-        .form-wrapper select,
-        .form-wrapper textarea,
-        .form-wrapper button,
-        .form-wrapper .form-group {
-            pointer-events: auto !important;
-            position: relative !important;
-            z-index: 999 !important;
-        }
-
-        .form-wrapper::before,
-        .form-wrapper::after {
-            pointer-events: none !important;
-            display: none !important;
-        }
-    </style>
 </head>
 
 <body>
@@ -69,6 +43,7 @@
                 </div>
             </div>
         </div>
+
         <div class="nav-wrapper">
             <div class="mobile-menu">
                 <div class="menu-toggle">
@@ -90,27 +65,19 @@
 
     <main>
         <!-- ===== HERO ===== -->
-        <section class="dangky-hero">
-            <!-- Background Pattern -->
+        <section class="teacher-hero">
             <div class="hero-bg-pattern"></div>
-
-            <!-- Decoration Shapes -->
             <div class="hero-shape s1"></div>
             <div class="hero-shape s2"></div>
-
-            <!-- Floating Emojis -->
-            <div class="hero-emoji e1">📝</div>
-            <div class="hero-emoji e2">🎯</div>
-            <div class="hero-emoji e3">🌟</div>
-
-            <!-- Accent Line -->
+            <div class="hero-emoji e1">👨‍🏫</div>
+            <div class="hero-emoji e2">🎓</div>
+            <div class="hero-emoji e3">⭐</div>
             <div class="hero-accent-line"></div>
 
-            <!-- Content -->
             <div class="hero-content">
-                <div class="hero-badge">📝 ĐĂNG KÝ NGAY</div>
-                <h1>Đăng Ký Khóa Học</h1>
-                <p>Điền thông tin bên dưới để đăng ký khóa học tại O-Yin</p>
+                <div class="hero-badge">👨‍🏫 ĐỘI NGŨ GIẢNG VIÊN</div>
+                <h1>Đội Ngũ Giảng Viên</h1>
+                <p>Đội ngũ giảng viên giàu kinh nghiệm, tận tâm và nhiệt huyết</p>
                 <div class="hero-deco">
                     <span></span>
                     <span></span>
@@ -118,86 +85,19 @@
                 </div>
             </div>
         </section>
-        <!-- ===== FORM ===== -->
-        <section class="dangky-section">
-            <div class="dangky-container">
-                <div class="form-wrapper">
-                    <div class="form-header">
-                        <h2>📋 Thông tin đăng ký</h2>
-                        <p>Chúng tôi sẽ liên hệ với bạn trong vòng 24 giờ</p>
-                    </div>
 
-                    <div id="formMessage" class="form-message" style="display:none;"></div>
-
-                    <form id="dangkyForm">
-                        <!-- Họ tên -->
-                        <div class="form-group">
-                            <label for="full_name">Họ và tên <span class="required">*</span></label>
-                            <input type="text" id="full_name" name="full_name" placeholder="VD: Nguyễn Văn A" required>
-                        </div>
-
-                        <!-- Số điện thoại -->
-                        <div class="form-group">
-                            <label for="phone">Số điện thoại <span class="required">*</span></label>
-                            <input type="tel" id="phone" name="phone" placeholder="VD: 0987654321" required>
-                        </div>
-
-                        <!-- Email -->
-                        <div class="form-group">
-                            <label for="email">Email <span class="required">*</span></label>
-                            <input type="email" id="email" name="email" placeholder="VD: email@example.com" required>
-                        </div>
-
-                        <!-- Khóa học muốn đăng ký -->
-                        <div class="form-group">
-                            <label for="course">Khóa học muốn đăng ký <span class="required">*</span></label>
-                            <select id="course" name="course" required>
-                                <option value="">-- Chọn khóa học --</option>
-                            </select>
-                        </div>
-
-                        <!-- Ghi chú -->
-                        <div class="form-group">
-                            <label for="message">Ghi chú (tùy chọn)</label>
-                            <textarea id="message" name="message" rows="4"
-                                placeholder="Thông tin thêm về nhu cầu học tập của bạn..."></textarea>
-                        </div>
-
-                        <!-- Nút submit -->
-                        <button type="submit" class="btn-submit" id="submitBtn">
-                            <i class="fas fa-paper-plane"></i> Gửi đăng ký
-                        </button>
-                    </form>
-
-                    <div class="form-footer">
-                        <p><i class="fas fa-shield-alt"></i> Thông tin của bạn được bảo mật tuyệt đối</p>
-                        <p><i class="fas fa-clock"></i> Chúng tôi sẽ phản hồi trong vòng 24 giờ</p>
-                    </div>
-                </div>
-
-                <!-- Sidebar thông tin -->
-                <div class="form-sidebar">
-                    <div class="sidebar-card">
-                        <h3>📞 Liên hệ nhanh</h3>
-                        <p><i class="fas fa-phone-alt"></i> 0971 306 143</p>
-                        <p><i class="fas fa-zalo"></i> Zalo: 0971 306 143</p>
-                        <p><i class="fas fa-envelope"></i> info@oyin.edu.vn</p>
-                    </div>
-                    <div class="sidebar-card">
-                        <h3>📍 Địa chỉ</h3>
-                        <p><i class="fas fa-map-marker-alt"></i> Sầm Sơn, Thanh Hóa</p>
-                    </div>
-                    <div class="sidebar-card">
-                        <h3>🕐 Giờ làm việc</h3>
-                        <p><i class="fas fa-clock"></i> Thứ 2 - Chủ Nhật</p>
-                        <p>8:00 - 21:00</p>
-                    </div>
+        <!-- ===== TEACHERS GRID ===== -->
+        <div class="teachers-container">
+            <div class="teachers-grid" id="teachersGrid">
+                <!-- Loading -->
+                <div style="grid-column:1/-1;text-align:center;padding:40px;color:#999;">
+                    <i class="fas fa-spinner fa-spin" style="font-size:32px;"></i>
+                    <p>Đang tải giảng viên...</p>
                 </div>
             </div>
-        </section>
+        </div>
     </main>
 
-    <!-- ===== FOOTER ===== -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-row">
@@ -302,28 +202,62 @@
             return html;
         }
 
-        // ===== LOAD COURSES CHO SELECT =====
-        async function loadCourses() {
+        // ===== LOAD TEACHERS =====
+        async function loadTeachers() {
             try {
-                const response = await fetch('/api/data/courses');
+                const response = await fetch('/api/data/teachers');
                 const data = await response.json();
-                const courses = Array.isArray(data) ? data : (data.items || []);
 
-                const select = document.getElementById('course');
-                if (!select) return;
-
-                while (select.options.length > 1) {
-                    select.remove(1);
+                // 👉 SỬA: Xử lý cả 2 trường hợp
+                let teachers = [];
+                if (Array.isArray(data)) {
+                    teachers = data;  // Nếu là mảng trực tiếp
+                } else if (data.items && Array.isArray(data.items)) {
+                    teachers = data.items;  // Nếu có items
                 }
 
-                courses.forEach(course => {
-                    const option = document.createElement('option');
-                    option.value = course.id || course.name;
-                    option.textContent = course.name + (course.level ? ` - ${course.level}` : '');
-                    select.appendChild(option);
-                });
+                const grid = document.getElementById('teachersGrid');
+
+                if (teachers.length === 0) {
+                    grid.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon-wrapper"><i class="fas fa-user-graduate"></i></div>
+                    <h3>Chưa có giảng viên</h3>
+                    <p>Đội ngũ giảng viên đang được cập nhật. Vui lòng quay lại sau.</p>
+                </div>
+            `;
+                    return;
+                }
+
+                grid.innerHTML = teachers.map(teacher => `
+            <div class="teacher-card" onclick="window.location.href='/gioi-thieu/chi-tiet-giao-vien/${teacher.id}'">
+                <div class="card-image">
+                    <img src="${teacher.image || '/static/img/teachers/default.jpg'}" alt="${teacher.name}" onerror="this.src='/static/img/teachers/default.jpg'">
+                    ${teacher.is_active !== false ? `<span class="card-badge"><i class="fas fa-check-circle"></i> Đang giảng dạy</span>` : ''}
+                    <span class="card-experience"><i class="fas fa-briefcase"></i> ${teacher.experience || 'Nhiều năm kinh nghiệm'}</span>
+                </div>
+                <div class="card-body">
+                    <h3 class="teacher-name">${teacher.name}</h3>
+                    <div class="teacher-title">${teacher.title || 'Giảng viên tiếng Trung'}</div>
+                    <p class="teacher-desc">${teacher.bio || teacher.description || 'Giảng viên giàu kinh nghiệm, tận tâm với nghề.'}</p>
+                    ${teacher.specialties ? `
+                        <div class="teacher-specialties">
+                            ${teacher.specialties.split(',').map(s => `<span class="tag">${s.trim()}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                    <span class="btn-view">Xem chi tiết <i class="fas fa-arrow-right"></i></span>
+                </div>
+            </div>
+        `).join('');
             } catch (error) {
-                console.error('Lỗi tải khóa học:', error);
+                console.error('Lỗi tải giảng viên:', error);
+                document.getElementById('teachersGrid').innerHTML = `
+            <div class="empty-state">
+                <div class="icon-wrapper"><i class="fas fa-exclamation-triangle"></i></div>
+                <h3>Không thể tải dữ liệu</h3>
+                <p>Vui lòng thử lại sau.</p>
+            </div>
+        `;
             }
         }
 
@@ -371,6 +305,7 @@
             if (!navWrapper || !header) return;
             let navHeight = navWrapper.offsetHeight;
             let stickyOffset = header.offsetHeight;
+
             function handleSticky() {
                 if (window.scrollY >= stickyOffset) {
                     navWrapper.classList.add('js-sticky');
@@ -386,6 +321,7 @@
                     if (spacer) spacer.remove();
                 }
             }
+
             const style = document.createElement('style');
             style.textContent = `
                 .nav-wrapper.js-sticky {
@@ -413,161 +349,12 @@
             handleSticky();
         }
 
-        // ===== SUBMIT FORM =====
         document.addEventListener('DOMContentLoaded', function () {
             loadMenu();
-            loadCourses();
+            loadTeachers();
             loadFooterCategories();
             initMobileMenu();
             initStickyNav();
-
-            const form = document.getElementById('dangkyForm');
-            const messageDiv = document.getElementById('formMessage');
-            const submitBtn = document.getElementById('submitBtn');
-
-            form.addEventListener('submit', async function (e) {
-                e.preventDefault();
-
-                const data = {
-                    full_name: document.getElementById('full_name').value.trim(),
-                    phone: document.getElementById('phone').value.trim(),
-                    email: document.getElementById('email').value.trim(),
-                    course: document.getElementById('course').value,
-                    course_id: document.getElementById('course').value,
-                    message: document.getElementById('message').value.trim()
-                };
-
-                if (!data.full_name) {
-                    showMessage('Vui lòng nhập họ tên!', 'error');
-                    return;
-                }
-                if (!data.phone) {
-                    showMessage('Vui lòng nhập số điện thoại!', 'error');
-                    return;
-                }
-                if (!data.email) {
-                    showMessage('Vui lòng nhập email!', 'error');
-                    return;
-                }
-                if (!data.course) {
-                    showMessage('Vui lòng chọn khóa học!', 'error');
-                    return;
-                }
-
-                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-                if (!emailRegex.test(data.email)) {
-                    showMessage('Email không hợp lệ!', 'error');
-                    return;
-                }
-
-                const phoneRegex = /^[0-9]{10,11}$/;
-                if (!phoneRegex.test(data.phone)) {
-                    showMessage('Số điện thoại không hợp lệ (10-11 số)!', 'error');
-                    return;
-                }
-
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
-
-                try {
-                    const response = await fetch('/api/dang-ky', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        showMessage(result.message, 'success');
-                        form.reset();
-                    } else {
-                        showMessage(result.error || 'Có lỗi xảy ra!', 'error');
-                    }
-                } catch (error) {
-                    showMessage('Lỗi kết nối! Vui lòng thử lại.', 'error');
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Gửi đăng ký';
-                }
-            });
-
-            function showMessage(msg, type) {
-                messageDiv.textContent = msg;
-                messageDiv.className = 'form-message ' + type;
-                messageDiv.style.display = 'block';
-                setTimeout(() => {
-                    messageDiv.style.display = 'none';
-                }, 5000);
-            }
-        });
-        // ============================================================
-        // SCROLL REVEAL - CHỈ ÁP DỤNG CHO CARD, KHÔNG CHO FORM
-        // ============================================================
-
-        function initScrollReveal() {
-            // CHỈ LẤY CÁC PHẦN TỬ CARD, KHÔNG LẤY FORM
-            const selectors = [
-                '.commitment-card',
-                '.category-card',
-                '.review-card',
-                '.sidebar-card'  // Thêm sidebar card nếu muốn
-            ];
-
-            const revealElements = document.querySelectorAll(selectors.join(','));
-
-            if (revealElements.length === 0) return;
-
-            revealElements.forEach((el, index) => {
-                el.classList.add('reveal');
-                const delayNum = (index % 8) + 1;
-                el.classList.add(`reveal-d${delayNum}`);
-            });
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry, index) => {
-                    if (entry.isIntersecting) {
-                        setTimeout(() => {
-                            entry.target.classList.add('active');
-                        }, 100 + (index * 30));
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, {
-                threshold: 0.1,
-                rootMargin: '0px 0px -30px 0px'
-            });
-
-            revealElements.forEach(el => {
-                observer.observe(el);
-            });
-        }
-        // ============================================================
-        // FIX: ĐẢM BẢO INPUT HOẠT ĐỘNG
-        // ============================================================
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Đảm bảo form-wrapper không chặn sự kiện
-            const formWrapper = document.querySelector('.form-wrapper');
-            if (formWrapper) {
-                formWrapper.style.pointerEvents = 'none';
-
-                // Tất cả con bên trong đều nhận sự kiện
-                const children = formWrapper.querySelectorAll('*');
-                children.forEach(child => {
-                    child.style.pointerEvents = 'auto';
-                });
-
-                // Đặc biệt cho input, select, textarea
-                const inputs = formWrapper.querySelectorAll('input, select, textarea, button');
-                inputs.forEach(el => {
-                    el.style.pointerEvents = 'auto';
-                    el.style.position = 'relative';
-                    el.style.zIndex = '999';
-                });
-
-                console.log('✅ Đã fix input bị chặn');
-            }
         });
     </script>
 </body>

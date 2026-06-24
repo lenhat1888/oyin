@@ -49,6 +49,12 @@ function loadTabContent(tab) {
     case "schedules":
       renderScheduleManager(container);
       break;
+    case "teachers":
+      renderTeacherManager(container);
+      break;
+    case "all":
+      renderAllDataManager(container);
+      break;
     default:
       container.innerHTML = "<p>Tab không hợp lệ</p>";
   }
@@ -222,12 +228,13 @@ async function renderSlideManager(container) {
                 : slides
                     .map(
                       (slide, index) => `
-                <div style="background:white;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);border:1px solid #eee;">
+                <div style="background:white;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);border:1px solid #eee;" data-slide-id="${slide.id}">
                     <div style="width:100%;height:120px;background:#eee;overflow:hidden;">
                         <img src="${slide.image}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22120%22%3E%3Crect fill=%22%23ddd%22 width=%22200%22 height=%22120%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22 font-size=%2214%22%3ENo Image%3C/text%3E%3C/svg%3E'">
                     </div>
                     <div style="padding:12px;">
                         <strong style="font-size:14px;">${slide.title || "Slide " + (index + 1)}</strong>
+                        <div style="font-size:11px;color:#999;margin:2px 0;">ID: ${slide.id}</div>
                         <div style="display:flex;gap:5px;margin-top:8px;">
                             <button onclick="editSlide('${slide.id}')" class="btn-edit" style="flex:1;">✏️ Sửa</button>
                             <button onclick="deleteSlide('${slide.id}')" class="btn-delete" style="flex:1;">🗑️ Xóa</button>
@@ -294,18 +301,21 @@ async function addSlide() {
     return;
   }
 
-  // Lưu vào database
+  // 👈 SỬA: Đảm bảo gửi đúng dữ liệu
+  const slideData = {
+    title: result.title.trim(),
+    image: uploadResult.image_url,
+    description: result.description?.trim() || "",
+    link: result.link?.trim() || "#",
+    active: result.active !== false,
+    order: 999,
+    name: result.title.trim(), // 👈 THÊM: name để tạo ID
+  };
+
   const response = await fetch("/api/data/slides/add", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      title: result.title.trim(),
-      image: uploadResult.image_url,
-      description: result.description?.trim() || "",
-      link: result.link?.trim() || "#",
-      active: result.active !== false,
-      order: 999,
-    }),
+    body: JSON.stringify(slideData),
   });
 
   if (response.ok) {
@@ -323,12 +333,28 @@ async function deleteSlide(id) {
   );
   if (!confirmed) return;
 
-  const response = await fetch(`/api/data/slides/${id}`, { method: "DELETE" });
-  if (response.ok) {
-    await Modal.show("✅ Xóa thành công!", "success");
-    loadTabContent("slides");
-  } else {
-    await Modal.show("❌ Xóa thất bại!", "error");
+  try {
+    const response = await fetch(`/api/data/slides/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      await Modal.show("✅ Xóa thành công!", "success");
+      loadTabContent("slides");
+    } else {
+      await Modal.show(
+        "❌ Xóa thất bại: " + (result.error || "Lỗi không xác định"),
+        "error",
+      );
+    }
+  } catch (error) {
+    console.error("❌ Lỗi:", error);
+    await Modal.show("❌ Lỗi kết nối!", "error");
   }
 }
 
@@ -444,341 +470,6 @@ async function renderCategoryManager(container) {
 }
 
 // ============================================
-// 4. QUẢN LÝ KHÓA HỌC
-// ============================================
-async function renderCourseManager(container) {
-  try {
-    const [coursesData, categoriesData] = await Promise.all([
-      fetch("/api/data/courses").then((r) => r.json()),
-      fetch("/api/data/categories").then((r) => r.json()),
-    ]);
-
-    let courses = [];
-    if (Array.isArray(coursesData)) courses = coursesData;
-    else if (coursesData.items && Array.isArray(coursesData.items))
-      courses = coursesData.items;
-    else if (typeof coursesData === "object")
-      courses = Object.values(coursesData);
-
-    const categories = categoriesData.categories || [];
-    const catMap = {};
-    categories.forEach((c) => (catMap[c.id] = c.name));
-
-    container.innerHTML = `
-            <h3>📚 Quản lý Khóa học</h3>
-            <p style="color:#999;font-size:14px;">Tổng: ${courses.length} khóa học</p>
-            <!-- 👈 SỬA NÚT NÀY THÀNH LINK -->
-            <a href="/admin/courses" class="btn-add" style="display:inline-block;text-decoration:none;">
-                + Thêm khóa học
-            </a>
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px;margin-top:15px;">
-                ${
-                  courses.length === 0
-                    ? "<p>Chưa có khóa học nào</p>"
-                    : courses
-                        .map((course) => {
-                          const imgSrc =
-                            course.image ||
-                            course.image_url ||
-                            "/static/img/courses/default.jpg";
-                          const catName =
-                            catMap[course.category_id] ||
-                            catMap[course.category] ||
-                            "Chưa phân loại";
-                          return `
-                        <div style="background:white;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);border:1px solid #eee;">
-                            <div style="height:120px;overflow:hidden;background:#f0f0f0;">
-                                <img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='/static/img/courses/default.jpg'">
-                            </div>
-                            <div style="padding:12px;">
-                                <strong style="font-size:14px;">${course.name || "Không tên"}</strong>
-                                <span style="background:#f0f0f0;padding:2px 8px;border-radius:10px;font-size:11px;display:inline-block;margin:4px 0;">${catName}</span>
-                                <p style="color:#e67e22;font-weight:bold;font-size:14px;margin:4px 0;">${course.price || "Liên hệ"}</p>
-                                <div style="display:flex;gap:5px;margin-top:8px;">
-                                    <button onclick="editCourse('${course.id}')" class="btn-edit" style="flex:1;">✏️ Sửa</button>
-                                    <button onclick="deleteCourse('${course.id}')" class="btn-delete" style="flex:1;">🗑️ Xóa</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                        })
-                        .join("")
-                }
-            </div>
-        `;
-  } catch (error) {
-    container.innerHTML = `<p style="color:red;">❌ Lỗi tải dữ liệu: ${error.message}</p>`;
-  }
-}
-
-// ============================================
-// THÊM KHÓA HỌC VỚI MODAL
-// ============================================
-function showAddCourseForm() {
-  // Lấy danh mục để chọn
-  fetch("/api/data/categories")
-    .then((r) => r.json())
-    .then(async (data) => {
-      const categories = data.categories || [];
-      const options = categories.map((c) => ({ value: c.id, label: c.name }));
-
-      const result = await Modal.form(
-        [
-          {
-            name: "name",
-            label: "📝 Tên khóa học *",
-            type: "text",
-            placeholder: "VD: HSK 1",
-            required: true,
-          },
-          {
-            name: "level",
-            label: "📊 Cấp độ",
-            type: "text",
-            placeholder: "VD: Sơ cấp",
-          },
-          {
-            name: "category",
-            label: "📁 Danh mục *",
-            type: "select",
-            options: options,
-            required: true,
-          },
-          {
-            name: "price",
-            label: "💰 Học phí",
-            type: "text",
-            placeholder: "VD: 1,500,000 VNĐ",
-            value: "Liên hệ",
-          },
-          {
-            name: "duration",
-            label: "⏰ Thời lượng",
-            type: "text",
-            placeholder: "VD: 2 tháng",
-            value: "Theo lộ trình",
-          },
-          {
-            name: "schedule",
-            label: "📅 Lịch học",
-            type: "text",
-            placeholder: "VD: Tối T2-T4-T6",
-            value: "Linh hoạt",
-          },
-          {
-            name: "description",
-            label: "📄 Mô tả *",
-            type: "textarea",
-            placeholder: "Mô tả khóa học...",
-            rows: 100,
-            required: true,
-          },
-          { name: "image", label: "🖼️ Ảnh khóa học", type: "file" },
-          {
-            name: "active",
-            label: "✅ Hiển thị",
-            type: "checkbox",
-            value: true,
-          },
-        ],
-        "➕ Thêm Khóa Học Mới",
-        "Tạo khóa học",
-      );
-
-      if (!result) return;
-      if (!result.name.trim()) {
-        await Modal.show("Vui lòng nhập tên khóa học!", "warning");
-        return showAddCourseForm();
-      }
-
-      let imageUrl = "";
-      if (result.image) {
-        const formData = new FormData();
-        formData.append("file", result.image);
-        const uploadRes = await fetch("/api/upload/course-image", {
-          method: "POST",
-          body: formData,
-        });
-        const uploadResult = await uploadRes.json();
-        if (uploadResult.success) imageUrl = uploadResult.image_url;
-      }
-
-      const courseData = {
-        name: result.name.trim(),
-        level: result.level?.trim() || "",
-        category: result.category || "hsk",
-        price: result.price?.trim() || "Liên hệ",
-        duration: result.duration?.trim() || "Theo lộ trình",
-        schedule: result.schedule?.trim() || "Linh hoạt",
-        description: result.description?.trim() || "Mô tả khóa học...",
-        image_url: imageUrl,
-      };
-
-      const response = await fetch("/api/course/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(courseData),
-      });
-
-      if (response.ok) {
-        await Modal.show("✅ Thêm khóa học thành công!", "success");
-        loadTabContent("courses");
-      } else {
-        const error = await response.json();
-        await Modal.show(
-          "❌ Thêm thất bại: " + (error.error || "Lỗi không xác định"),
-          "error",
-        );
-      }
-    });
-}
-
-// ============================================
-// SỬA KHÓA HỌC VỚI MODAL
-// ============================================
-async function editCourse(id) {
-  const data = await fetch("/api/data/courses").then((r) => r.json());
-  let course = null;
-  if (Array.isArray(data)) course = data.find((c) => c.id === id);
-  else if (data.items) course = data.items.find((c) => c.id === id);
-
-  if (!course) {
-    await Modal.show("❌ Không tìm thấy khóa học!", "error");
-    return;
-  }
-
-  const modal = document.createElement("div");
-  modal.className = "modal-overlay";
-  modal.innerHTML = `
-        <div class="modal-box" style="max-width:600px;max-height:90vh;overflow-y:auto;">
-            <div class="modal-header">
-                <h3>✏️ Sửa Khóa Học</h3>
-                <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="editCourseForm">
-                    <div style="margin-bottom:12px;">
-                        <label style="font-weight:600;display:block;margin-bottom:4px;">Tên khóa học *</label>
-                        <input type="text" id="edit_courseName" class="modal-input" value="${course.name || ""}" required>
-                    </div>
-                    <div style="margin-bottom:12px;">
-                        <label style="font-weight:600;display:block;margin-bottom:4px;">Cấp độ</label>
-                        <input type="text" id="edit_courseLevel" class="modal-input" value="${course.level || ""}" placeholder="VD: Sơ cấp">
-                    </div>
-                    <div style="margin-bottom:12px;">
-                        <label style="font-weight:600;display:block;margin-bottom:4px;">Học phí</label>
-                        <input type="text" id="edit_price" class="modal-input" value="${course.price || ""}">
-                    </div>
-                    <div style="margin-bottom:12px;">
-                        <label style="font-weight:600;display:block;margin-bottom:4px;">Mô tả</label>
-                        <textarea id="edit_description" class="modal-input" style="min-height:80px;">${course.description || ""}</textarea>
-                    </div>
-                    <div style="margin-bottom:12px;">
-                        <label style="font-weight:600;display:block;margin-bottom:4px;">Đổi ảnh mới</label>
-                        <input type="file" id="edit_image" accept="image/*" class="modal-input">
-                        <small style="color:#999;">Để trống nếu giữ ảnh cũ</small>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Hủy</button>
-                <button class="btn btn-primary" id="submitEditBtn">💾 Cập nhật</button>
-            </div>
-        </div>
-    `;
-  document.body.appendChild(modal);
-
-  document
-    .getElementById("submitEditBtn")
-    .addEventListener("click", async function () {
-      const fileInput = document.getElementById("edit_image");
-      let imageUrl = course.image || course.image_url || "";
-
-      if (fileInput.files.length > 0) {
-        const formData = new FormData();
-        formData.append("file", fileInput.files[0]);
-        try {
-          const uploadRes = await fetch("/api/upload/course-image", {
-            method: "POST",
-            body: formData,
-          });
-          const uploadResult = await uploadRes.json();
-          if (uploadResult.success) {
-            if (course.image || course.image_url) {
-              await deleteOldImage(course.image || course.image_url);
-            }
-            imageUrl = uploadResult.image_url;
-          }
-        } catch (error) {
-          console.error("Upload ảnh thất bại:", error);
-        }
-      }
-
-      const courseData = {
-        name: document.getElementById("edit_courseName").value.trim(),
-        level: document.getElementById("edit_courseLevel").value.trim(),
-        price: document.getElementById("edit_price").value.trim() || "Liên hệ",
-        description:
-          document.getElementById("edit_description").value.trim() ||
-          "Mô tả khóa học...",
-        image: imageUrl,
-        image_url: imageUrl,
-        html_file: course.html_file,
-        category: course.category || "hsk",
-        duration: course.duration || "Theo lộ trình",
-        schedule: course.schedule || "Linh hoạt",
-      };
-
-      if (!courseData.name) {
-        await Modal.show("❌ Vui lòng nhập tên khóa học!", "warning");
-        return;
-      }
-
-      const response = await fetch(`/api/data/courses/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(courseData),
-      });
-
-      if (response.ok) {
-        await Modal.show("✅ Cập nhật khóa học thành công!", "success");
-        modal.remove();
-        loadTabContent("courses");
-      } else {
-        const error = await response.json();
-        await Modal.show(
-          "❌ Cập nhật thất bại: " + (error.error || "Lỗi không xác định"),
-          "error",
-        );
-      }
-    });
-}
-
-// ============================================
-// XÓA KHÓA HỌC
-// ============================================
-async function deleteCourse(id) {
-  const confirmed = await Modal.confirm(
-    "⚠️ Bạn có chắc muốn xóa khóa học này?\n\nHành động này sẽ xóa:\n- Thông tin khóa học\n- File HTML chi tiết\n- Ảnh khóa học",
-    "🗑️ Xác nhận xóa",
-  );
-  if (!confirmed) return;
-
-  const response = await fetch(`/api/data/courses/${id}`, { method: "DELETE" });
-  const result = await response.json();
-
-  if (response.ok && result.success) {
-    await Modal.show("✅ Đã xóa khóa học thành công!", "success");
-    loadTabContent("courses");
-  } else {
-    await Modal.show(
-      "❌ Xóa thất bại: " + (result.error || "Lỗi không xác định"),
-      "error",
-    );
-  }
-}
-
-// ============================================
 // HÀM HỖ TRỢ XÓA ẢNH CŨ
 // ============================================
 async function deleteOldImage(imageUrl) {
@@ -792,59 +483,6 @@ async function deleteOldImage(imageUrl) {
   } catch (error) {
     console.error("Xóa ảnh cũ thất bại:", error);
   }
-}
-
-// ============================================
-// TAB KHÁC (Documents, News) - GIỮ NGUYÊN
-// ============================================
-async function renderDocumentManager(container) {
-  const data = await fetch("/api/data/documents").then((r) => r.json());
-  const docs = data.items || [];
-  container.innerHTML = `
-        <h3>📄 Quản lý Tài liệu</h3>
-        <p style="color:#999;font-size:14px;">Tổng: ${docs.length} tài liệu</p>
-        <button onclick="addDocument()" class="btn-add">+ Thêm tài liệu</button>
-        <div id="documentList">
-            ${docs
-              .map(
-                (doc) => `
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #eee;">
-                    <div><i class="fas fa-file-pdf"></i> <strong>${doc.name}</strong></div>
-                    <div>
-                        <button onclick="editDocument('${doc.id}')" class="btn-edit">✏️</button>
-                        <button onclick="deleteDocument('${doc.id}')" class="btn-delete">🗑️</button>
-                    </div>
-                </div>
-            `,
-              )
-              .join("")}
-        </div>
-    `;
-}
-
-async function renderNewsManager(container) {
-  const data = await fetch("/api/data/news").then((r) => r.json());
-  const news = data.items || [];
-  container.innerHTML = `
-        <h3>📰 Quản lý Tin tức</h3>
-        <p style="color:#999;font-size:14px;">Tổng: ${news.length} tin tức</p>
-        <button onclick="addNews()" class="btn-add">+ Thêm tin tức</button>
-        <div id="newsList">
-            ${news
-              .map(
-                (item) => `
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #eee;">
-                    <div><strong>${item.title}</strong> <small style="color:#999;">${item.created_at || ""}</small></div>
-                    <div>
-                        <button onclick="editNews('${item.id}')" class="btn-edit">✏️</button>
-                        <button onclick="deleteNews('${item.id}')" class="btn-delete">🗑️</button>
-                    </div>
-                </div>
-            `,
-              )
-              .join("")}
-        </div>
-    `;
 }
 
 // ============================================
@@ -1076,17 +714,6 @@ async function addCategory() {
   } else {
     await Modal.show("❌ Thêm thất bại!", "error");
   }
-}
-
-// ============================================
-// HÀM CHUNG CHO TÀI LIỆU & TIN TỨC (edit)
-// ============================================
-async function editDocument(id) {
-  await Modal.show("Tính năng đang phát triển", "info");
-}
-
-async function editNews(id) {
-  await Modal.show("Tính năng đang phát triển", "info");
 }
 
 // ============================================
@@ -1428,8 +1055,32 @@ async function renderScheduleManager(container) {
 
 // ===== THÊM LỊCH KHAI GIẢNG =====
 async function showAddScheduleForm() {
+  // Lấy danh sách khóa học để chọn
+  let courseOptions = [{ value: "", label: "-- Không liên kết khóa học --" }];
+
+  try {
+    const coursesRes = await fetch("/api/schedules/courses");
+    const courses = await coursesRes.json();
+    courses.forEach((course) => {
+      courseOptions.push({
+        value: course.id,
+        label: `${course.name} (${course.category || "Chưa phân loại"})`,
+      });
+    });
+  } catch (error) {
+    console.error("Lỗi tải khóa học:", error);
+  }
+
   const result = await Modal.form(
     [
+      {
+        name: "course_id",
+        label: "📚 Liên kết khóa học (tùy chọn)",
+        type: "select",
+        options: courseOptions,
+        value: "",
+        help: "Chọn khóa học để liên kết, nếu có sẽ hiển thị nút 'Tìm hiểu thêm'",
+      },
       {
         name: "course_name",
         label: "📚 Tên khóa học *",
@@ -1520,11 +1171,27 @@ async function showAddScheduleForm() {
     return showAddScheduleForm();
   }
 
+  // Nếu chọn course_id, lấy tên khóa học từ course_id
+  let courseName = result.course_name.trim();
+  if (result.course_id) {
+    try {
+      const coursesRes = await fetch("/api/schedules/courses");
+      const courses = await coursesRes.json();
+      const selected = courses.find((c) => c.id === result.course_id);
+      if (selected) {
+        courseName = selected.name;
+      }
+    } catch (error) {
+      console.error("Lỗi lấy tên khóa học:", error);
+    }
+  }
+
   const response = await fetch("/api/data/schedules/add", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      course_name: result.course_name.trim(),
+      course_id: result.course_id || null,
+      course_name: courseName,
       category: result.category?.trim() || "HSK",
       start_date: result.start_date?.trim() || "",
       end_date: result.end_date?.trim() || "",
@@ -1560,8 +1227,32 @@ async function editSchedule(id) {
     return;
   }
 
+  // Lấy danh sách khóa học để chọn
+  let courseOptions = [{ value: "", label: "-- Không liên kết khóa học --" }];
+
+  try {
+    const coursesRes = await fetch("/api/schedules/courses");
+    const courses = await coursesRes.json();
+    courses.forEach((course) => {
+      courseOptions.push({
+        value: course.id,
+        label: `${course.name} (${course.category || "Chưa phân loại"})`,
+      });
+    });
+  } catch (error) {
+    console.error("Lỗi tải khóa học:", error);
+  }
+
   const result = await Modal.form(
     [
+      {
+        name: "course_id",
+        label: "📚 Liên kết khóa học (tùy chọn)",
+        type: "select",
+        options: courseOptions,
+        value: schedule.course_id || "",
+        help: "Chọn khóa học để liên kết, nếu có sẽ hiển thị nút 'Tìm hiểu thêm'",
+      },
       {
         name: "course_name",
         label: "📚 Tên khóa học *",
@@ -1648,11 +1339,27 @@ async function editSchedule(id) {
 
   if (!result) return;
 
+  // Nếu chọn course_id, lấy tên khóa học từ course_id
+  let courseName = result.course_name.trim();
+  if (result.course_id) {
+    try {
+      const coursesRes = await fetch("/api/schedules/courses");
+      const courses = await coursesRes.json();
+      const selected = courses.find((c) => c.id === result.course_id);
+      if (selected) {
+        courseName = selected.name;
+      }
+    } catch (error) {
+      console.error("Lỗi lấy tên khóa học:", error);
+    }
+  }
+
   const response = await fetch(`/api/data/schedules/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      course_name: result.course_name.trim(),
+      course_id: result.course_id || null,
+      course_name: courseName,
       category: result.category?.trim() || "HSK",
       start_date: result.start_date?.trim() || "",
       end_date: result.end_date?.trim() || "",
@@ -1692,6 +1399,2257 @@ async function deleteSchedule(id) {
     await Modal.show("❌ Xóa thất bại!", "error");
   }
 }
+
+// ============================================
+// QUẢN LÝ KHÓA HỌC (COURSES) - DÙNG JSON
+// ============================================
+
+async function renderCourseManager(container) {
+  try {
+    const [coursesRes, categoriesRes] = await Promise.all([
+      fetch("/api/data/courses"),
+      fetch("/api/data/categories"),
+    ]);
+
+    let coursesData = await coursesRes.json();
+    const categoriesData = await categoriesRes.json();
+
+    // 👈 SỬA: Lấy đúng dữ liệu từ JSON
+    let courses = [];
+    if (Array.isArray(coursesData)) {
+      courses = coursesData;
+    } else if (coursesData.items && Array.isArray(coursesData.items)) {
+      courses = coursesData.items;
+    }
+
+    const categories = categoriesData.categories || [];
+    const catMap = {};
+    categories.forEach((c) => (catMap[c.id] = c.name));
+
+    container.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:15px;">
+                <div>
+                    <h3 style="margin:0;">📚 Quản lý Khóa học</h3>
+                    <p style="color:#999;font-size:14px;margin:4px 0;">Tổng: ${courses.length} khóa học</p>
+                </div>
+                <a href="/admin/courses" class="btn-add" style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;text-decoration:none;"><i class="fas fa-plus-circle"></i> Thêm khóa học</a>
+                </button>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px;margin-top:15px;">
+                ${
+                  courses.length === 0
+                    ? `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#999;">
+                            <div style="font-size:48px;margin-bottom:16px;">📭</div>
+                            <h3 style="color:#555;">Chưa có khóa học</h3>
+                            <p>Nhấn "Thêm khóa học" để bắt đầu</p>
+                           </div>`
+                    : courses
+                        .map((course) => {
+                          const imgSrc =
+                            course.image ||
+                            course.image_url ||
+                            "/static/img/courses/default.jpg";
+                          const catName =
+                            catMap[course.category] ||
+                            course.category_name ||
+                            "Chưa phân loại";
+                          return `
+                            <div style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:1px solid #eee;transition:all 0.3s;"
+                                 onmouseenter="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 25px rgba(230,126,34,0.12)';this.style.borderColor='#e67e22'"
+                                 onmouseleave="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)';this.style.borderColor='#eee'">
+                                <div style="height:150px;overflow:hidden;background:#f0f0f0;">
+                                    <img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='/static/img/courses/default.jpg'">
+                                </div>
+                                <div style="padding:14px 16px;">
+                                    <strong style="font-size:15px;display:block;">${course.name || "Không tên"}</strong>
+                                    <span style="background:#f0f0f0;padding:2px 10px;border-radius:10px;font-size:11px;display:inline-block;margin:4px 0;">${catName}</span>
+                                    <span style="font-size:12px;color:#999;display:block;">${course.level || "Cơ bản"}</span>
+                                    <p style="color:#e67e22;font-weight:bold;font-size:15px;margin:4px 0;">${course.price || "Liên hệ"}</p>
+                                    <div style="display:flex;gap:5px;margin-top:8px;">
+                                        <button onclick="editCourse('${course.id}')" class="btn-edit" style="flex:1;padding:4px 12px;font-size:12px;">✏️ Sửa</button>
+                                        <button onclick="deleteCourse('${course.id}')" class="btn-delete" style="flex:1;padding:4px 12px;font-size:12px;">🗑️ Xóa</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        })
+                        .join("")
+                }
+            </div>
+        `;
+  } catch (error) {
+    container.innerHTML = `<p style="color:red;">❌ Lỗi tải dữ liệu: ${error.message}</p>`;
+  }
+}
+
+// ===== THÊM KHÓA HỌC =====
+async function showAddCourseForm() {
+  const catsRes = await fetch("/api/data/categories");
+  const catsData = await catsRes.json();
+  const categories = catsData.categories || [];
+  const options = categories.map((c) => ({ value: c.id, label: c.name }));
+  options.unshift({ value: "", label: "-- Chọn danh mục --" });
+
+  const result = await Modal.form(
+    [
+      {
+        name: "name",
+        label: "📝 Tên khóa học *",
+        type: "text",
+        placeholder: "VD: HSK 1",
+        required: true,
+      },
+      {
+        name: "level",
+        label: "📊 Cấp độ",
+        type: "text",
+        placeholder: "VD: Cơ bản",
+        value: "Cơ bản",
+      },
+      {
+        name: "category",
+        label: "📁 Danh mục *",
+        type: "select",
+        options: options,
+        required: true,
+      },
+      {
+        name: "image",
+        label: "🖼️ Ảnh khóa học (tùy chọn)",
+        type: "file",
+        accept: "image/*",
+      },
+      {
+        name: "price",
+        label: "💰 Học phí",
+        type: "text",
+        placeholder: "VD: 2,500,000 VNĐ",
+        value: "Liên hệ",
+      },
+      {
+        name: "price_original",
+        label: "💰 Giá gốc (khuyến mãi)",
+        type: "text",
+        placeholder: "VD: 3,500,000 VNĐ",
+      },
+      {
+        name: "duration",
+        label: "⏰ Thời lượng",
+        type: "text",
+        placeholder: "VD: 2 tháng",
+        value: "Theo lộ trình",
+      },
+      {
+        name: "schedule",
+        label: "📅 Lịch học",
+        type: "text",
+        placeholder: "VD: Tối T2-T4-T6",
+        value: "Linh hoạt",
+      },
+      {
+        name: "subtitle",
+        label: "📝 Phụ đề",
+        type: "text",
+        placeholder: "VD: Khóa học nền tảng cho người mới",
+      },
+      {
+        name: "description",
+        label: "📄 Mô tả ngắn *",
+        type: "textarea",
+        placeholder: "Mô tả ngắn về khóa học...",
+        rows: 60,
+        required: true,
+      },
+      {
+        name: "detailed_description",
+        label: "📖 Mô tả chi tiết",
+        type: "textarea",
+        placeholder: "Mô tả chi tiết nội dung khóa học...",
+        rows: 100,
+      },
+      {
+        name: "benefits",
+        label: "🎯 Lợi ích (mỗi dòng 1 lợi ích)",
+        type: "textarea",
+        placeholder: "Phát âm chuẩn\nTự tin giao tiếp\nĐạt chứng chỉ",
+        rows: 80,
+      },
+      {
+        name: "learning_outcomes",
+        label: "📋 Kết quả đầu ra (mỗi dòng 1 kết quả)",
+        type: "textarea",
+        placeholder: "150 từ vựng\n50 chữ Hán",
+        rows: 80,
+      },
+      {
+        name: "video_intro",
+        label: "🎬 Video giới thiệu (URL)",
+        type: "url",
+        placeholder: "https://www.youtube.com/embed/xxxxx",
+      },
+      {
+        name: "active",
+        label: "✅ Hiển thị",
+        type: "checkbox",
+        value: true,
+      },
+    ],
+    "📚 Thêm Khóa Học Mới",
+    "Thêm khóa học",
+  );
+
+  if (!result) return;
+
+  if (!result.name.trim()) {
+    await Modal.show("❌ Vui lòng nhập tên khóa học!", "warning");
+    return showAddCourseForm();
+  }
+  if (!result.category) {
+    await Modal.show("❌ Vui lòng chọn danh mục!", "warning");
+    return showAddCourseForm();
+  }
+  if (!result.description.trim()) {
+    await Modal.show("❌ Vui lòng nhập mô tả!", "warning");
+    return showAddCourseForm();
+  }
+
+  // Upload ảnh
+  let imageUrl = "";
+  if (result.image) {
+    const formData = new FormData();
+    formData.append("file", result.image);
+    const uploadRes = await fetch("/api/upload/course-image", {
+      method: "POST",
+      body: formData,
+    });
+    const uploadResult = await uploadRes.json();
+    if (uploadResult.success) {
+      imageUrl = uploadResult.image_url;
+    }
+  }
+
+  const courseData = {
+    name: result.name.trim(),
+    level: result.level?.trim() || "Cơ bản",
+    category: result.category,
+    image_url: imageUrl,
+    image: imageUrl,
+    price: result.price?.trim() || "Liên hệ",
+    price_original: result.price_original?.trim() || "",
+    duration: result.duration?.trim() || "Theo lộ trình",
+    schedule: result.schedule?.trim() || "Linh hoạt",
+    subtitle: result.subtitle?.trim() || "",
+    description: result.description.trim(),
+    detailed_description: result.detailed_description?.trim() || "",
+    benefits: result.benefits?.trim() || "",
+    learning_outcomes: result.learning_outcomes?.trim() || "",
+    video_intro: result.video_intro?.trim() || "",
+    active: result.active !== false,
+  };
+
+  try {
+    const response = await fetch("/api/data/courses/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(courseData),
+    });
+
+    const responseData = await response.json();
+
+    if (responseData.success) {
+      await Modal.show("✅ Thêm khóa học thành công!", "success");
+      loadTabContent("courses");
+    } else {
+      await Modal.show(
+        "❌ Thêm thất bại: " + (responseData.error || "Lỗi không xác định"),
+        "error",
+      );
+    }
+  } catch (error) {
+    await Modal.show("❌ Lỗi kết nối: " + error.message, "error");
+  }
+}
+
+// ===== SỬA KHÓA HỌC =====
+async function editCourse(courseId) {
+  try {
+    const coursesRes = await fetch("/api/data/courses");
+    let coursesData = await coursesRes.json();
+    let courses = Array.isArray(coursesData)
+      ? coursesData
+      : coursesData.items || [];
+    const course = courses.find((c) => c.id === courseId);
+
+    if (!course) {
+      await Modal.show("❌ Không tìm thấy khóa học!", "error");
+      return;
+    }
+
+    const catsRes = await fetch("/api/data/categories");
+    const catsData = await catsRes.json();
+    const categories = catsData.categories || [];
+    const options = categories.map((c) => ({ value: c.id, label: c.name }));
+    options.unshift({ value: "", label: "-- Chọn danh mục --" });
+
+    const result = await Modal.form(
+      [
+        {
+          name: "name",
+          label: "📝 Tên khóa học *",
+          type: "text",
+          value: course.name || "",
+          required: true,
+        },
+        {
+          name: "level",
+          label: "📊 Cấp độ",
+          type: "text",
+          value: course.level || "Cơ bản",
+        },
+        {
+          name: "category",
+          label: "📁 Danh mục *",
+          type: "select",
+          options: options,
+          value: course.category || "",
+          required: true,
+        },
+        {
+          name: "image",
+          label: "🖼️ Đổi ảnh (để trống giữ ảnh cũ)",
+          type: "file",
+          accept: "image/*",
+        },
+        {
+          name: "price",
+          label: "💰 Học phí",
+          type: "text",
+          value: course.price || "Liên hệ",
+        },
+        {
+          name: "price_original",
+          label: "💰 Giá gốc (khuyến mãi)",
+          type: "text",
+          value: course.price_original || "",
+        },
+        {
+          name: "duration",
+          label: "⏰ Thời lượng",
+          type: "text",
+          value: course.duration || "Theo lộ trình",
+        },
+        {
+          name: "schedule",
+          label: "📅 Lịch học",
+          type: "text",
+          value: course.schedule || "Linh hoạt",
+        },
+        {
+          name: "subtitle",
+          label: "📝 Phụ đề",
+          type: "text",
+          value: course.subtitle || "",
+        },
+        {
+          name: "description",
+          label: "📄 Mô tả ngắn *",
+          type: "textarea",
+          value: course.description || "",
+          rows: 60,
+          required: true,
+        },
+        {
+          name: "detailed_description",
+          label: "📖 Mô tả chi tiết",
+          type: "textarea",
+          value: course.detailed_description || "",
+          rows: 100,
+        },
+        {
+          name: "benefits",
+          label: "🎯 Lợi ích (mỗi dòng 1 lợi ích)",
+          type: "textarea",
+          value: course.benefits || "",
+          rows: 80,
+        },
+        {
+          name: "learning_outcomes",
+          label: "📋 Kết quả đầu ra (mỗi dòng 1 kết quả)",
+          type: "textarea",
+          value: course.learning_outcomes || "",
+          rows: 80,
+        },
+        {
+          name: "video_intro",
+          label: "🎬 Video giới thiệu (URL)",
+          type: "url",
+          value: course.video_intro || "",
+        },
+        {
+          name: "active",
+          label: "✅ Hiển thị",
+          type: "checkbox",
+          value: course.active !== false,
+        },
+      ],
+      "✏️ Sửa Khóa Học",
+      "Cập nhật",
+    );
+
+    if (!result) return;
+
+    let imageUrl = course.image || course.image_url || "";
+    if (result.image) {
+      const formData = new FormData();
+      formData.append("file", result.image);
+      const uploadRes = await fetch("/api/upload/course-image", {
+        method: "POST",
+        body: formData,
+      });
+      const uploadResult = await uploadRes.json();
+      if (uploadResult.success) {
+        if (course.image || course.image_url) {
+          await deleteOldImage(course.image || course.image_url);
+        }
+        imageUrl = uploadResult.image_url;
+      }
+    }
+
+    const courseData = {
+      name: result.name.trim(),
+      level: result.level?.trim() || "Cơ bản",
+      category: result.category,
+      image_url: imageUrl,
+      image: imageUrl,
+      price: result.price?.trim() || "Liên hệ",
+      price_original: result.price_original?.trim() || "",
+      duration: result.duration?.trim() || "Theo lộ trình",
+      schedule: result.schedule?.trim() || "Linh hoạt",
+      subtitle: result.subtitle?.trim() || "",
+      description: result.description.trim(),
+      detailed_description: result.detailed_description?.trim() || "",
+      benefits: result.benefits?.trim() || "",
+      learning_outcomes: result.learning_outcomes?.trim() || "",
+      video_intro: result.video_intro?.trim() || "",
+      active: result.active !== false,
+    };
+
+    const response = await fetch(`/api/data/courses/${courseId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(courseData),
+    });
+
+    const responseData = await response.json();
+
+    if (responseData.success) {
+      await Modal.show("✅ Cập nhật khóa học thành công!", "success");
+      loadTabContent("courses");
+    } else {
+      await Modal.show(
+        "❌ Cập nhật thất bại: " + (responseData.error || "Lỗi không xác định"),
+        "error",
+      );
+    }
+  } catch (error) {
+    await Modal.show("❌ Lỗi kết nối: " + error.message, "error");
+  }
+}
+
+// ===== XÓA KHÓA HỌC =====
+async function deleteCourse(courseId) {
+  const confirmed = await Modal.confirm(
+    "⚠️ Bạn có chắc muốn xóa khóa học này?\n\nHành động này không thể hoàn tác!",
+    "🗑️ Xác nhận xóa",
+  );
+  if (!confirmed) return;
+
+  try {
+    const response = await fetch(`/api/data/courses/${courseId}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      await Modal.show("✅ Đã xóa khóa học thành công!", "success");
+      loadTabContent("courses");
+    } else {
+      await Modal.show(
+        "❌ Xóa thất bại: " + (result.error || "Lỗi không xác định"),
+        "error",
+      );
+    }
+  } catch (error) {
+    await Modal.show("❌ Lỗi kết nối: " + error.message, "error");
+  }
+}
+
+// ============================================
+// QUẢN LÝ TÀI LIỆU (DOCUMENTS)
+// ============================================
+
+async function renderDocumentManager(container) {
+  try {
+    const [docsRes, catsRes] = await Promise.all([
+      fetch("/api/data/documents"),
+      fetch("/api/data/categories"),
+    ]);
+
+    const docsData = await docsRes.json();
+    const catsData = await catsRes.json();
+
+    const documents = docsData.items || [];
+    const categories = catsData.categories || [];
+
+    // Tạo map category
+    const catMap = {};
+    categories.forEach((c) => (catMap[c.id] = c.name));
+
+    container.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:15px;">
+                <div>
+                    <h3 style="margin:0;">📄 Quản lý Tài liệu</h3>
+                    <p style="color:#999;font-size:14px;margin:4px 0;">Tổng: ${documents.length} tài liệu</p>
+                </div>
+                <button onclick="showAddDocumentForm()" class="btn-add" style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;">
+                    <i class="fas fa-plus-circle"></i> Thêm tài liệu
+                </button>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:15px;margin-top:15px;">
+                ${
+                  documents.length === 0
+                    ? `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#999;">
+                            <div style="font-size:48px;margin-bottom:16px;">📭</div>
+                            <h3 style="color:#555;">Chưa có tài liệu</h3>
+                            <p>Nhấn "Thêm tài liệu" để bắt đầu</p>
+                           </div>`
+                    : documents
+                        .map((doc) => {
+                          const catName =
+                            catMap[doc.category_id] || "Chưa phân loại";
+                          const fileIcon = getFileIconForAdmin(doc.file_type);
+
+                          return `
+                            <div style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:1px solid #eee;transition:all 0.3s;" 
+                                 onmouseenter="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 25px rgba(230,126,34,0.12)';this.style.borderColor='#e67e22'"
+                                 onmouseleave="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)';this.style.borderColor='#eee'">
+                                <div style="padding:16px 18px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:12px;background:${doc.file_type === "pdf" ? "#f4433610" : "#f8f9fa"}">
+                                    <span style="font-size:28px;color:#e67e22;">${fileIcon}</span>
+                                    <div style="flex:1;min-width:0;">
+                                        <strong style="font-size:15px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${doc.title || "Không có tên"}</strong>
+                                        <span style="font-size:12px;color:#999;">${catName} • ${doc.file_type || "Không rõ"}</span>
+                                    </div>
+                                    <span style="font-size:12px;${doc.active !== false ? "color:#4CAF50;" : "color:#999;"}">${doc.active !== false ? "✅" : "⛔"}</span>
+                                </div>
+                                <div style="padding:12px 18px;display:flex;gap:8px;flex-wrap:wrap;">
+                                    <span style="font-size:12px;color:#999;display:flex;align-items:center;gap:4px;">
+                                        <i class="fas fa-eye"></i> ${doc.view_count || 0}
+                                    </span>
+                                    <span style="font-size:12px;color:#999;display:flex;align-items:center;gap:4px;">
+                                        <i class="fas fa-download"></i> ${doc.download_count || 0}
+                                    </span>
+                                    <span style="font-size:12px;color:#999;display:flex;align-items:center;gap:4px;">
+                                        <i class="fas fa-calendar-alt"></i> ${doc.created_at ? doc.created_at.split(" ")[0] : "Chưa có"}
+                                    </span>
+                                    <div style="margin-left:auto;display:flex;gap:5px;">
+                                        <button onclick="editDocument('${doc.id}')" class="btn-edit" style="padding:4px 12px;font-size:12px;">✏️ Sửa</button>
+                                        <button onclick="deleteDocument('${doc.id}')" class="btn-delete" style="padding:4px 12px;font-size:12px;">🗑️ Xóa</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        })
+                        .join("")
+                }
+            </div>
+        `;
+  } catch (error) {
+    container.innerHTML = `<p style="color:red;">❌ Lỗi tải dữ liệu: ${error.message}</p>`;
+  }
+}
+
+function getFileIconForAdmin(fileType) {
+  const map = {
+    pdf: '<i class="fas fa-file-pdf" style="color:#f44336;"></i>',
+    doc: '<i class="fas fa-file-word" style="color:#2196f3;"></i>',
+    docx: '<i class="fas fa-file-word" style="color:#2196f3;"></i>',
+    xls: '<i class="fas fa-file-excel" style="color:#4caf50;"></i>',
+    xlsx: '<i class="fas fa-file-excel" style="color:#4caf50;"></i>',
+    ppt: '<i class="fas fa-file-powerpoint" style="color:#ff9800;"></i>',
+    pptx: '<i class="fas fa-file-powerpoint" style="color:#ff9800;"></i>',
+    video: '<i class="fas fa-file-video" style="color:#9c27b0;"></i>',
+    audio: '<i class="fas fa-file-audio" style="color:#e91e63;"></i>',
+    image: '<i class="fas fa-file-image" style="color:#00bcd4;"></i>',
+    zip: '<i class="fas fa-file-archive" style="color:#9e9e9e;"></i>',
+    other: '<i class="fas fa-file" style="color:#607d8b;"></i>',
+  };
+  return map[fileType] || map["other"];
+}
+
+// ===== THÊM TÀI LIỆU =====
+async function showAddDocumentForm() {
+  // Lấy danh mục để chọn
+  const catsRes = await fetch("/api/data/categories");
+  const catsData = await catsRes.json();
+  const categories = catsData.categories || [];
+
+  const options = categories.map((c) => ({ value: c.id, label: c.name }));
+  options.unshift({ value: "", label: "-- Chọn danh mục --" });
+
+  const result = await Modal.form(
+    [
+      {
+        name: "title",
+        label: "📝 Tên tài liệu *",
+        type: "text",
+        placeholder: "VD: Từ vựng HSK 1 đầy đủ",
+        required: true,
+      },
+      {
+        name: "category_id",
+        label: "📁 Danh mục *",
+        type: "select",
+        options: options,
+        required: true,
+        value: "",
+      },
+      {
+        name: "image",
+        label: "🖼️ Ảnh đại diện (tùy chọn)",
+        type: "file",
+        accept: "image/*",
+      },
+      {
+        name: "summary",
+        label: "📄 Tóm tắt",
+        type: "textarea",
+        placeholder: "Mô tả ngắn về tài liệu...",
+        rows: 60,
+      },
+      {
+        name: "description",
+        label: "📖 Mô tả chi tiết",
+        type: "textarea",
+        placeholder:
+          "Mô tả chi tiết nội dung tài liệu...\n- Nội dung 1\n- Nội dung 2",
+        rows: 100,
+      },
+      {
+        name: "file_url",
+        label: "🔗 Link Google Drive *",
+        type: "url",
+        placeholder: "https://drive.google.com/file/d/XXXXX/view",
+        required: true,
+        help: "Hệ thống sẽ tự động tạo link preview",
+      },
+      // 👈 XÓA TRƯỜNG preview_url
+      {
+        name: "file_type",
+        label: "📂 Loại tài liệu",
+        type: "select",
+        options: [
+          { value: "pdf", label: "📄 PDF" },
+          { value: "doc", label: "📝 Word" },
+          { value: "docx", label: "📝 Word (docx)" },
+          { value: "xls", label: "📊 Excel" },
+          { value: "xlsx", label: "📊 Excel (xlsx)" },
+          { value: "ppt", label: "📽️ PowerPoint" },
+          { value: "pptx", label: "📽️ PowerPoint (pptx)" },
+          { value: "video", label: "🎬 Video" },
+          { value: "audio", label: "🎵 Audio" },
+          { value: "image", label: "🖼️ Ảnh" },
+          { value: "zip", label: "📦 Zip" },
+          { value: "other", label: "📁 Khác" },
+        ],
+        value: "pdf",
+      },
+      {
+        name: "file_size",
+        label: "💾 Dung lượng",
+        type: "text",
+        placeholder: "VD: 2.4 MB",
+        value: "Chưa rõ",
+      },
+      {
+        name: "tags",
+        label: "🏷️ Tags (cách nhau bằng dấu phẩy)",
+        type: "text",
+        placeholder: "VD: HSK1, Từ vựng, Cơ bản",
+      },
+      {
+        name: "is_new",
+        label: "✨ Đánh dấu là tài liệu mới",
+        type: "checkbox",
+        value: false,
+      },
+      {
+        name: "active",
+        label: "✅ Hiển thị",
+        type: "checkbox",
+        value: true,
+      },
+    ],
+    "📄 Thêm Tài Liệu Mới",
+    "Thêm tài liệu",
+  );
+
+  if (!result) return;
+
+  // Validate
+  if (!result.title.trim()) {
+    await Modal.show("❌ Vui lòng nhập tên tài liệu!", "warning");
+    return showAddDocumentForm();
+  }
+  if (!result.category_id) {
+    await Modal.show("❌ Vui lòng chọn danh mục!", "warning");
+    return showAddDocumentForm();
+  }
+  if (!result.file_url.trim()) {
+    await Modal.show("❌ Vui lòng nhập link Google Drive!", "warning");
+    return showAddDocumentForm();
+  }
+
+  // 👈 TỰ ĐỘNG TẠO PREVIEW URL TỪ FILE URL
+  let previewUrl = "";
+  const fileUrl = result.file_url.trim();
+  // Lấy File ID từ link Google Drive
+  const fileIdMatch = fileUrl.match(/\/d\/([^\/]+)\//);
+  if (fileIdMatch && fileIdMatch[1]) {
+    previewUrl = `https://drive.google.com/file/d/${fileIdMatch[1]}/preview`;
+  }
+
+  // Upload ảnh
+  let imageUrl = "";
+  if (result.image) {
+    const formData = new FormData();
+    formData.append("file", result.image);
+    const uploadRes = await fetch("/api/upload/document-image", {
+      method: "POST",
+      body: formData,
+    });
+    const uploadResult = await uploadRes.json();
+    if (uploadResult.success) {
+      imageUrl = uploadResult.image_url;
+    }
+  }
+
+  // Xử lý tags
+  let tags = [];
+  if (result.tags && result.tags.trim()) {
+    tags = result.tags
+      .split(",")
+      .map((t) => t.trim())
+      .filter((t) => t);
+  }
+
+  const docData = {
+    title: result.title.trim(),
+    category_id: result.category_id,
+    image: imageUrl,
+    summary: result.summary?.trim() || "",
+    description: result.description?.trim() || "",
+    file_url: fileUrl,
+    preview_url: previewUrl, // 👈 TỰ ĐỘNG TẠO
+    file_type: result.file_type || "pdf",
+    file_size: result.file_size?.trim() || "Chưa rõ",
+    tags: tags,
+    is_new: result.is_new === true,
+    active: result.active !== false,
+  };
+
+  try {
+    const response = await fetch("/api/data/documents/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(docData),
+    });
+
+    const responseData = await response.json();
+
+    if (responseData.success) {
+      await Modal.show("✅ Thêm tài liệu thành công!", "success");
+      loadTabContent("documents");
+    } else {
+      await Modal.show(
+        "❌ Thêm thất bại: " + (responseData.error || "Lỗi không xác định"),
+        "error",
+      );
+    }
+  } catch (error) {
+    await Modal.show("❌ Lỗi kết nối: " + error.message, "error");
+  }
+}
+
+// ===== SỬA TÀI LIỆU =====
+async function editDocument(docId) {
+  try {
+    const docsRes = await fetch("/api/data/documents");
+    const docsData = await docsRes.json();
+    const doc = docsData.items?.find((d) => d.id === docId);
+
+    if (!doc) {
+      await Modal.show("❌ Không tìm thấy tài liệu!", "error");
+      return;
+    }
+
+    // Lấy danh mục
+    const catsRes = await fetch("/api/data/categories");
+    const catsData = await catsRes.json();
+    const categories = catsData.categories || [];
+    const options = categories.map((c) => ({ value: c.id, label: c.name }));
+    options.unshift({ value: "", label: "-- Chọn danh mục --" });
+
+    const result = await Modal.form(
+      [
+        {
+          name: "title",
+          label: "📝 Tên tài liệu *",
+          type: "text",
+          value: doc.title || "",
+          required: true,
+        },
+        {
+          name: "category_id",
+          label: "📁 Danh mục *",
+          type: "select",
+          options: options,
+          value: doc.category_id || "",
+          required: true,
+        },
+        {
+          name: "image",
+          label: "🖼️ Đổi ảnh (để trống giữ ảnh cũ)",
+          type: "file",
+          accept: "image/*",
+        },
+        {
+          name: "summary",
+          label: "📄 Tóm tắt",
+          type: "textarea",
+          value: doc.summary || "",
+          rows: 60,
+        },
+        {
+          name: "description",
+          label: "📖 Mô tả chi tiết",
+          type: "textarea",
+          value: doc.description || "",
+          rows: 100,
+        },
+        {
+          name: "file_url",
+          label: "🔗 Link Google Drive *",
+          type: "url",
+          value: doc.file_url || "",
+          required: true,
+          help: "Hệ thống sẽ tự động tạo link preview",
+        },
+        // 👈 XÓA TRƯỜNG preview_url
+        {
+          name: "file_type",
+          label: "📂 Loại tài liệu",
+          type: "select",
+          options: [
+            { value: "pdf", label: "📄 PDF" },
+            { value: "doc", label: "📝 Word" },
+            { value: "docx", label: "📝 Word (docx)" },
+            { value: "xls", label: "📊 Excel" },
+            { value: "xlsx", label: "📊 Excel (xlsx)" },
+            { value: "ppt", label: "📽️ PowerPoint" },
+            { value: "pptx", label: "📽️ PowerPoint (pptx)" },
+            { value: "video", label: "🎬 Video" },
+            { value: "audio", label: "🎵 Audio" },
+            { value: "image", label: "🖼️ Ảnh" },
+            { value: "zip", label: "📦 Zip" },
+            { value: "other", label: "📁 Khác" },
+          ],
+          value: doc.file_type || "pdf",
+        },
+        {
+          name: "file_size",
+          label: "💾 Dung lượng",
+          type: "text",
+          value: doc.file_size || "Chưa rõ",
+        },
+        {
+          name: "tags",
+          label: "🏷️ Tags (cách nhau bằng dấu phẩy)",
+          type: "text",
+          value: (doc.tags || []).join(", "),
+        },
+        {
+          name: "is_new",
+          label: "✨ Đánh dấu là tài liệu mới",
+          type: "checkbox",
+          value: doc.is_new === true,
+        },
+        {
+          name: "active",
+          label: "✅ Hiển thị",
+          type: "checkbox",
+          value: doc.active !== false,
+        },
+      ],
+      "✏️ Sửa Tài Liệu",
+      "Cập nhật",
+    );
+
+    if (!result) return;
+
+    // 👈 TỰ ĐỘNG TẠO PREVIEW URL
+    let previewUrl = doc.preview_url || "";
+    const fileUrl = result.file_url.trim();
+    const fileIdMatch = fileUrl.match(/\/d\/([^\/]+)\//);
+    if (fileIdMatch && fileIdMatch[1]) {
+      previewUrl = `https://drive.google.com/file/d/${fileIdMatch[1]}/preview`;
+    }
+
+    // Upload ảnh nếu có
+    let imageUrl = doc.image || "";
+    if (result.image) {
+      const formData = new FormData();
+      formData.append("file", result.image);
+      const uploadRes = await fetch("/api/upload/document-image", {
+        method: "POST",
+        body: formData,
+      });
+      const uploadResult = await uploadRes.json();
+      if (uploadResult.success) {
+        imageUrl = uploadResult.image_url;
+      }
+    }
+
+    // Xử lý tags
+    let tags = [];
+    if (result.tags && result.tags.trim()) {
+      tags = result.tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t);
+    }
+
+    const docData = {
+      title: result.title.trim(),
+      category_id: result.category_id,
+      image: imageUrl,
+      summary: result.summary?.trim() || "",
+      description: result.description?.trim() || "",
+      file_url: fileUrl,
+      preview_url: previewUrl,
+      file_type: result.file_type || "pdf",
+      file_size: result.file_size?.trim() || "Chưa rõ",
+      tags: tags,
+      is_new: result.is_new === true,
+      active: result.active !== false,
+    };
+
+    const response = await fetch(`/api/data/documents/${docId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(docData),
+    });
+
+    const responseData = await response.json();
+
+    if (responseData.success) {
+      await Modal.show("✅ Cập nhật tài liệu thành công!", "success");
+      loadTabContent("documents");
+    } else {
+      await Modal.show(
+        "❌ Cập nhật thất bại: " + (responseData.error || "Lỗi không xác định"),
+        "error",
+      );
+    }
+  } catch (error) {
+    await Modal.show("❌ Lỗi kết nối: " + error.message, "error");
+  }
+}
+
+// ===== XÓA TÀI LIỆU =====
+async function deleteDocument(docId) {
+  const confirmed = await Modal.confirm(
+    "⚠️ Bạn có chắc muốn xóa tài liệu này?\n\nHành động này không thể hoàn tác!",
+    "🗑️ Xác nhận xóa",
+  );
+  if (!confirmed) return;
+
+  try {
+    const response = await fetch(`/api/data/documents/${docId}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      await Modal.show("✅ Đã xóa tài liệu thành công!", "success");
+      loadTabContent("documents");
+    } else {
+      await Modal.show(
+        "❌ Xóa thất bại: " + (result.error || "Lỗi không xác định"),
+        "error",
+      );
+    }
+  } catch (error) {
+    await Modal.show("❌ Lỗi kết nối: " + error.message, "error");
+  }
+}
+
+// ============================================
+// QUẢN LÝ TIN TỨC (NEWS) - GIỐNG TÀI LIỆU
+// ============================================
+
+async function renderNewsManager(container) {
+  try {
+    const response = await fetch("/api/data/news");
+    const data = await response.json();
+    const news = data.items || [];
+
+    container.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:15px;">
+                <div>
+                    <h3 style="margin:0;">📰 Quản lý Tin tức</h3>
+                    <p style="color:#999;font-size:14px;margin:4px 0;">Tổng: ${news.length} tin tức</p>
+                </div>
+                <button onclick="showAddNewsForm()" class="btn-add" style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;">
+                    <i class="fas fa-plus-circle"></i> Thêm tin tức
+                </button>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:15px;margin-top:15px;">
+                ${
+                  news.length === 0
+                    ? `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#999;">
+                            <div style="font-size:48px;margin-bottom:16px;">📭</div>
+                            <h3 style="color:#555;">Chưa có tin tức</h3>
+                            <p>Nhấn "Thêm tin tức" để bắt đầu</p>
+                           </div>`
+                    : news
+                        .map(
+                          (item) => `
+                            <div style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:1px solid #eee;transition:all 0.3s;"
+                                 onmouseenter="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 25px rgba(230,126,34,0.12)';this.style.borderColor='#e67e22'"
+                                 onmouseleave="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)';this.style.borderColor='#eee'">
+                                <div style="height:140px;overflow:hidden;background:#f0f0f0;">
+                                    <img src="${item.image || "/static/img/news/default.jpg"}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='/static/img/news/default.jpg'">
+                                    ${item.is_new ? `<span style="position:absolute;top:10px;right:10px;background:#4caf50;color:white;padding:2px 12px;border-radius:20px;font-size:11px;font-weight:600;"><i class="fas fa-star"></i> Mới</span>` : ""}
+                                </div>
+                                <div style="padding:14px 16px;">
+                                    <strong style="font-size:14px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.title || "Không có tiêu đề"}</strong>
+                                    <div style="font-size:12px;color:#999;margin:4px 0;">
+                                        <i class="fas fa-calendar-alt"></i> ${item.created_at ? item.created_at.split(" ")[0] : "Chưa có"}
+                                        <span style="margin-left:12px;"><i class="fas fa-eye"></i> ${item.view_count || 0}</span>
+                                    </div>
+                                    <div style="display:flex;gap:5px;margin-top:8px;">
+                                        <button onclick="editNews('${item.id}')" class="btn-edit" style="flex:1;padding:4px 12px;font-size:12px;">✏️ Sửa</button>
+                                        <button onclick="deleteNews('${item.id}')" class="btn-delete" style="flex:1;padding:4px 12px;font-size:12px;">🗑️ Xóa</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `,
+                        )
+                        .join("")
+                }
+            </div>
+        `;
+  } catch (error) {
+    container.innerHTML = `<p style="color:red;">❌ Lỗi tải dữ liệu: ${error.message}</p>`;
+  }
+}
+
+// ===== THÊM TIN TỨC =====
+async function showAddNewsForm() {
+  const result = await Modal.form(
+    [
+      {
+        name: "title",
+        label: "📝 Tiêu đề tin tức *",
+        type: "text",
+        placeholder: "VD: Khai giảng khóa học HSK mới",
+        required: true,
+      },
+      {
+        name: "category",
+        label: "📁 Danh mục",
+        type: "text",
+        placeholder: "VD: Sự kiện, Thông báo, Khóa học",
+        value: "Tin tức",
+      },
+      {
+        name: "summary",
+        label: "📄 Tóm tắt",
+        type: "textarea",
+        placeholder: "Mô tả ngắn về tin tức...",
+        rows: 60,
+      },
+      {
+        name: "content",
+        label: "📖 Nội dung chi tiết *",
+        type: "textarea",
+        placeholder: "Nội dung tin tức...\n\n<p>Viết HTML hoặc văn bản...</p>",
+        rows: 150,
+        required: true,
+      },
+      {
+        name: "image",
+        label: "🖼️ Ảnh đại diện (tùy chọn)",
+        type: "file",
+        accept: "image/*",
+      },
+      {
+        name: "author",
+        label: "👤 Tác giả",
+        type: "text",
+        placeholder: "VD: Admin",
+        value: "Admin",
+      },
+      {
+        name: "is_new",
+        label: "✨ Đánh dấu là tin mới",
+        type: "checkbox",
+        value: true,
+      },
+      {
+        name: "active",
+        label: "✅ Hiển thị",
+        type: "checkbox",
+        value: true,
+      },
+    ],
+    "📰 Thêm Tin Tức Mới",
+    "Thêm tin tức",
+  );
+
+  if (!result) return;
+
+  if (!result.title.trim()) {
+    await Modal.show("❌ Vui lòng nhập tiêu đề!", "warning");
+    return showAddNewsForm();
+  }
+  if (!result.content.trim()) {
+    await Modal.show("❌ Vui lòng nhập nội dung!", "warning");
+    return showAddNewsForm();
+  }
+
+  // Upload ảnh
+  let imageUrl = "";
+  if (result.image) {
+    const formData = new FormData();
+    formData.append("file", result.image);
+    const uploadRes = await fetch("/api/upload/news-image", {
+      method: "POST",
+      body: formData,
+    });
+    const uploadResult = await uploadRes.json();
+    if (uploadResult.success) {
+      imageUrl = uploadResult.image_url;
+    }
+  }
+
+  const newsData = {
+    title: result.title.trim(),
+    category: result.category?.trim() || "Tin tức",
+    summary: result.summary?.trim() || "",
+    content: result.content.trim(),
+    image: imageUrl,
+    author: result.author?.trim() || "Admin",
+    is_new: result.is_new === true,
+    active: result.active !== false,
+  };
+
+  try {
+    const response = await fetch("/api/data/news/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newsData),
+    });
+
+    const responseData = await response.json();
+
+    if (responseData.success) {
+      await Modal.show("✅ Thêm tin tức thành công!", "success");
+      loadTabContent("news");
+    } else {
+      await Modal.show(
+        "❌ Thêm thất bại: " + (responseData.error || "Lỗi không xác định"),
+        "error",
+      );
+    }
+  } catch (error) {
+    await Modal.show("❌ Lỗi kết nối: " + error.message, "error");
+  }
+}
+
+// ===== SỬA TIN TỨC =====
+async function editNews(newsId) {
+  try {
+    const response = await fetch("/api/data/news");
+    const data = await response.json();
+    const item = data.items?.find((n) => n.id === newsId);
+
+    if (!item) {
+      await Modal.show("❌ Không tìm thấy tin tức!", "error");
+      return;
+    }
+
+    const result = await Modal.form(
+      [
+        {
+          name: "title",
+          label: "📝 Tiêu đề tin tức *",
+          type: "text",
+          value: item.title || "",
+          required: true,
+        },
+        {
+          name: "category",
+          label: "📁 Danh mục",
+          type: "text",
+          value: item.category || "Tin tức",
+        },
+        {
+          name: "summary",
+          label: "📄 Tóm tắt",
+          type: "textarea",
+          value: item.summary || "",
+          rows: 60,
+        },
+        {
+          name: "content",
+          label: "📖 Nội dung chi tiết *",
+          type: "textarea",
+          value: item.content || "",
+          rows: 150,
+          required: true,
+        },
+        {
+          name: "image",
+          label: "🖼️ Đổi ảnh (để trống giữ ảnh cũ)",
+          type: "file",
+          accept: "image/*",
+        },
+        {
+          name: "author",
+          label: "👤 Tác giả",
+          type: "text",
+          value: item.author || "Admin",
+        },
+        {
+          name: "is_new",
+          label: "✨ Đánh dấu là tin mới",
+          type: "checkbox",
+          value: item.is_new === true,
+        },
+        {
+          name: "active",
+          label: "✅ Hiển thị",
+          type: "checkbox",
+          value: item.active !== false,
+        },
+      ],
+      "✏️ Sửa Tin Tức",
+      "Cập nhật",
+    );
+
+    if (!result) return;
+
+    // Upload ảnh nếu có
+    let imageUrl = item.image || "";
+    if (result.image) {
+      const formData = new FormData();
+      formData.append("file", result.image);
+      const uploadRes = await fetch("/api/upload/news-image", {
+        method: "POST",
+        body: formData,
+      });
+      const uploadResult = await uploadRes.json();
+      if (uploadResult.success) {
+        imageUrl = uploadResult.image_url;
+      }
+    }
+
+    const newsData = {
+      title: result.title.trim(),
+      category: result.category?.trim() || "Tin tức",
+      summary: result.summary?.trim() || "",
+      content: result.content.trim(),
+      image: imageUrl,
+      author: result.author?.trim() || "Admin",
+      is_new: result.is_new === true,
+      active: result.active !== false,
+    };
+
+    const updateRes = await fetch(`/api/data/news/${newsId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newsData),
+    });
+
+    const updateData = await updateRes.json();
+
+    if (updateData.success) {
+      await Modal.show("✅ Cập nhật tin tức thành công!", "success");
+      loadTabContent("news");
+    } else {
+      await Modal.show(
+        "❌ Cập nhật thất bại: " + (updateData.error || "Lỗi không xác định"),
+        "error",
+      );
+    }
+  } catch (error) {
+    await Modal.show("❌ Lỗi kết nối: " + error.message, "error");
+  }
+}
+
+// ===== XÓA TIN TỨC =====
+async function deleteNews(newsId) {
+  const confirmed = await Modal.confirm(
+    "⚠️ Bạn có chắc muốn xóa tin tức này?\n\nHành động này không thể hoàn tác!",
+    "🗑️ Xác nhận xóa",
+  );
+  if (!confirmed) return;
+
+  try {
+    const response = await fetch(`/api/data/news/${newsId}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      await Modal.show("✅ Đã xóa tin tức thành công!", "success");
+      loadTabContent("news");
+    } else {
+      await Modal.show(
+        "❌ Xóa thất bại: " + (result.error || "Lỗi không xác định"),
+        "error",
+      );
+    }
+  } catch (error) {
+    await Modal.show("❌ Lỗi kết nối: " + error.message, "error");
+  }
+}
+
+// ============================================
+// QUẢN LÝ GIÁO VIÊN (TEACHERS)
+// ============================================
+
+async function renderTeacherManager(container) {
+  try {
+    const response = await fetch("/api/data/teachers");
+    const data = await response.json();
+
+    // Xử lý cả 2 trường hợp: array hoặc { items: [] }
+    let teachers = [];
+    if (Array.isArray(data)) {
+      teachers = data;
+    } else if (data.items && Array.isArray(data.items)) {
+      teachers = data.items;
+    }
+
+    // 👉 TẠO NÚT THÊM (HIỂN THỊ MỌI LÚC)
+    const buttonHtml = `
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:15px;">
+        <div>
+          <h3 style="margin:0;">👨‍🏫 Quản lý Giảng viên</h3>
+          <p style="color:#999;font-size:14px;margin:4px 0;">Tổng: ${teachers.length} giảng viên</p>
+        </div>
+        <button onclick="showAddTeacherForm()" class="btn-add" style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;">
+          <i class="fas fa-plus-circle"></i> Thêm giảng viên
+        </button>
+      </div>
+    `;
+
+    // Nếu chưa có giảng viên
+    if (teachers.length === 0) {
+      container.innerHTML =
+        buttonHtml +
+        `
+        <div style="text-align:center;padding:60px 20px;color:#999;background:white;border-radius:16px;border:1px solid #eee;">
+          <div style="font-size:48px;margin-bottom:16px;">👨‍🏫</div>
+          <h3 style="color:#555;">Chưa có giảng viên</h3>
+          <p>Nhấn "Thêm giảng viên" để bắt đầu</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Có giảng viên -> hiển thị danh sách
+    container.innerHTML =
+      buttonHtml +
+      `
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-top:15px;">
+        ${teachers
+          .map(
+            (teacher) => `
+          <div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);border:1px solid #eee;transition:all 0.3s;">
+            <div style="height:200px;overflow:hidden;background:#f0f0f0;">
+              <img src="${teacher.image || "/static/img/teachers/default.jpg"}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='/static/img/teachers/default.jpg'">
+            </div>
+            <div style="padding:16px;">
+              <strong style="font-size:16px;display:block;">${teacher.name || "Chưa có tên"}</strong>
+              <span style="font-size:13px;color:#e67e22;">${teacher.title || "Giảng viên"}</span>
+              <div style="display:flex;gap:5px;margin-top:10px;">
+                <button onclick="editTeacher('${teacher.id}')" class="btn-edit" style="flex:1;padding:4px 12px;font-size:12px;">✏️ Sửa</button>
+                <button onclick="deleteTeacher('${teacher.id}')" class="btn-delete" style="flex:1;padding:4px 12px;font-size:12px;">🗑️ Xóa</button>
+              </div>
+            </div>
+          </div>
+        `,
+          )
+          .join("")}
+      </div>
+    `;
+  } catch (error) {
+    container.innerHTML = `<p style="color:red;">❌ Lỗi tải dữ liệu: ${error.message}</p>`;
+  }
+}
+
+// ===== THÊM GIÁO VIÊN =====
+async function showAddTeacherForm() {
+  const result = await Modal.form(
+    [
+      {
+        name: "name",
+        label: "👤 Tên giảng viên *",
+        type: "text",
+        placeholder: "VD: Nguyễn Thị Lan",
+        required: true,
+      },
+      {
+        name: "title",
+        label: "📌 Chức danh",
+        type: "text",
+        placeholder: "VD: Giảng viên chính",
+        value: "Giảng viên tiếng Trung",
+      },
+      {
+        name: "image",
+        label: "🖼️ Ảnh đại diện",
+        type: "file",
+        accept: "image/*",
+      },
+      {
+        name: "bio",
+        label: "📝 Giới thiệu",
+        type: "textarea",
+        placeholder: "Giới thiệu về giảng viên...",
+        rows: 80,
+      },
+      {
+        name: "experience",
+        label: "💼 Kinh nghiệm",
+        type: "text",
+        placeholder: "VD: 5 năm giảng dạy",
+        value: "Nhiều năm kinh nghiệm",
+      },
+      {
+        name: "qualification",
+        label: "🎓 Trình độ",
+        type: "text",
+        placeholder: "VD: Thạc sĩ Ngôn ngữ Trung",
+        value: "Thạc sĩ Ngôn ngữ Trung",
+      },
+      {
+        name: "specialties",
+        label: "🏷️ Chuyên môn (cách nhau bằng dấu phẩy)",
+        type: "text",
+        placeholder: "VD: HSK, Giao tiếp, Phát âm",
+      },
+      {
+        name: "is_active",
+        label: "✅ Đang giảng dạy",
+        type: "checkbox",
+        value: true,
+      },
+    ],
+    "👨‍🏫 Thêm Giảng Viên Mới",
+    "Thêm giảng viên",
+  );
+
+  if (!result) return;
+  if (!result.name.trim()) {
+    await Modal.show("❌ Vui lòng nhập tên giảng viên!", "warning");
+    return showAddTeacherForm();
+  }
+
+  let imageUrl = "";
+  if (result.image) {
+    const formData = new FormData();
+    formData.append("file", result.image);
+    const uploadRes = await fetch("/api/upload/teacher-image", {
+      method: "POST",
+      body: formData,
+    });
+    const uploadResult = await uploadRes.json();
+    if (uploadResult.success) imageUrl = uploadResult.image_url;
+  }
+
+  const teacherData = {
+    name: result.name.trim(),
+    title: result.title?.trim() || "Giảng viên tiếng Trung",
+    image: imageUrl,
+    bio: result.bio?.trim() || "",
+    experience: result.experience?.trim() || "Nhiều năm kinh nghiệm",
+    qualification: result.qualification?.trim() || "Thạc sĩ Ngôn ngữ Trung",
+    specialties: result.specialties?.trim() || "",
+    is_active: result.is_active !== false,
+  };
+
+  try {
+    const response = await fetch("/api/data/teachers/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(teacherData),
+    });
+    const responseData = await response.json();
+    if (responseData.success) {
+      await Modal.show("✅ Thêm giảng viên thành công!", "success");
+      loadTabContent("teachers");
+    } else {
+      await Modal.show(
+        "❌ Thêm thất bại: " + (responseData.error || "Lỗi không xác định"),
+        "error",
+      );
+    }
+  } catch (error) {
+    await Modal.show("❌ Lỗi kết nối: " + error.message, "error");
+  }
+}
+
+// ===== SỬA GIÁO VIÊN =====
+async function editTeacher(teacherId) {
+  try {
+    const response = await fetch("/api/data/teachers");
+    const data = await response.json();
+    const teachers = data.items || [];
+    const teacher = teachers.find((t) => t.id === teacherId);
+
+    if (!teacher) {
+      await Modal.show("❌ Không tìm thấy giảng viên!", "error");
+      return;
+    }
+
+    const result = await Modal.form(
+      [
+        {
+          name: "name",
+          label: "👤 Tên giảng viên *",
+          type: "text",
+          value: teacher.name || "",
+          required: true,
+        },
+        {
+          name: "title",
+          label: "📌 Chức danh",
+          type: "text",
+          value: teacher.title || "Giảng viên tiếng Trung",
+        },
+        {
+          name: "image",
+          label: "🖼️ Đổi ảnh (để trống giữ ảnh cũ)",
+          type: "file",
+          accept: "image/*",
+        },
+        {
+          name: "bio",
+          label: "📝 Giới thiệu",
+          type: "textarea",
+          value: teacher.bio || "",
+          rows: 80,
+        },
+        {
+          name: "experience",
+          label: "💼 Kinh nghiệm",
+          type: "text",
+          value: teacher.experience || "Nhiều năm kinh nghiệm",
+        },
+        {
+          name: "qualification",
+          label: "🎓 Trình độ",
+          type: "text",
+          value: teacher.qualification || "Thạc sĩ Ngôn ngữ Trung",
+        },
+        {
+          name: "specialties",
+          label: "🏷️ Chuyên môn (cách nhau bằng dấu phẩy)",
+          type: "text",
+          value: teacher.specialties || "",
+        },
+        {
+          name: "is_active",
+          label: "✅ Đang giảng dạy",
+          type: "checkbox",
+          value: teacher.is_active !== false,
+        },
+      ],
+      "✏️ Sửa Giảng Viên",
+      "Cập nhật",
+    );
+
+    if (!result) return;
+
+    let imageUrl = teacher.image || "";
+    if (result.image) {
+      const formData = new FormData();
+      formData.append("file", result.image);
+      const uploadRes = await fetch("/api/upload/teacher-image", {
+        method: "POST",
+        body: formData,
+      });
+      const uploadResult = await uploadRes.json();
+      if (uploadResult.success) imageUrl = uploadResult.image_url;
+    }
+
+    const teacherData = {
+      name: result.name.trim(),
+      title: result.title?.trim() || "Giảng viên tiếng Trung",
+      image: imageUrl,
+      bio: result.bio?.trim() || "",
+      experience: result.experience?.trim() || "Nhiều năm kinh nghiệm",
+      qualification: result.qualification?.trim() || "Thạc sĩ Ngôn ngữ Trung",
+      specialties: result.specialties?.trim() || "",
+      is_active: result.is_active !== false,
+    };
+
+    const updateRes = await fetch(`/api/data/teachers/${teacherId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(teacherData),
+    });
+    const updateData = await updateRes.json();
+    if (updateData.success) {
+      await Modal.show("✅ Cập nhật giảng viên thành công!", "success");
+      loadTabContent("teachers");
+    } else {
+      await Modal.show(
+        "❌ Cập nhật thất bại: " + (updateData.error || "Lỗi không xác định"),
+        "error",
+      );
+    }
+  } catch (error) {
+    await Modal.show("❌ Lỗi kết nối: " + error.message, "error");
+  }
+}
+
+// ===== XÓA GIÁO VIÊN =====
+async function deleteTeacher(teacherId) {
+  const confirmed = await Modal.confirm(
+    "⚠️ Bạn có chắc muốn xóa giảng viên này?",
+    "🗑️ Xác nhận xóa",
+  );
+  if (!confirmed) return;
+
+  try {
+    const response = await fetch(`/api/data/teachers/${teacherId}`, {
+      method: "DELETE",
+    });
+    const result = await response.json();
+    if (response.ok && result.success) {
+      await Modal.show("✅ Đã xóa giảng viên thành công!", "success");
+      loadTabContent("teachers");
+    } else {
+      await Modal.show(
+        "❌ Xóa thất bại: " + (result.error || "Lỗi không xác định"),
+        "error",
+      );
+    }
+  } catch (error) {
+    await Modal.show("❌ Lỗi kết nối: " + error.message, "error");
+  }
+}
+
+// Đảm bảo các hàm có thể truy cập từ console
+window.renderTeacherManager = renderTeacherManager;
+window.showAddTeacherForm = showAddTeacherForm;
+window.editTeacher = editTeacher;
+window.deleteTeacher = deleteTeacher;
+
+// ============================================
+// QUẢN LÝ "XEM TẤT CẢ" - TỔNG QUAN DỮ LIỆU
+// ============================================
+
+async function renderAllDataManager(container) {
+  try {
+    // Load tất cả dữ liệu song song
+    const [
+      slidesRes,
+      teachersRes,
+      categoriesRes,
+      coursesRes,
+      documentsRes,
+      newsRes,
+      reviewsRes,
+      schedulesRes,
+    ] = await Promise.all([
+      fetch("/api/data/slides"),
+      fetch("/api/data/teachers"),
+      fetch("/api/data/categories"),
+      fetch("/api/data/courses"),
+      fetch("/api/data/documents"),
+      fetch("/api/data/news"),
+      fetch("/api/data/reviews"),
+      fetch("/api/data/schedules"),
+    ]);
+
+    const slides = await slidesRes.json();
+    const teachers = await teachersRes.json();
+    const categories = await categoriesRes.json();
+    const courses = await coursesRes.json();
+    const documents = await documentsRes.json();
+    const news = await newsRes.json();
+    const reviews = await reviewsRes.json();
+    const schedules = await schedulesRes.json();
+
+    // 👇 SỬA: XỬ LÝ DỮ LIỆU TEACHERS ĐÚNG CÁCH
+    let teachersItems = [];
+    if (Array.isArray(teachers)) {
+      teachersItems = teachers;
+    } else if (teachers.items && Array.isArray(teachers.items)) {
+      teachersItems = teachers.items;
+    } else {
+      // 👇 THÊM FALLBACK: Nếu không có dữ liệu, thử lấy từ JSON
+      try {
+        const fallbackRes = await fetch("/api/data/teachers");
+        const fallbackData = await fallbackRes.json();
+        if (Array.isArray(fallbackData)) {
+          teachersItems = fallbackData;
+        } else if (fallbackData.items && Array.isArray(fallbackData.items)) {
+          teachersItems = fallbackData.items;
+        }
+      } catch (e) {
+        console.warn("Không thể lấy dữ liệu giảng viên fallback:", e);
+      }
+    }
+
+    console.log("📊 Dữ liệu giảng viên:", teachersItems);
+    console.log("📊 Số lượng giảng viên:", teachersItems.length);
+
+    // Xử lý các dữ liệu khác
+    const slidesItems = slides.items || [];
+    const categoriesItems = categories.categories || [];
+    const coursesItems = Array.isArray(courses) ? courses : courses.items || [];
+    const documentsItems = documents.items || [];
+    const newsItems = news.items || [];
+    const reviewsItems = reviews.items || [];
+    const schedulesItems = schedules.items || [];
+
+    // Thống kê
+    const stats = [
+      {
+        id: "slides",
+        icon: "fa-images",
+        label: "Slider",
+        count: slidesItems.length,
+        color: "#e67e22",
+      },
+      {
+        id: "teachers",
+        icon: "fa-chalkboard-teacher",
+        label: "Giảng viên",
+        count: teachersItems.length,
+        color: "#3498db",
+      },
+      {
+        id: "categories",
+        icon: "fa-tags",
+        label: "Danh mục",
+        count: categoriesItems.length,
+        color: "#9b59b6",
+      },
+      {
+        id: "courses",
+        icon: "fa-book",
+        label: "Khóa học",
+        count: coursesItems.length,
+        color: "#27ae60",
+      },
+      {
+        id: "documents",
+        icon: "fa-file-alt",
+        label: "Tài liệu",
+        count: documentsItems.length,
+        color: "#e67e22",
+      },
+      {
+        id: "news",
+        icon: "fa-newspaper",
+        label: "Tin tức",
+        count: newsItems.length,
+        color: "#2980b9",
+      },
+      {
+        id: "reviews",
+        icon: "fa-star",
+        label: "Đánh giá",
+        count: reviewsItems.length,
+        color: "#f1c40f",
+      },
+      {
+        id: "schedules",
+        icon: "fa-calendar-check",
+        label: "Lịch khai giảng",
+        count: schedulesItems.length,
+        color: "#16a085",
+      },
+    ];
+
+    // Tổng số
+    const totalItems = stats.reduce((sum, s) => sum + s.count, 0);
+
+    // Render HTML...
+    container.innerHTML = `
+      <style>
+        .all-dashboard { padding: 0 4px; }
+        .all-dashboard .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+          gap: 14px;
+          margin-bottom: 30px;
+        }
+        .all-dashboard .stat-card {
+          background: white;
+          border-radius: 12px;
+          padding: 16px 18px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+          border: 1px solid #f0f0f0;
+          transition: all 0.3s ease;
+          cursor: pointer;
+          position: relative;
+          overflow: hidden;
+        }
+        .all-dashboard .stat-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+          border-color: #e67e22;
+        }
+        .all-dashboard .stat-card .stat-icon {
+          font-size: 24px;
+          margin-bottom: 6px;
+        }
+        .all-dashboard .stat-card .stat-count {
+          font-size: 28px;
+          font-weight: 800;
+          color: #2c3e50;
+        }
+        .all-dashboard .stat-card .stat-label {
+          font-size: 13px;
+          color: #999;
+          font-weight: 500;
+        }
+        .all-dashboard .stat-card .stat-bar {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          height: 3px;
+          border-radius: 0 2px 0 0;
+          transition: width 1s ease;
+        }
+        .all-dashboard .section-title {
+          font-size: 17px;
+          font-weight: 700;
+          color: #2c3e50;
+          margin: 24px 0 10px 0;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .all-dashboard .section-title .badge-count {
+          font-size: 12px;
+          background: #e67e22;
+          color: white;
+          padding: 2px 12px;
+          border-radius: 20px;
+          font-weight: 600;
+        }
+        .all-dashboard .item-list {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+          gap: 10px;
+        }
+        .all-dashboard .item-card {
+          background: white;
+          border-radius: 10px;
+          padding: 12px 14px;
+          border: 1px solid #f0f0f0;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          transition: all 0.3s ease;
+          text-decoration: none;
+          color: inherit;
+        }
+        .all-dashboard .item-card:hover {
+          border-color: #e67e22;
+          box-shadow: 0 4px 15px rgba(230,126,34,0.1);
+          transform: translateX(4px);
+        }
+        .all-dashboard .item-card .item-avatar {
+          width: 36px;
+          height: 36px;
+          border-radius: 8px;
+          overflow: hidden;
+          flex-shrink: 0;
+          background: #f0f0f0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+        }
+        .all-dashboard .item-card .item-avatar img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .all-dashboard .item-card .item-info {
+          flex: 1;
+          min-width: 0;
+        }
+        .all-dashboard .item-card .item-info .item-name {
+          font-weight: 600;
+          font-size: 14px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .all-dashboard .item-card .item-info .item-meta {
+          font-size: 12px;
+          color: #999;
+        }
+        .all-dashboard .item-card .item-status {
+          font-size: 12px;
+          flex-shrink: 0;
+        }
+        .all-dashboard .view-all-link {
+          text-align: center;
+          margin-top: 10px;
+          padding: 8px;
+          background: #f8f9fa;
+          border-radius: 8px;
+          color: #e67e22;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          border: 1px dashed #e0e0e0;
+          font-size: 13px;
+        }
+        .all-dashboard .view-all-link:hover {
+          background: #e67e22;
+          color: white;
+          border-color: #e67e22;
+        }
+        .all-dashboard .empty-state {
+          text-align: center;
+          padding: 24px 20px;
+          color: #999;
+          background: #fafafa;
+          border-radius: 10px;
+          border: 1px dashed #e0e0e0;
+        }
+        .all-dashboard .empty-state .empty-icon {
+          font-size: 28px;
+          margin-bottom: 4px;
+          opacity: 0.5;
+        }
+        .all-dashboard .empty-state p {
+          margin: 0;
+          font-size: 14px;
+        }
+        @media (max-width: 768px) {
+          .all-dashboard .stats-grid {
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+          }
+          .all-dashboard .stat-card .stat-count {
+            font-size: 22px;
+          }
+          .all-dashboard .item-list {
+            grid-template-columns: 1fr;
+          }
+        }
+      </style>
+
+      <div class="all-dashboard">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:20px;">
+          <div>
+            <h2 style="margin:0;font-size:22px;">📊 Tổng Quan Dữ Liệu</h2>
+            <p style="color:#999;font-size:14px;margin:4px 0;">
+              Tổng cộng <strong style="color:#e67e22;">${totalItems}</strong> mục dữ liệu trên toàn hệ thống
+            </p>
+          </div>
+          <button onclick="refreshAllData()" class="btn-add" style="display:inline-flex;align-items:center;gap:8px;padding:8px 18px;font-size:13px;">
+            <i class="fas fa-sync-alt"></i> Làm mới
+          </button>
+        </div>
+
+        <!-- Thống kê -->
+        <div class="stats-grid">
+          ${stats
+            .map(
+              (stat) => `
+            <div class="stat-card" onclick="switchToTab('${stat.id}')" title="Xem chi tiết ${stat.label}">
+              <div class="stat-icon" style="color:${stat.color}"><i class="fas ${stat.icon}"></i></div>
+              <div class="stat-count">${stat.count}</div>
+              <div class="stat-label">${stat.label}</div>
+              <div class="stat-bar" style="width:${stat.count > 0 ? Math.min((stat.count / Math.max(totalItems, 1)) * 100, 100) : 0}%;background:${stat.color};"></div>
+            </div>
+          `,
+            )
+            .join("")}
+        </div>
+
+        <!-- Chi tiết từng loại -->
+        ${renderAllSection("🖼️ Slider", "slides", slidesItems)}
+        ${renderAllSection("👨‍🏫 Giảng viên", "teachers", teachersItems)}
+        ${renderAllSection("🏷️ Danh mục", "categories", categoriesItems)}
+        ${renderAllSection("📚 Khóa học", "courses", coursesItems)}
+        ${renderAllSection("📄 Tài liệu", "documents", documentsItems)}
+        ${renderAllSection("📰 Tin tức", "news", newsItems)}
+        ${renderAllSection("⭐ Đánh giá", "reviews", reviewsItems)}
+        ${renderAllSection("📅 Lịch khai giảng", "schedules", schedulesItems)}
+      </div>
+    `;
+
+    // Animation cho thanh bar
+    setTimeout(() => {
+      document.querySelectorAll(".stat-bar").forEach((bar) => {
+        const width = bar.style.width;
+        bar.style.width = "0%";
+        setTimeout(() => {
+          bar.style.width = width;
+        }, 100);
+      });
+    }, 100);
+  } catch (error) {
+    console.error("Lỗi tải dữ liệu:", error);
+    container.innerHTML = `
+      <div style="text-align:center;padding:60px 20px;color:#e74c3c;">
+        <div style="font-size:48px;margin-bottom:16px;">❌</div>
+        <h3>Lỗi tải dữ liệu</h3>
+        <p>${error.message}</p>
+        <button onclick="loadTabContent('all')" class="btn-add" style="margin-top:16px;">🔄 Thử lại</button>
+      </div>
+    `;
+  }
+}
+
+// ===== HÀM RENDER SECTION =====
+function renderAllSection(title, type, items) {
+  if (!items || items.length === 0) {
+    return `
+      <div class="section-title" id="section-${type}">
+        ${title}
+        <span class="badge-count">0</span>
+      </div>
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <p>Chưa có dữ liệu</p>
+      </div>
+    `;
+  }
+
+  // Lấy 5 item đầu tiên
+  const displayItems = items.slice(0, 5);
+  const hasMore = items.length > 5;
+
+  return `
+    <div class="section-title" id="section-${type}">
+      ${title}
+      <span class="badge-count">${items.length}</span>
+      <span style="font-size:12px;color:#999;font-weight:400;margin-left:4px;">(hiển thị ${Math.min(5, items.length)}/${items.length})</span>
+    </div>
+    <div class="item-list">
+      ${displayItems.map((item) => renderAllItemCard(item, type)).join("")}
+    </div>
+    ${
+      hasMore
+        ? `
+      <div class="view-all-link" onclick="switchToTab('${type}')">
+        <i class="fas fa-arrow-right"></i> Xem tất cả ${items.length} ${title.toLowerCase()}
+      </div>
+    `
+        : ""
+    }
+  `;
+}
+
+// ===== HÀM RENDER ITEM CARD (ĐÃ SỬA LỖI) =====
+function renderAllItemCard(item, type) {
+  // Xác định tên - SỬA LỖI CHO SCHEDULES VÀ TEACHERS
+  let name = "Không có tên";
+
+  switch (type) {
+    case "schedules":
+      name = item.course_name || item.name || "Không có tên";
+      break;
+    case "teachers":
+      name = item.name || "Không có tên";
+      break;
+    case "slides":
+      name = item.title || item.name || "Không có tên";
+      break;
+    case "categories":
+      name = item.name || "Không có tên";
+      break;
+    case "courses":
+      name = item.name || "Không có tên";
+      break;
+    case "documents":
+      name = item.title || item.name || "Không có tên";
+      break;
+    case "news":
+      name = item.title || item.name || "Không có tên";
+      break;
+    case "reviews":
+      name = item.name || "Không có tên";
+      break;
+    default:
+      name = item.name || item.title || "Không có tên";
+  }
+
+  let image = item.image || item.avatar || "";
+  let meta = "";
+  let status = "";
+
+  switch (type) {
+    case "slides":
+      meta = item.link || "#";
+      status = item.active !== false ? "✅" : "⛔";
+      break;
+    case "teachers":
+      meta = item.title || "Giảng viên";
+      status = item.is_active !== false ? "✅" : "⛔";
+      break;
+    case "categories":
+      meta = item.slug || "";
+      status = item.active !== false ? "✅" : "⛔";
+      break;
+    case "courses":
+      meta = `${item.level || "Cơ bản"} • ${item.price || "Liên hệ"}`;
+      status = item.active !== false ? "✅" : "⛔";
+      break;
+    case "documents":
+      meta = `${item.category_name || "Chưa phân loại"} • ${item.file_type || "pdf"}`;
+      status = item.active !== false ? "✅" : "⛔";
+      break;
+    case "news":
+      meta = item.category || "Tin tức";
+      status = item.active !== false ? "✅" : "⛔";
+      break;
+    case "reviews":
+      const stars = "⭐".repeat(Math.min(item.rating || 5, 5));
+      meta = `${stars} • ${item.course || ""}`;
+      status = item.active !== false ? "✅" : "⛔";
+      break;
+    case "schedules":
+      // 👇 SỬA LỖI: Lấy đúng tên và meta cho schedules
+      const statusMap = {
+        open: "🟢 Còn chỗ",
+        full: "🔴 Đã kín",
+        upcoming: "🟡 Sắp khai giảng",
+        closed: "⚫ Đã đóng",
+      };
+      meta = `${item.category || "HSK"} • ${statusMap[item.status] || item.status || "open"}`;
+      status = item.active !== false ? "✅" : "⛔";
+      break;
+    default:
+      meta = "";
+      status = "";
+  }
+
+  // Xác định link đến trang chi tiết
+  let detailLink = "#";
+  const id = item.id || item._id || "";
+
+  switch (type) {
+    case "courses":
+      detailLink = `/khoa-hoc/chi-tiet/${id}`;
+      break;
+    case "documents":
+      detailLink = `/thu-vien/chi-tiet/${id}`;
+      break;
+    case "news":
+      detailLink = `/tin-tuc/chi-tiet/${id}`;
+      break;
+    case "teachers":
+      detailLink = `/gioi-thieu/chi-tiet-giao-vien/${id}`;
+      break;
+    default:
+      detailLink = "#";
+  }
+
+  const isLink = detailLink !== "#";
+
+  return `
+    <a href="${detailLink}" class="item-card" target="${isLink ? "_blank" : ""}" onclick="${!isLink ? "event.preventDefault();" : ""}">
+      <div class="item-avatar">
+        ${image ? `<img src="${image}" alt="${name}" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\\'fas fa-file\\'></i>'">` : `<i class="fas fa-file"></i>`}
+      </div>
+      <div class="item-info">
+        <div class="item-name">${name}</div>
+        <div class="item-meta">${meta}</div>
+      </div>
+      <div class="item-status">${status}</div>
+    </a>
+  `;
+}
+
+// ===== HÀM CHUYỂN ĐỔI TAB =====
+function switchToTab(tabName) {
+  const tabMap = {
+    slides: "slides",
+    teachers: "teachers",
+    categories: "categories",
+    courses: "courses",
+    documents: "documents",
+    news: "news",
+    reviews: "reviews",
+    schedules: "schedules",
+  };
+
+  const target = tabMap[tabName];
+  if (!target) {
+    console.warn("Không tìm thấy tab:", tabName);
+    return;
+  }
+
+  const links = document.querySelectorAll(".sidebar-nav a");
+  for (const link of links) {
+    if (link.dataset.tab === target) {
+      link.click();
+      return;
+    }
+  }
+
+  for (const link of links) {
+    if (link.getAttribute("href") === `#${target}`) {
+      link.click();
+      return;
+    }
+  }
+}
+
+// ===== HÀM LÀM MỚI DỮ LIỆU =====
+async function refreshAllData() {
+  const btn = document.querySelector(".all-dashboard .btn-add");
+  if (btn) {
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải...';
+    btn.disabled = true;
+  }
+
+  await loadTabContent("all");
+
+  if (btn) {
+    btn.innerHTML = '<i class="fas fa-sync-alt"></i> Làm mới';
+    btn.disabled = false;
+  }
+}
+
+// Export các hàm ra window
+window.renderAllDataManager = renderAllDataManager;
+window.switchToTab = switchToTab;
+window.refreshAllData = refreshAllData;
 
 // ============================================
 // LOAD TAB ĐẦU TIÊN

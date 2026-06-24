@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Thư viện - Ngoại Ngữ OYin</title>
+    <link rel="stylesheet" href="/static/css/chungcss.css">
+    <link rel="stylesheet" href="/static/css/thuvien.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="icon" href="/static/img/default/favicon.png" type="image/png">
+</head>
+
+<body>
+    <header>
+        <div class="information">
+            <div class="informationtext informationtextlogo">
+                <a href="/"><img src="/static/img/default/logooyin.png" alt="Logo" class="informationimg" /></a>
+            </div>
+            <div class="informationtext informationtextname">
+                <strong class="informationtextname2">NGOẠI NGỮ O-YIN</strong>
+            </div>
+            <div class="informationtext informationtextcall">
+                <div class="informationtextcallimg">
+                    <img src="/static/img/default/dienthoai.png" alt="Liên Hệ" class="callimg" />
+                </div>
+                <div class="informationtextcall12">
+                    <div class="informationtextcall1">LIÊN HỆ ZALO</div>
+                    <div class="informationtextcall2">0971 306 143(Hoàng Ngân)</div>
+                </div>
+            </div>
+            <div class="informationtext informationtextsupport">
+                <div class="informationtextsupportimg">
+                    <img src="/static/img/default/dongho.jpg" alt="Hỗ trợ" class="supportimg" />
+                </div>
+                <div class="informationtextsupport12">
+                    <div class="informationtextsupport1">HỖ TRỢ</div>
+                    <div class="informationtextsupport2">24/7</div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-wrapper">
+            <div class="mobile-menu">
+                <div class="menu-toggle">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+            </div>
+            <div class="nav-main">
+                <ul class="nav-list" id="dynamic-menu">
+                    <li>Đang tải menu...</li>
+                </ul>
+            </div>
+            <div class="register-btn">
+                <a href="/dang-ky">ĐĂNG KÝ</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- ===== HERO ===== -->
+        <section class="library-hero">
+            <!-- Background Pattern -->
+            <div class="hero-bg-pattern"></div>
+
+            <!-- Decoration Circles -->
+            <div class="hero-circle c1"></div>
+            <div class="hero-circle c2"></div>
+            <div class="hero-circle c3"></div>
+
+            <!-- Floating Emojis -->
+            <div class="hero-emoji e1">📚</div>
+            <div class="hero-emoji e2">📖</div>
+            <div class="hero-emoji e3">✨</div>
+
+            <!-- Accent Line -->
+            <div class="hero-accent-line"></div>
+
+            <!-- Content -->
+            <div class="hero-content">
+                <div class="hero-badge">📖 KHO TRI THỨC</div>
+                <h1>Thư Viện Học Tập</h1>
+                <p class="subtitle">Khám phá kho tài liệu tiếng Trung phong phú, được chọn lọc và cập nhật liên tục</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="number" id="totalDocs">0</span>
+                        <span class="label">Tài liệu</span>
+                    </div>
+                    <div class="stat">
+                        <span class="number" id="totalCategories">0</span>
+                        <span class="label">Danh mục</span>
+                    </div>
+                    <div class="stat">
+                        <span class="number" id="totalDownloads">0</span>
+                        <span class="label">Lượt tải</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SEARCH ===== -->
+        <div class="search-container">
+            <div class="search-wrapper">
+                <span class="search-icon"><i class="fas fa-search"></i></span>
+                <input type="text" id="searchInput" placeholder="Tìm kiếm tài liệu theo tên, từ khóa..."
+                    autocomplete="off">
+                <button class="search-btn" id="searchBtn">
+                    <i class="fas fa-search"></i> Tìm kiếm
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== LIBRARY CONTENT ===== -->
+        <div class="library-container">
+            <!-- Sidebar -->
+            <aside class="library-sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-title">
+                        <i class="fas fa-folder-tree"></i> Danh mục
+                    </div>
+                    <button class="sidebar-reset" id="resetFilter">
+                        <i class="fas fa-undo-alt"></i> Đặt lại
+                    </button>
+                </div>
+                <ul class="category-tree" id="categoryTree">
+                    <li>
+                        <div class="cat-link active" data-category="all" onclick="filterDocuments('all', this)">
+                            <span class="icon default"><i class="fas fa-th-list"></i></span>
+                            <span>Tất cả tài liệu</span>
+                            <span class="count" id="allCount">0</span>
+                        </div>
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- Documents -->
+            <div class="documents-grid" id="documentsGrid">
+                <!-- Loading -->
+                <div class="loading-grid">
+                    <div class="loading-card">
+                        <div class="loading-preview"></div>
+                        <div class="loading-line"></div>
+                        <div class="loading-line short"></div>
+                    </div>
+                    <div class="loading-card">
+                        <div class="loading-preview"></div>
+                        <div class="loading-line"></div>
+                        <div class="loading-line short"></div>
+                    </div>
+                    <div class="loading-card">
+                        <div class="loading-preview"></div>
+                        <div class="loading-line"></div>
+                        <div class="loading-line short"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-row">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <img src="/static/img/default/logooyin.png" alt="Logo">
+                        <h3>NGOẠI NGỮ O-YIN</h3>
+                    </div>
+                    <p class="footer-desc">
+                        Trung tâm đào tạo tiếng Trung uy tín hàng đầu, với đội ngũ giảng viên giàu kinh nghiệm,
+                        phương pháp giảng dạy hiện đại, cam kết đầu ra chất lượng.
+                    </p>
+                    <div class="footer-social">
+                        <a href="https://www.facebook.com/profile.php?id=61564711545051" class="social-icon facebook"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="https://zalo.me/0971306143" class="social-icon zalo"><i class="fas fa-comment"
+                                style="font-size:18px;"></i></a>
+                        <a href="#" class="social-icon youtube"><i class="fab fa-youtube"></i></a>
+                        <a href="http://tiktok.com/@ngoainguoyin_24" class="social-icon tiktok"><i
+                                class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>📞 LIÊN HỆ</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-map-marker-alt"></i> Sầm Sơn, Thanh Hóa</li>
+                        <li><i class="fas fa-phone-alt"></i> 0971 306 143 (Hoàng Ngân)</li>
+                        <li><i class="fas fa-envelope"></i> ngoainguoyin@gmail.com</li>
+                        <li><i class="fas fa-clock"></i> Mọi lúc</li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>📚 KHÓA HỌC</h4>
+                    <ul class="footer-links" id="footerCategories">
+                        <!-- Categories sẽ load từ API -->
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>🛡️ HỖ TRỢ</h4>
+                    <ul class="footer-links">
+                        <li><a href="/chinh-sach-dieu-khoan">Chính sách & Điều khoản</a></li>
+                        <li><a href="/chinh-sach-bao-mat">Chính sách bảo mật</a></li>
+                        <li><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Ngoại Ngữ O-Yin. Tất cả các quyền được bảo lưu.</p>
+                <p>Thiết kế và phát triển bởi <span>O-Yin Team</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================================
+        // MENU
+        // ============================================================
+        async function loadMenu() {
+            try {
+                const response = await fetch('/api/menu');
+                const data = await response.json();
+                const menuItems = data.items;
+                const menuContainer = document.getElementById('dynamic-menu');
+                if (!menuContainer) return;
+                menuContainer.innerHTML = '';
+                menuItems.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'nav-item';
+                    if (item.children && item.children.length > 0) {
+                        li.classList.add('has-dropdown');
+                        li.innerHTML = `
+                        <a href="${item.url}">${item.name}</a>
+                        <ul class="dropdown">
+                            ${renderChildren(item.children)}
+                        </ul>
+                    `;
+                    } else {
+                        li.innerHTML = `<a href="${item.url}">${item.name}</a>`;
+                    }
+                    menuContainer.appendChild(li);
+                });
+                if (window.innerWidth <= 768) {
+                    document.querySelectorAll('.has-dropdown > a').forEach(link => {
+                        link.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            const dropdown = this.nextElementSibling;
+                            if (dropdown) dropdown.classList.toggle('show');
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error('Lỗi tải menu:', error);
+            }
+        }
+
+        function renderChildren(children) {
+            let html = '';
+            children.forEach(child => {
+                if (child.children && child.children.length > 0) {
+                    html += `<li class="dropdown-sub"><span>${child.name}</span><ul class="sub-dropdown">${renderChildren(child.children)}</ul></li>`;
+                } else {
+                    html += `<li><a href="${child.url}">${child.name}</a></li>`;
+                }
+            });
+            return html;
+        }
+
+        // ===== LOAD FOOTER CATEGORIES =====
+        async function loadFooterCategories() {
+            try {
+                const response = await fetch('/api/data/categories');
+                const data = await response.json();
+                const container = document.getElementById('footerCategories');
+                if (!container) return;
+                container.innerHTML = (data.categories || []).map(cat =>
+                    `<li><a href="/khoa-hoc?category=${cat.slug}">${cat.name}</a></li>`
+                ).join('');
+                container.innerHTML += `<li><a href="/khoa-hoc">Tất cả khóa học</a></li>`;
+            } catch (error) {
+                console.error('Lỗi tải footer:', error);
+            }
+        }
+
+        // ============================================================
+        // STICKY NAV
+        // ============================================================
+        (function () {
+            const nav = document.querySelector('.nav-wrapper');
+            const header = document.querySelector('header');
+            if (!nav) return;
+            let navHeight = nav.offsetHeight;
+            let stickyOffset = header.offsetHeight;
+            function handleSticky() {
+                if (window.scrollY >= stickyOffset) {
+                    nav.classList.add('js-sticky');
+                    if (!document.querySelector('.sticky-spacer')) {
+                        const spacer = document.createElement('div');
+                        spacer.className = 'sticky-spacer';
+                        spacer.style.height = navHeight + 'px';
+                        nav.parentNode.insertBefore(spacer, nav);
+                    }
+                } else {
+                    nav.classList.remove('js-sticky');
+                    const spacer = document.querySelector('.sticky-spacer');
+                    if (spacer) spacer.remove();
+                }
+            }
+            const style = document.createElement('style');
+            style.textContent = `
+            .nav-wrapper.js-sticky {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                width: 100% !important;
+                z-index: 10000 !important;
+                animation: slideDown 0.3s ease !important;
+                box-shadow: 0 4px 25px rgba(0,0,0,0.2) !important;
+            }
+            @keyframes slideDown {
+                from { transform: translateY(-100%); }
+                to { transform: translateY(0); }
+            }
+        `;
+            document.head.appendChild(style);
+            window.addEventListener('scroll', handleSticky);
+            window.addEventListener('resize', function () {
+                stickyOffset = header.offsetHeight;
+                navHeight = nav.offsetHeight;
+                handleSticky();
+            });
+            handleSticky();
+        })();
+
+        // ============================================================
+        // MOBILE MENU
+        // ============================================================
+        function initMobileMenu() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navMain = document.querySelector('.nav-main');
+            if (menuToggle && navMain) {
+                menuToggle.addEventListener('click', function () {
+                    navMain.classList.toggle('active');
+                    const bars = document.querySelectorAll('.bar');
+                    if (navMain.classList.contains('active')) {
+                        bars[0].style.transform = 'rotate(-45deg) translate(-5px, 6px)';
+                        bars[1].style.opacity = '0';
+                        bars[2].style.transform = 'rotate(45deg) translate(-5px, -6px)';
+                    } else {
+                        bars[0].style.transform = 'rotate(0) translate(0, 0)';
+                        bars[1].style.opacity = '1';
+                        bars[2].style.transform = 'rotate(0) translate(0, 0)';
+                    }
+                });
+            }
+        }
+
+        // ============================================================
+        // LIBRARY DATA
+        // ============================================================
+        let allDocuments = [];
+        let categories = [];
+        let currentFilter = 'all';
+        let currentSearch = '';
+
+        async function loadLibraryData() {
+            try {
+                const [docsRes, catsRes] = await Promise.all([
+                    fetch('/api/data/documents'),
+                    fetch('/api/data/categories')
+                ]);
+
+                const docsData = await docsRes.json();
+                const catsData = await catsRes.json();
+
+                allDocuments = docsData.items || [];
+                categories = catsData.categories || [];
+
+                document.getElementById('totalDocs').textContent = allDocuments.length;
+                document.getElementById('totalCategories').textContent = categories.length;
+
+                let totalDownloads = 0;
+                allDocuments.forEach(d => totalDownloads += (d.download_count || 0));
+                document.getElementById('totalDownloads').textContent = totalDownloads;
+
+                renderCategories();
+                renderDocuments('all');
+            } catch (error) {
+                console.error('❌ Lỗi tải dữ liệu:', error);
+                document.getElementById('documentsGrid').innerHTML = `
+                <div class="empty-state">
+                    <div class="icon-wrapper"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h3>Không thể tải dữ liệu</h3>
+                    <p>Vui lòng thử lại sau hoặc liên hệ quản trị viên.</p>
+                </div>
+            `;
+            }
+        }
+
+        // ============================================================
+        // RENDER CATEGORIES
+        // ============================================================
+        function renderCategories() {
+            const container = document.getElementById('categoryTree');
+            if (!container) return;
+
+            document.getElementById('allCount').textContent = allDocuments.length;
+
+            const rootCategories = categories.filter(c => !c.parent_id);
+            const childMap = {};
+            categories.forEach(c => {
+                if (c.parent_id) {
+                    if (!childMap[c.parent_id]) childMap[c.parent_id] = [];
+                    childMap[c.parent_id].push(c);
+                }
+            });
+
+            let html = `
+            <li>
+                <div class="cat-link active" data-category="all" onclick="filterDocuments('all', this)">
+                    <span class="icon default"><i class="fas fa-th-list"></i></span>
+                    <span>Tất cả tài liệu</span>
+                    <span class="count" id="allCount">${allDocuments.length}</span>
+                </div>
+            </li>
+        `;
+
+            rootCategories.forEach(cat => {
+                const hasChildren = childMap[cat.id] && childMap[cat.id].length > 0;
+                const count = allDocuments.filter(d => d.category_id === cat.id).length;
+
+                html += `
+                <li>
+                    <div class="cat-link" data-category="${cat.id}" onclick="filterDocuments('${cat.id}', this)">
+                        <span class="icon default"><i class="fas ${cat.icon || 'fa-folder'}"></i></span>
+                        <span>${cat.name}</span>
+                        <span class="count">${count}</span>
+                        ${hasChildren ? `<button class="arrow" onclick="event.stopPropagation(); toggleChildren(this)"><i class="fas fa-chevron-right"></i></button>` : ''}
+                    </div>
+                    ${hasChildren ? `<ul class="children">${renderChildCategories(childMap[cat.id], childMap)}</ul>` : ''}
+                </li>
+            `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function renderChildCategories(childList, childMap) {
+            return childList.map(child => {
+                const hasChildren = childMap[child.id] && childMap[child.id].length > 0;
+                const count = allDocuments.filter(d => d.category_id === child.id).length;
+                return `
+                <li>
+                    <div class="cat-link" data-category="${child.id}" onclick="filterDocuments('${child.id}', this)">
+                        <span class="icon default"><i class="fas ${child.icon || 'fa-file'}"></i></span>
+                        <span>${child.name}</span>
+                        <span class="count">${count}</span>
+                        ${hasChildren ? `<button class="arrow" onclick="event.stopPropagation(); toggleChildren(this)"><i class="fas fa-chevron-right"></i></button>` : ''}
+                    </div>
+                    ${hasChildren ? `<ul class="children">${renderChildCategories(childMap[child.id], childMap)}</ul>` : ''}
+                </li>
+            `;
+            }).join('');
+        }
+
+        function toggleChildren(btn) {
+            const parent = btn.closest('li');
+            const childrenList = parent.querySelector('.children');
+            if (childrenList) {
+                childrenList.classList.toggle('open');
+                btn.classList.toggle('open');
+            }
+        }
+
+        // ============================================================
+        // FILTER & RENDER DOCUMENTS
+        // ============================================================
+        function filterDocuments(categoryId, element) {
+            currentFilter = categoryId;
+
+            document.querySelectorAll('.cat-link').forEach(el => el.classList.remove('active'));
+            if (element) element.classList.add('active');
+
+            let filtered = allDocuments;
+
+            if (categoryId !== 'all') {
+                const categoryIds = [categoryId];
+                function findSubIds(parentId) {
+                    categories.forEach(c => {
+                        if (c.parent_id === parentId) {
+                            categoryIds.push(c.id);
+                            findSubIds(c.id);
+                        }
+                    });
+                }
+                findSubIds(categoryId);
+                filtered = filtered.filter(d => categoryIds.includes(d.category_id));
+            }
+
+            if (currentSearch) {
+                const keyword = currentSearch.toLowerCase();
+                filtered = filtered.filter(d =>
+                    (d.title || d.name || '').toLowerCase().includes(keyword) ||
+                    (d.summary || d.description || '').toLowerCase().includes(keyword)
+                );
+            }
+
+            renderDocuments(filtered);
+        }
+
+        function renderDocuments(documents) {
+            const grid = document.getElementById('documentsGrid');
+            if (!grid) return;
+
+            const docs = Array.isArray(documents) ? documents : allDocuments;
+
+            if (docs.length === 0) {
+                grid.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon-wrapper"><i class="fas fa-search"></i></div>
+                    <h3>Không tìm thấy tài liệu</h3>
+                    <p>${currentSearch ? `Không có tài liệu nào phù hợp với "${currentSearch}"` : 'Danh mục này chưa có tài liệu nào.'}</p>
+                    ${currentSearch ? `<button onclick="clearSearch()" style="margin-top:16px;padding:10px 30px;background:linear-gradient(135deg,#e67e22,#d35400);color:white;border:none;border-radius:40px;font-weight:600;cursor:pointer;">Xóa tìm kiếm</button>` : ''}
+                </div>
+            `;
+                return;
+            }
+
+            grid.innerHTML = docs.map(doc => {
+                const fileExt = doc.file_url ? doc.file_url.split('.').pop().toLowerCase() : 'other';
+                const fileIcon = getFileIcon(fileExt);
+                const detailUrl = doc.id ? `/thu-vien/chi-tiet/${doc.id}` : '#';
+                const imageUrl = doc.image || '';
+                const hasImage = imageUrl && imageUrl.trim() !== '';
+                const viewCount = doc.view_count || 0;
+                const downloadCount = doc.download_count || 0;
+
+                return `
+                <div class="document-card" onclick="window.location.href='${detailUrl}'">
+                    <div class="card-preview" style="${hasImage ? `background: linear-gradient(135deg, #f8f9fa, #f1f3f5);` : ''}">
+                        ${hasImage ? `
+                            <img src="${imageUrl}" alt="${doc.title || 'Tài liệu'}" style="width:100%;height:100%;object-fit:cover;">
+                        ` : `
+                            <span class="file-icon"><i class="fas ${fileIcon}"></i></span>
+                        `}
+                        <span class="view-count-badge"><i class="fas fa-eye"></i> ${viewCount}</span>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="doc-title">${doc.title || doc.name || 'Tài liệu'}</h3>
+                        <p class="doc-desc">${doc.summary || doc.description || '📄 Không có mô tả'}</p>
+                        <div class="doc-meta">
+                            <span class="size" style="margin-left:8px;"><i class="fas fa-download"></i> ${downloadCount}</span>
+                            <div class="actions">
+                                <a href="${detailUrl}" class="btn-preview" onclick="event.stopPropagation()"><i class="fas fa-eye"></i> Xem</a>
+                                <a href="${doc.file_url || '#'}" class="btn-download" onclick="event.stopPropagation(); trackDownload('${doc.id}')" download><i class="fas fa-download"></i> Tải</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        // ============================================================
+        // UTILITY FUNCTIONS
+        // ============================================================
+        function getFileIcon(ext) {
+            const map = {
+                'pdf': 'fa-file-pdf',
+                'doc': 'fa-file-word', 'docx': 'fa-file-word',
+                'xls': 'fa-file-excel', 'xlsx': 'fa-file-excel',
+                'ppt': 'fa-file-powerpoint', 'pptx': 'fa-file-powerpoint',
+                'zip': 'fa-file-archive', 'rar': 'fa-file-archive',
+                'mp4': 'fa-file-video', 'avi': 'fa-file-video', 'mov': 'fa-file-video',
+                'mp3': 'fa-file-audio', 'wav': 'fa-file-audio',
+                'jpg': 'fa-file-image', 'jpeg': 'fa-file-image', 'png': 'fa-file-image', 'gif': 'fa-file-image'
+            };
+            return map[ext] || 'fa-file';
+        }
+
+        // ============================================================
+        // SEARCH
+        // ============================================================
+        function performSearch() {
+            const input = document.getElementById('searchInput');
+            currentSearch = input.value.trim();
+
+            if (currentFilter === 'all') {
+                filterDocuments('all', document.querySelector('.cat-link[data-category="all"]'));
+            } else {
+                const activeCat = document.querySelector(`.cat-link[data-category="${currentFilter}"]`);
+                if (activeCat) {
+                    filterDocuments(currentFilter, activeCat);
+                } else {
+                    filterDocuments('all', document.querySelector('.cat-link[data-category="all"]'));
+                }
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            currentSearch = '';
+            const activeCat = document.querySelector('.cat-link.active');
+            if (activeCat) {
+                filterDocuments(activeCat.dataset.category, activeCat);
+            } else {
+                filterDocuments('all', document.querySelector('.cat-link[data-category="all"]'));
+            }
+        }
+
+        // ============================================================
+        // TRACK DOWNLOAD
+        // ============================================================
+        async function trackDownload(docId) {
+            try {
+                await fetch(`/api/document/download/${docId}`, { method: 'POST' });
+            } catch (e) {
+                console.log('Không thể cập nhật lượt tải');
+            }
+        }
+
+        // ============================================================
+        // KEYBOARD SHORTCUT
+        // ============================================================
+        document.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+            if (e.key === 'Escape') {
+                const input = document.getElementById('searchInput');
+                if (input.value) {
+                    input.value = '';
+                    clearSearch();
+                }
+                input.blur();
+            }
+        });
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function () {
+            loadMenu();
+            loadFooterCategories();  // 👈 THÊM DÒNG NÀY
+            loadLibraryData();
+            initMobileMenu();
+
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+
+            searchBtn.addEventListener('click', performSearch);
+            searchInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') performSearch();
+            });
+
+            document.getElementById('resetFilter').addEventListener('click', function () {
+                document.getElementById('searchInput').value = '';
+                currentSearch = '';
+                const allLink = document.querySelector('.cat-link[data-category="all"]');
+                if (allLink) filterDocuments('all', allLink);
+            });
+
+            document.addEventListener('click', function (event) {
+                if (window.innerWidth <= 768) {
+                    const menuToggle = document.querySelector('.menu-toggle');
+                    const navMain = document.querySelector('.nav-main');
+                    const isClickInside = menuToggle?.contains(event.target) || navMain?.contains(event.target);
+                    if (!isClickInside && navMain?.classList.contains('active')) {
+                        navMain.classList.remove('active');
+                        const bars = document.querySelectorAll('.bar');
+                        bars[0].style.transform = 'rotate(0) translate(0, 0)';
+                        bars[1].style.opacity = '1';
+                        bars[2].style.transform = 'rotate(0) translate(0, 0)';
+                    }
+                }
+            });
+
+            window.addEventListener('resize', function () {
+                if (window.innerWidth > 768) {
+                    const navMain = document.querySelector('.nav-main');
+                    if (navMain) navMain.classList.remove('active');
+                    const bars = document.querySelectorAll('.bar');
+                    bars[0].style.transform = 'rotate(0) translate(0, 0)';
+                    bars[1].style.opacity = '1';
+                    bars[2].style.transform = 'rotate(0) translate(0, 0)';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

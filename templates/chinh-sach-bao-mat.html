@@ -4,14 +4,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ngoại Ngữ OYin</title>
+    <title>Chính sách bảo mật - Ngoại Ngữ OYin</title>
     <link rel="stylesheet" href="/static/css/chungcss.css">
     <link rel="stylesheet" href="/static/css/trangchucss.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link
-        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="icon" href="/static/img/default/favicon.png" type="image/png">
+    <style>
+        .policy-hero {
+            position: relative;
+            background: linear-gradient(145deg, #2196f3 0%, #1976d2 50%, #0d47a1 100%);
+            padding: 50px 20px 40px;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+            border-radius: 0 0 30px 30px;
+            box-shadow: 0 20px 60px rgba(33, 150, 243, 0.3);
+        }
+
+        .policy-hero h1 {
+            font-size: 38px;
+            font-weight: 800;
+            font-family: "Playfair Display", serif;
+        }
+
+        .policy-hero h1 span {
+            color: #ffd700;
+        }
+
+        .policy-hero p {
+            font-size: 16px;
+            opacity: 0.85;
+            margin-top: 6px;
+        }
+
+        .policy-container {
+            max-width: 900px;
+            margin: 40px auto 60px;
+            padding: 0 20px;
+        }
+
+        .policy-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 45px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.04);
+            border: 1px solid #f0f0f0;
+        }
+
+        .policy-content h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2c3e50;
+            font-family: "Playfair Display", serif;
+            margin-top: 30px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .policy-content h2:first-child {
+            margin-top: 0;
+        }
+
+        .policy-content h2 i {
+            color: #1976d2;
+            font-size: 24px;
+        }
+
+        .policy-content p {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 12px;
+        }
+
+        .policy-content ul {
+            padding-left: 24px;
+            margin: 10px 0 16px;
+        }
+
+        .policy-content ul li {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .policy-content .highlight-box {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+
+        .policy-content .highlight-box p {
+            margin: 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #1976d2;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #0d47a1;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .policy-hero h1 {
+                font-size: 28px;
+            }
+
+            .policy-content {
+                padding: 24px 20px;
+            }
+
+            .policy-content h2 {
+                font-size: 19px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .policy-hero {
+                border-radius: 0 0 16px 16px;
+                padding: 30px 16px;
+            }
+
+            .policy-hero h1 {
+                font-size: 24px;
+            }
+
+            .policy-content {
+                padding: 16px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -61,136 +198,63 @@
             </div>
         </div>
     </header>
+
     <main>
-        <!-- ========== SLIDER FULL WIDTH 16:9 ========== -->
-        <section class="slider-section">
-            <div class="slider-container">
-                <div class="slider-wrapper" id="sliderWrapper">
-                </div>
-
-                <!-- Nút điều hướng -->
-                <button class="slider-btn prev-btn" id="prevBtn">❮</button>
-                <button class="slider-btn next-btn" id="nextBtn">❯</button>
-
-                <!-- Dấu dot -->
-                <div class="slider-dots" id="sliderDots"></div>
+        <section class="policy-hero">
+            <div class="hero-content">
+                <h1>Chính sách bảo mật</h1>
+                <p>Cam kết bảo vệ thông tin cá nhân của bạn</p>
             </div>
         </section>
-        <!-- ========== KHÁC BIỆT VÀ CAM KẾT ========== -->
-        <section class="commitment-section">
-            <div class="commitment-container">
-                <div class="commitment-header">
-                    <h2 class="commitment-title">KHÁC BIỆT VÀ CAM KẾT</h2>
-                    <p class="commitment-subtitle">CỦA TIẾNG TRUNG O-YIN</p>
-                    <div class="title-underline"></div>
+
+        <div class="policy-container">
+            <div class="policy-content">
+                <h2><i class="fas fa-shield-alt"></i> 1. Cam kết bảo mật</h2>
+                <p>Ngoại Ngữ O-Yin cam kết bảo vệ thông tin cá nhân của bạn. Chúng tôi thu thập thông tin với mục đích
+                    duy nhất là phục vụ nhu cầu học tập và hỗ trợ của bạn.</p>
+
+                <h2><i class="fas fa-database"></i> 2. Thông tin thu thập</h2>
+                <p>Chúng tôi có thể thu thập các thông tin sau:</p>
+                <ul>
+                    <li><strong>Thông tin cá nhân:</strong> Họ tên, số điện thoại, email, địa chỉ</li>
+                    <li><strong>Thông tin học tập:</strong> Khóa học đã đăng ký, tiến độ học tập</li>
+                    <li><strong>Dữ liệu truy cập:</strong> IP, trình duyệt, thời gian truy cập</li>
+                </ul>
+
+                <h2><i class="fas fa-lock"></i> 3. Bảo mật thông tin</h2>
+                <p>Chúng tôi áp dụng các biện pháp bảo mật để đảm bảo thông tin của bạn được an toàn:</p>
+                <ul>
+                    <li>Mã hóa dữ liệu truyền tải qua SSL</li>
+                    <li>Lưu trữ dữ liệu trên hệ thống an toàn</li>
+                    <li>Giới hạn quyền truy cập thông tin</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <p><strong>📌 Lưu ý:</strong> Chúng tôi không chia sẻ thông tin của bạn với bên thứ ba khi chưa có
+                        sự đồng ý của bạn.</p>
                 </div>
 
-                <div class="commitment-grid">
-                    <!-- Item 1: Giáo trình thực tế dễ hiểu -->
-                    <div class="commitment-card">
-                        <div class="card-icon">
-                            <i class="fas fa-book-open"></i>
-                        </div>
-                        <h3>Giáo trình thực tế dễ hiểu</h3>
-                        <p>Nội dung cập nhật theo xu hướng mới nhất, tích hợp tình huống giao tiếp thực tế, trình bày
-                            khoa học, dễ hiểu, áp dụng ngay vào công việc và cuộc sống.</p>
-                    </div>
+                <h2><i class="fas fa-cookie-bite"></i> 4. Cookie</h2>
+                <p>Website sử dụng cookie để cải thiện trải nghiệm người dùng. Bạn có thể tùy chỉnh cài đặt cookie trong
+                    trình duyệt của mình.</p>
 
-                    <!-- Item 2: Lớp học siêu nhỏ -->
-                    <div class="commitment-card">
-                        <div class="card-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h3>Lớp học siêu nhỏ 6 người</h3>
-                        <p>Tối đa 6 học viên/lớp, giáo viên kèm cặp sát sao từng người. Thực hành 1-1 thường xuyên, sửa
-                            lỗi phát âm, ngữ pháp và diễn đạt ngay trong buổi học.</p>
-                    </div>
+                <h2><i class="fas fa-user-edit"></i> 5. Quyền của bạn</h2>
+                <ul>
+                    <li>Yêu cầu xem, chỉnh sửa thông tin cá nhân</li>
+                    <li>Yêu cầu xóa tài khoản và dữ liệu</li>
+                    <li>Rút lại sự đồng ý chia sẻ thông tin</li>
+                </ul>
 
-                    <!-- Item 3: Giáo viên Trung - Việt -->
-                    <div class="commitment-card">
-                        <div class="card-icon">
-                            <i class="fas fa-handshake"></i>
-                        </div>
-                        <h3>Giáo viên Trung - Việt</h3>
-                        <p>Đội ngũ giáo viên bản ngữ Trung Quốc kết hợp giáo viên Việt Nam giàu kinh nghiệm. Giúp học
-                            viên phát âm chuẩn như người bản xứ, đồng thời dễ dàng tiếp thu và đặt câu hỏi bằng tiếng
-                            Việt khi cần.</p>
-                    </div>
+                <h2><i class="fas fa-envelope"></i> 6. Liên hệ</h2>
+                <p>Mọi thắc mắc về chính sách bảo mật, vui lòng liên hệ:</p>
+                <ul>
+                    <li><strong>📞 Hotline:</strong> 0971 306 143</li>
+                    <li><strong>📧 Email:</strong> ngoainguoyin@gmail.com</li>
+                </ul>
 
-                    <!-- Item 4: Giảng viên trình độ cao -->
-                    <div class="commitment-card">
-                        <div class="card-icon">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                        </div>
-                        <h3>Giảng viên trình độ cao</h3>
-                        <p>100% giảng viên có trình độ Thạc sĩ trở lên, chuyên ngành tiếng Trung. Nhiều năm kinh nghiệm
-                            giảng dạy, tận tâm, nhiệt huyết, đồng hành cùng học viên trên mọi hành trình.</p>
-                    </div>
-
-                    <!-- Item 5: Phương pháp học hiện đại -->
-                    <div class="commitment-card">
-                        <div class="card-icon">
-                            <i class="fas fa-brain"></i>
-                        </div>
-                        <h3>Phương pháp học hiện đại</h3>
-                        <p>Kết hợp phương pháp phản xạ, học qua tình huống thực tế, thảo luận nhóm, trò chơi tương tác.
-                            Luyện tập cả 4 kỹ năng Nghe - Nói - Đọc - Viết một cách toàn diện.</p>
-                    </div>
-
-                    <!-- Item 6: Cam kết chất lượng -->
-                    <div class="commitment-card highlight">
-                        <div class="card-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h3>Cam kết chất lượng</h3>
-                        <p>Cam kết đầu ra bằng văn bản rõ ràng. Hỗ trợ học bù, học kèm 1-1 miễn phí cho học viên khi
-                            cần.</p>
-                    </div>
-                </div>
+                <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> Quay lại trang chủ</a>
             </div>
-        </section>
-        <!-- ========== DANH MỤC KHÓA HỌC ========== -->
-        <section class="categories-section">
-            <div class="categories-container">
-                <div class="commitment-header">
-                    <h2 class="commitment-title">KHÓA HỌC CỦA CHÚNG TÔI</h2>
-                    <p class="commitment-subtitle">LỘ TRÌNH HỌC TẬP RÕ RÀNG, PHÙ HỢP MỌI ĐỐI TƯỢNG</p>
-                    <div class="title-underline"></div>
-                </div>
-                <div class="categories-grid" id="categoriesGrid">
-                    <!-- Categories sẽ được load từ API -->
-                </div>
-            </div>
-        </section>
-        <!-- ========== ĐÁNH GIÁ CỦA HỌC VIÊN ========== -->
-        <section class="reviews-section">
-            <div class="reviews-container">
-                <div class="reviews-header">
-                    <!-- <span class="reviews-icon">💬</span> -->
-                    <h2 class="reviews-title">Học viên nói gì về chúng tôi?</h2>
-                    <p class="reviews-subtitle">Những chia sẻ chân thực từ học viên đã và đang theo học tại O-Yin</p>
-                    <div class="title-underline"></div>
-                </div>
-
-                <div class="reviews-slider-wrapper">
-                    <div class="reviews-track" id="reviewsTrack">
-                        <!-- Reviews sẽ được load từ API -->
-                    </div>
-
-                    <!-- Nút điều hướng 2 bên -->
-                    <div class="reviews-controls">
-                        <button class="reviews-btn" id="reviewPrevBtn" aria-label="Previous">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <button class="reviews-btn" id="reviewNextBtn" aria-label="Next">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="reviews-dots" id="reviewsDots"></div>
-            </div>
-        </section>
+        </div>
     </main>
 
     <!-- ========== FOOTER ========== -->
@@ -246,6 +310,7 @@
             </div>
         </div>
     </footer>
+
 
     <script>
         // ===== LOAD MENU =====

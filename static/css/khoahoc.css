@@ -1,0 +1,922 @@
+/* ============================================
+   KHÓA HỌC - STYLES
+   ============================================ */
+
+/* ===== COURSES HERO ===== */
+.courses-hero {
+  position: relative;
+  background: linear-gradient(145deg, #e67e22 0%, #d35400 50%, #a04000 100%);
+  padding: 55px 50px 55px 60px;
+  margin-bottom: 45px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(211, 84, 0, 0.3);
+  min-height: 320px;
+  border-radius: 0 0 30px 30px;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.courses-hero:hover {
+  box-shadow: 0 25px 80px rgba(211, 84, 0, 0.4);
+}
+
+/* ===== DECORATION LINE ===== */
+.hero-accent-line {
+  position: absolute;
+  left: 0;
+  top: 15%;
+  bottom: 15%;
+  width: 5px;
+  background: linear-gradient(180deg, #ffd700, #f39c12, #ffd700);
+  border-radius: 0 5px 5px 0;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  animation: accentPulse 2s ease-in-out infinite;
+}
+
+@keyframes accentPulse {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: scaleY(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1.05);
+  }
+}
+
+/* ===== BACKGROUND PATTERN ===== */
+.hero-bg-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.06;
+  background-image:
+    radial-gradient(circle at 20% 50%, #ffffff 2px, transparent 2px),
+    radial-gradient(circle at 80% 20%, #ffffff 2px, transparent 2px),
+    radial-gradient(circle at 40% 80%, #ffffff 2px, transparent 2px),
+    radial-gradient(circle at 70% 70%, #ffffff 2px, transparent 2px);
+  background-size: 80px 80px;
+  pointer-events: none;
+}
+
+/* ===== DECORATION CIRCLES ===== */
+.hero-decoration-circle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.hero-decoration-circle.c1 {
+  width: 300px;
+  height: 300px;
+  bottom: -100px;
+  right: -60px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid rgba(255, 255, 255, 0.06);
+  animation: circleFloat 8s ease-in-out infinite;
+}
+.hero-decoration-circle.c2 {
+  width: 180px;
+  height: 180px;
+  top: -60px;
+  left: 30%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid rgba(255, 255, 255, 0.05);
+  animation: circleFloat 6s ease-in-out infinite 2s;
+}
+.hero-decoration-circle.c3 {
+  width: 120px;
+  height: 120px;
+  bottom: 20px;
+  left: 5%;
+  background: rgba(255, 215, 0, 0.05);
+  border: 2px solid rgba(255, 215, 0, 0.08);
+  animation: circleFloat 7s ease-in-out infinite 4s;
+}
+
+@keyframes circleFloat {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-10px, -15px) scale(1.05);
+  }
+}
+
+/* ===== CONTENT WRAPPER ===== */
+.hero-content-wrapper {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+/* ===== LEFT SIDE ===== */
+.hero-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 6px 22px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff5e6;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 14px;
+  transition: all 0.3s ease;
+}
+.hero-badge:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+.hero-badge i {
+  font-size: 14px;
+  color: #ffd700;
+}
+
+.hero-title {
+  font-size: 44px;
+  font-weight: 800;
+  font-family: "Playfair Display", serif;
+  color: #ffffff;
+  line-height: 1.15;
+  margin-bottom: 8px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  animation: titleSlide 0.8s ease-out;
+}
+
+@keyframes titleSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.hero-title .highlight {
+  color: #ffd700;
+  text-shadow: 0 4px 30px rgba(255, 215, 0, 0.3);
+  position: relative;
+  display: inline-block;
+}
+.hero-title .highlight::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ffd700, #f39c12);
+  border-radius: 2px;
+  animation: underlineExpand 1s ease-out 0.5s forwards;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+@keyframes underlineExpand {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.hero-subtitle {
+  font-size: 17px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 22px;
+  font-weight: 300;
+  animation: titleSlide 0.8s ease-out 0.2s both;
+}
+
+/* ===== SEARCH ===== */
+.hero-search {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 4px;
+  max-width: 420px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: titleSlide 0.8s ease-out 0.4s both;
+}
+.hero-search:focus-within {
+  border-color: #ffd700;
+  box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.15);
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.02);
+}
+.hero-search i {
+  color: rgba(255, 255, 255, 0.5);
+  padding: 0 16px;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+.hero-search:focus-within i {
+  color: #ffd700;
+}
+.hero-search input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 12px 0;
+  color: white;
+  font-size: 15px;
+  outline: none;
+}
+.hero-search input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+.hero-search button {
+  background: linear-gradient(135deg, #ffd700, #f39c12);
+  border: none;
+  color: #2c3e50;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-search button:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 4px 25px rgba(255, 215, 0, 0.4);
+}
+.hero-search button:active {
+  transform: scale(0.95);
+}
+
+/* ===== RIGHT SIDE ===== */
+.hero-right {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px;
+  animation: fadeInRight 0.8s ease-out 0.3s both;
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ===== STATS ===== */
+.hero-stats-wrapper {
+  display: flex;
+  gap: 16px;
+}
+.hero-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  padding: 12px 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-stat::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 215, 0, 0.1),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+.hero-stat:hover::before {
+  left: 100%;
+}
+
+.hero-stat:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-4px) scale(1.02);
+  border-color: rgba(255, 215, 0, 0.2);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.stat-icon {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 215, 0, 0.15);
+  color: #ffd700;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+.hero-stat:hover .stat-icon {
+  background: rgba(255, 215, 0, 0.25);
+  transform: rotate(-5deg) scale(1.1);
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+.stat-number {
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.1;
+  transition: all 0.3s ease;
+}
+.hero-stat:hover .stat-number {
+  color: #ffd700;
+}
+.stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 400;
+}
+
+/* ===== FLOAT CARDS ===== */
+.hero-float-cards {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.hero-float-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px 18px;
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  cursor: default;
+}
+
+.hero-float-card:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+.hero-float-card i {
+  font-size: 18px;
+  color: #ffd700;
+  transition: all 0.3s ease;
+}
+.hero-float-card:hover i {
+  transform: rotate(15deg) scale(1.1);
+}
+
+.card-1 {
+  animation: cardFloat 4s ease-in-out infinite 0s;
+}
+.card-2 {
+  animation: cardFloat 4s ease-in-out infinite 1.3s;
+}
+.card-3 {
+  animation: cardFloat 4s ease-in-out infinite 2.6s;
+}
+
+@keyframes cardFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* ============================================
+   FILTER TABS - HIỆU ỨNG MỚI
+   ============================================ */
+.courses-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 30px 20px 60px;
+}
+
+.filter-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  padding: 8px;
+  background: #f8f9fa;
+  border-radius: 50px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.04);
+}
+
+.filter-tab {
+  padding: 10px 30px;
+  border-radius: 40px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #666;
+  background: transparent;
+  border: none;
+  position: relative;
+}
+
+/* Hiệu ứng hover */
+.filter-tab:hover {
+  color: #e67e22;
+  transform: translateY(-2px);
+}
+
+/* Hiệu ứng active */
+.filter-tab.active {
+  background: linear-gradient(135deg, #e67e22, #d35400);
+  color: white;
+  box-shadow: 0 8px 25px rgba(230, 126, 34, 0.3);
+  transform: translateY(-3px);
+}
+
+/* Hiệu ứng ripple khi click */
+.filter-tab:active {
+  transform: scale(0.92);
+}
+
+/* ============================================
+   COURSES GRID
+   ============================================ */
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  align-items: stretch;
+}
+
+/* ============================================
+   COURSE CARD - HIỆU ỨNG MỚI
+   ============================================ */
+.course-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+/* Hiệu ứng hover card */
+.course-card:hover {
+  transform: translateY(-10px) scale(1.01);
+  box-shadow: 0 20px 50px rgba(230, 126, 34, 0.15);
+  border-color: #e67e22;
+}
+
+/* Hiệu ứng glow khi hover */
+.course-card::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 22px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: -1;
+  background-size: 200% 200%;
+  animation: gradientMove 3s ease infinite;
+}
+
+.course-card:hover::before {
+  opacity: 1;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Card Image */
+.card-image {
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.course-card:hover .card-image img {
+  transform: scale(1.08);
+}
+
+/* Card Badge */
+.card-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: linear-gradient(135deg, #e67e22, #d35400);
+  color: white;
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%,
+  100% {
+    box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 25px rgba(230, 126, 34, 0.5);
+  }
+}
+
+/* Card Body */
+.card-body {
+  padding: 20px 20px 25px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-category {
+  display: inline-block;
+  background: #e67e2210;
+  color: #e67e22;
+  padding: 3px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  align-self: flex-start;
+  transition: all 0.3s ease;
+}
+
+.course-card:hover .card-category {
+  background: #e67e22;
+  color: white;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 6px;
+  min-height: 28px;
+  transition: color 0.3s ease;
+}
+
+.course-card:hover .card-title {
+  color: #e67e22;
+}
+
+.card-description {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  flex: 1;
+  margin-bottom: 15px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Card Meta */
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  flex-shrink: 0;
+  transition: border-color 0.3s ease;
+}
+
+.course-card:hover .card-meta {
+  border-color: #e67e22;
+}
+
+.card-price {
+  font-weight: 700;
+  color: #e67e22;
+  font-size: 17px;
+  transition: all 0.3s ease;
+}
+
+.course-card:hover .card-price {
+  transform: scale(1.05);
+}
+
+.card-duration {
+  color: #999;
+  font-size: 13px;
+}
+.card-duration i {
+  margin-right: 4px;
+}
+
+/* Button Detail */
+.btn-detail {
+  background: linear-gradient(135deg, #e67e22, #d35400);
+  color: white;
+  padding: 6px 20px;
+  border-radius: 30px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.btn-detail:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 20px rgba(230, 126, 34, 0.4);
+}
+
+.course-card:hover .btn-detail {
+  animation: btnPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes btnPulse {
+  0%,
+  100% {
+    box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 30px rgba(230, 126, 34, 0.5);
+  }
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.empty-courses {
+  text-align: center;
+  padding: 80px 20px;
+  background: #f8f9fa;
+  border-radius: 20px;
+  grid-column: 1/-1;
+}
+.empty-courses h3 {
+  font-size: 24px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.empty-search {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+}
+.empty-search button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(230, 126, 34, 0.3);
+}
+
+.search-result-info {
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+  .courses-hero {
+    border-radius: 0 0 20px 20px;
+    padding: 40px 30px 40px 40px;
+  }
+  .hero-content-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+  }
+  .hero-right {
+    align-items: stretch;
+    width: 100%;
+  }
+  .hero-stats-wrapper {
+    justify-content: center;
+  }
+  .hero-float-cards {
+    justify-content: center;
+  }
+  .hero-title {
+    font-size: 38px;
+  }
+  .courses-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .courses-hero {
+    border-radius: 0 0 16px 16px;
+    padding: 30px 20px;
+    min-height: auto;
+  }
+  .hero-title {
+    font-size: 30px;
+    text-align: center;
+  }
+  .hero-subtitle {
+    font-size: 15px;
+    text-align: center;
+  }
+  .hero-badge {
+    margin: 0 auto 14px;
+    display: inline-flex;
+  }
+  .hero-left {
+    text-align: center;
+  }
+  .hero-search {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  .hero-stats-wrapper {
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  .hero-stat {
+    flex: 1;
+    min-width: 80px;
+    justify-content: center;
+    padding: 10px 14px;
+  }
+  .hero-float-cards {
+    justify-content: center;
+    gap: 8px;
+  }
+  .hero-float-card {
+    font-size: 12px;
+    padding: 8px 14px;
+  }
+  .stat-number {
+    font-size: 18px;
+  }
+  .stat-icon {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    font-size: 15px;
+  }
+  .filter-tabs {
+    border-radius: 30px;
+    gap: 6px;
+    padding: 6px;
+  }
+  .filter-tab {
+    padding: 8px 18px;
+    font-size: 13px;
+  }
+  .courses-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .card-image {
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .courses-hero {
+    border-radius: 0 0 12px 12px;
+    padding: 24px 16px;
+  }
+  .hero-title {
+    font-size: 24px;
+  }
+  .hero-subtitle {
+    font-size: 14px;
+  }
+  .hero-badge {
+    font-size: 10px;
+    padding: 4px 14px;
+  }
+  .hero-search input {
+    font-size: 13px;
+    padding: 8px 0;
+  }
+  .hero-search button {
+    width: 38px;
+    height: 38px;
+  }
+  .hero-stat {
+    min-width: 60px;
+    padding: 6px 10px;
+    gap: 8px;
+  }
+  .stat-number {
+    font-size: 16px;
+  }
+  .stat-label {
+    font-size: 10px;
+  }
+  .stat-icon {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    font-size: 12px;
+  }
+  .hero-float-card {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+  .hero-float-card i {
+    font-size: 14px;
+  }
+  .filter-tabs {
+    gap: 4px;
+    padding: 4px;
+    border-radius: 20px;
+  }
+  .filter-tab {
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+  .card-image {
+    height: 160px;
+  }
+  .card-title {
+    font-size: 16px;
+  }
+}

@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ doc.title }} - Thư viện OYin</title>
+    <link rel="stylesheet" href="/static/css/chungcss.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="icon" href="/static/img/default/favicon.png" type="image/png">
+    <style>
+        /* ============================================================
+           DOCUMENT DETAIL - HIỆU ỨNG ĐẸP MẮT
+           ============================================================ */
+        .doc-detail-wrapper {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 40px;
+        }
+
+        /* ===== BREADCRUMB ===== */
+        .breadcrumb {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb a {
+            color: #e67e22;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: #d35400;
+            text-decoration: underline;
+        }
+
+        .breadcrumb .sep {
+            color: #ddd;
+            font-size: 10px;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .doc-main {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s;
+        }
+
+        .doc-main:hover {
+            border-color: #e67e22;
+        }
+
+        .doc-main .doc-title {
+            font-size: 34px;
+            font-weight: 800;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            font-family: 'Playfair Display', serif;
+            line-height: 1.2;
+        }
+
+        .doc-main .doc-title .badge-new {
+            display: inline-block;
+            font-size: 13px;
+            background: #4caf50;
+            color: white;
+            padding: 2px 14px;
+            border-radius: 20px;
+            margin-left: 12px;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            vertical-align: middle;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        .doc-main .doc-meta-top {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f5f5f5;
+        }
+
+        .doc-main .doc-meta-top .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .doc-main .doc-meta-top .meta-item i {
+            color: #e67e22;
+            width: 18px;
+            font-size: 14px;
+        }
+
+        .doc-main .doc-meta-top .meta-item .badge {
+            padding: 3px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-pdf {
+            background: #f4433615;
+            color: #f44336;
+        }
+
+        .badge-doc {
+            background: #2196f315;
+            color: #2196f3;
+        }
+
+        .badge-video {
+            background: #9c27b015;
+            color: #9c27b0;
+        }
+
+        .badge-audio {
+            background: #e91e6315;
+            color: #e91e63;
+        }
+
+        .badge-image {
+            background: #00bcd415;
+            color: #00bcd4;
+        }
+
+        .badge-other {
+            background: #607d8b15;
+            color: #607d8b;
+        }
+
+        /* ===== PREVIEW ===== */
+        .doc-preview {
+            margin: 20px 0 30px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9fa, #f1f3f5);
+            border: 1px solid #eee;
+            position: relative;
+        }
+
+        .doc-preview iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+            display: block;
+        }
+
+        .doc-preview .preview-placeholder {
+            padding: 60px 20px;
+            text-align: center;
+            color: #999;
+        }
+
+        .doc-preview .preview-placeholder .icon {
+            font-size: 72px;
+            margin-bottom: 16px;
+            opacity: 0.2;
+        }
+
+        .doc-preview .preview-placeholder h3 {
+            font-size: 20px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .doc-preview .preview-placeholder p {
+            font-size: 14px;
+        }
+
+        .doc-preview .preview-label {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== DESCRIPTION ===== */
+        .doc-description {
+            margin: 25px 0;
+            padding: 24px 28px;
+            background: linear-gradient(135deg, #fff9f5, #fff5e6);
+            border-radius: 16px;
+            border-left: 4px solid #e67e22;
+        }
+
+        .doc-description h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .doc-description h3 i {
+            color: #e67e22;
+        }
+
+        .doc-description p {
+            color: #555;
+            line-height: 1.9;
+            margin: 0;
+            font-size: 15px;
+        }
+
+        /* ===== TAGS ===== */
+        .doc-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0 25px;
+        }
+
+        .doc-tags .tag {
+            padding: 5px 18px;
+            background: linear-gradient(135deg, #e67e2210, #f39c1210);
+            color: #e67e22;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid #e67e2220;
+            transition: all 0.3s;
+        }
+
+        .doc-tags .tag:hover {
+            background: #e67e22;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.2);
+        }
+
+        /* ===== ACTIONS ===== */
+        .doc-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #f5f5f5;
+            flex-wrap: wrap;
+        }
+
+        .doc-actions .btn {
+            padding: 14px 34px;
+            border-radius: 40px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .doc-actions .btn-download {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: white;
+            box-shadow: 0 4px 20px rgba(230, 126, 34, 0.25);
+        }
+
+        .doc-actions .btn-download:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(230, 126, 34, 0.35);
+        }
+
+        .doc-actions .btn-download:active {
+            transform: scale(0.95);
+        }
+
+        .doc-actions .btn-outline {
+            background: transparent;
+            color: #e67e22;
+            border: 2px solid #e67e22;
+        }
+
+        .doc-actions .btn-outline:hover {
+            background: #e67e22;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(230, 126, 34, 0.2);
+        }
+
+        .doc-actions .btn-zalo {
+            background: #0181f5;
+            color: white;
+            box-shadow: 0 4px 20px rgba(1, 129, 245, 0.25);
+        }
+
+        .doc-actions .btn-zalo:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(1, 129, 245, 0.35);
+        }
+
+        /* ===== SIDEBAR ===== */
+        .doc-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .doc-sidebar .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s;
+        }
+
+        .doc-sidebar .sidebar-card:hover {
+            border-color: #e67e22;
+        }
+
+        .doc-sidebar .sidebar-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .doc-sidebar .sidebar-card h4 i {
+            color: #e67e22;
+        }
+
+        .doc-sidebar .sidebar-card .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 14px;
+        }
+
+        .doc-sidebar .sidebar-card .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .doc-sidebar .sidebar-card .info-row .label {
+            color: #999;
+        }
+
+        .doc-sidebar .sidebar-card .info-row .value {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .doc-sidebar .sidebar-card .info-row .value .highlight {
+            color: #e67e22;
+        }
+
+        /* Share buttons */
+        .share-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .share-buttons a {
+            padding: 10px 20px;
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            flex: 1;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .share-buttons a:hover {
+            transform: translateY(-3px);
+        }
+
+        .share-facebook {
+            background: #1877f2;
+        }
+
+        .share-zalo {
+            background: #0181f5;
+        }
+
+        .share-twitter {
+            background: #1da1f2;
+        }
+
+        .share-link {
+            background: #f0f0f0;
+            color: #555;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 12px;
+            transition: all 0.3s;
+            flex: 1;
+            text-align: center;
+        }
+
+        .share-link:hover {
+            background: #e67e22;
+            color: white;
+        }
+
+        /* ===== RELATED DOCUMENTS ===== */
+        .related-section {
+            max-width: 1200px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }
+
+        .related-section .related-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .related-section .related-header h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2c3e50;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .related-section .related-header h3 i {
+            color: #e67e22;
+            margin-right: 10px;
+        }
+
+        .related-section .related-header a {
+            color: #e67e22;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .related-section .related-header a:hover {
+            color: #d35400;
+            text-decoration: underline;
+        }
+
+        .related-section .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .related-section .related-item {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #f0f0f0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .related-section .related-item:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(230, 126, 34, 0.12);
+            border-color: #e67e22;
+        }
+
+        .related-section .related-item .icon {
+            font-size: 32px;
+            color: #e67e22;
+            margin-bottom: 10px;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .related-section .related-item:hover .icon {
+            opacity: 1;
+        }
+
+        .related-section .related-item .title {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .related-section .related-item .type {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 992px) {
+            .doc-detail-wrapper {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .doc-main {
+                padding: 24px;
+            }
+
+            .doc-main .doc-title {
+                font-size: 26px;
+            }
+
+            .doc-main .doc-meta-top {
+                gap: 12px;
+            }
+
+            .doc-preview iframe {
+                height: 320px;
+            }
+
+            .doc-actions .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 12px 20px;
+            }
+
+            .doc-actions {
+                gap: 10px;
+            }
+
+            .related-section .related-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .share-buttons a {
+                min-width: 60px;
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .doc-main {
+                padding: 16px;
+            }
+
+            .doc-main .doc-title {
+                font-size: 22px;
+            }
+
+            .doc-preview iframe {
+                height: 220px;
+            }
+
+            .doc-description {
+                padding: 16px;
+            }
+
+            .related-section .related-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .doc-sidebar .sidebar-card {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="information">
+            <div class="informationtext informationtextlogo">
+                <a href="/"><img src="/static/img/default/logooyin.png" alt="Logo" class="informationimg" /></a>
+            </div>
+            <div class="informationtext informationtextname">
+                <strong class="informationtextname2">NGOẠI NGỮ O-YIN</strong>
+            </div>
+            <div class="informationtext informationtextcall">
+                <div class="informationtextcallimg">
+                    <img src="/static/img/default/dienthoai.png" alt="Liên Hệ" class="callimg" />
+                </div>
+                <div class="informationtextcall12">
+                    <div class="informationtextcall1">LIÊN HỆ ZALO</div>
+                    <div class="informationtextcall2">0971 306 143(Hoàng Ngân)</div>
+                </div>
+            </div>
+            <div class="informationtext informationtextsupport">
+                <div class="informationtextsupportimg">
+                    <img src="/static/img/default/dongho.jpg" alt="Hỗ trợ" class="supportimg" />
+                </div>
+                <div class="informationtextsupport12">
+                    <div class="informationtextsupport1">HỖ TRỢ</div>
+                    <div class="informationtextsupport2">24/7</div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-wrapper">
+            <div class="mobile-menu">
+                <div class="menu-toggle">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+            </div>
+            <div class="nav-main">
+                <ul class="nav-list" id="dynamic-menu">
+                    <li>Đang tải menu...</li>
+                </ul>
+            </div>
+            <div class="register-btn">
+                <a href="/dang-ky">ĐĂNG KÝ</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="doc-detail-wrapper">
+            <!-- MAIN CONTENT -->
+            <div class="doc-main">
+                <!-- Breadcrumb -->
+                <div class="breadcrumb">
+                    <a href="/"><i class="fas fa-home"></i> Trang chủ</a>
+                    <span class="sep"><i class="fas fa-chevron-right" style="font-size:10px;"></i></span>
+                    <a href="/thu-vien">Thư viện</a>
+                    <span class="sep"><i class="fas fa-chevron-right" style="font-size:10px;"></i></span>
+                    <!-- 👈 THÊM BẬC DANH MỤC -->
+                    <a href="/thu-vien?category={{ doc.category_id }}">{{ doc.category_name or 'Chưa phân loại' }}</a>
+                    <span class="sep"><i class="fas fa-chevron-right" style="font-size:10px;"></i></span>
+                    <span style="color:#555;">{{ doc.title }}</span>
+                </div>
+
+                <!-- Title -->
+                <h1 class="doc-title">
+                    {{ doc.title if doc and doc.title else 'Tài liệu' }}
+                    {% if doc and doc.is_new %}
+                    <span class="badge-new"><i class="fas fa-star"></i> Mới</span>
+                    {% endif %}
+                </h1>
+
+                <!-- Meta -->
+                <div class="doc-meta-top">
+                    <span class="meta-item">
+                        <i class="fas fa-folder"></i>
+                        <a href="/thu-vien?category={{ doc.category_id }}" style="color:#e67e22;text-decoration:none;">
+                            {{ doc.category_name or 'Chưa phân loại' }}
+                        </a>
+                    </span>
+                    <span class="meta-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        {{ doc.created_at or 'Chưa cập nhật' }}
+                    </span>
+                    <span class="meta-item">
+                        <i class="fas fa-file"></i>
+                        <span class="badge badge-{{ doc.file_type or 'other' }}">
+                            {{ (doc.file_type or 'Tài liệu')|upper }}
+                        </span>
+                    </span>
+                    <span class="meta-item">
+                        <i class="fas fa-download"></i>
+                        {{ doc.download_count|default(0) }} lượt tải
+                    </span>
+                    <span class="meta-item">
+                        <i class="fas fa-eye"></i>
+                        {{ doc.view_count|default(0) }} lượt xem
+                    </span>
+                </div>
+
+                PREVIEW
+                <div class="doc-preview">
+                    {% if doc.preview_url or doc.file_url %}
+                    {% if doc.preview_url %}
+                    <span class="preview-label"><i class="fas fa-eye"></i> Xem trước</span>
+                    <iframe src="{{ doc.preview_url }}" allowfullscreen></iframe>
+                    {% elif doc.file_url and doc.file_type == 'pdf' %}
+                    <span class="preview-label"><i class="fas fa-file-pdf"></i> PDF</span>
+                    <iframe src="{{ doc.file_url }}" allowfullscreen></iframe>
+                    {% elif doc.file_url and doc.file_type in ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'] %}
+                    <div
+                        style="padding:20px;text-align:center;background:#f8f9fa;min-height:300px;display:flex;align-items:center;justify-content:center;">
+                        <img src="{{ doc.file_url }}" alt="{{ doc.title }}"
+                            style="max-width:100%;max-height:400px;border-radius:8px;object-fit:contain;">
+                    </div>
+                    {% elif doc.file_url and doc.file_type in ['mp4', 'avi', 'mov', 'webm'] %}
+                    <video controls style="width:100%;max-height:500px;background:#000;">
+                        <source src="{{ doc.file_url }}" type="video/{{ doc.file_type }}">
+                        Trình duyệt của bạn không hỗ trợ video.
+                    </video>
+                    {% elif doc.file_url and doc.file_type in ['mp3', 'wav', 'flac'] %}
+                    <div style="padding:60px 20px;text-align:center;background:#f8f9fa;">
+                        <div style="font-size:64px;color:#e67e22;opacity:0.3;margin-bottom:16px;">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <h3 style="color:#555;margin-bottom:8px;">Audio</h3>
+                        <audio controls style="width:100%;max-width:400px;margin:0 auto;">
+                            <source src="{{ doc.file_url }}" type="audio/{{ doc.file_type }}">
+                            Trình duyệt của bạn không hỗ trợ audio.
+                        </audio>
+                    </div>
+                    {% else %}
+                    <div class="preview-placeholder">
+                        <div class="icon"><i class="fas fa-file"></i></div>
+                        <h3>Không thể xem trước</h3>
+                        <p>Tải xuống để xem nội dung tài liệu</p>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <div class="preview-placeholder">
+                        <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                        <h3>Chưa có bản xem trước</h3>
+                        <p>Tài liệu này chưa được cấu hình xem trước</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- DESCRIPTION -->
+                {% if doc.description or doc.summary %}
+                <div class="doc-description">
+                    <h3><i class="fas fa-align-left"></i> Mô tả chi tiết</h3>
+                    <p>{{ doc.description or doc.summary }}</p>
+                </div>
+                {% endif %}
+
+                <!-- TAGS -->
+                {% if doc.tags %}
+                <div class="doc-tags">
+                    {% for tag in doc.tags %}
+                    <span class="tag">#{{ tag }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- ACTIONS -->
+                <div class="doc-actions">
+                    <a href="{{ doc.file_url or '#' }}" class="btn btn-download" download
+                        onclick="trackDownload('{{ doc.id }}')">
+                        <i class="fas fa-download"></i> Tải xuống
+                    </a>
+                    <a href="javascript:history.back()" class="btn btn-outline">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </a>
+                    <a href="https://zalo.me/0971306143" target="_blank" class="btn btn-zalo">
+                        <i class="fas fa-comment"></i> Tư vấn qua Zalo
+                    </a>
+                </div>
+            </div>
+
+            <!-- SIDEBAR -->
+            <div class="doc-sidebar">
+                <!-- 👈 THÊM CARD ẢNH -->
+                {% if doc.image %}
+                <div class="sidebar-card" style="padding:0;overflow:hidden;border-radius:16px;">
+                    <img src="{{ doc.image }}" alt="{{ doc.title }}" style="width:100%;height:200px;object-fit:cover;">
+                </div>
+                {% endif %}
+                <!-- Info Card -->
+                <div class="sidebar-card">
+                    <h4><i class="fas fa-info-circle"></i> Thông tin</h4>
+                    <div class="info-row">
+                        <span class="label">Tên tài liệu</span>
+                        <span class="value">{{ doc.title }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Danh mục</span>
+                        <span class="value">{{ doc.category_name or 'Chưa phân loại' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Ngày đăng</span>
+                        <span class="value">{{ doc.created_at or 'Chưa cập nhật' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Định dạng</span>
+                        <span class="value">{{ (doc.file_type or 'Không rõ')|upper }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Dung lượng</span>
+                        <span class="value">{{ doc.file_size or 'Không rõ' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Lượt tải</span>
+                        <span class="value"><span class="highlight">{{ doc.download_count|default(0) }}</span></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Lượt xem</span>
+                        <span class="value"><span class="highlight">{{ doc.view_count|default(0) }}</span></span>
+                    </div>
+                </div>
+
+                <!-- Share Card -->
+                <div class="sidebar-card">
+                    <h4><i class="fas fa-share-alt"></i> Chia sẻ</h4>
+                    <div class="share-buttons">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" target="_blank"
+                            class="share-facebook">
+                            <i class="fab fa-facebook-f"></i> Facebook
+                        </a>
+                        <a href="https://zalo.me/share?url={{ request.url }}" target="_blank" class="share-zalo">
+                            <i class="fab fa-zalo"></i> Zalo
+                        </a>
+                        <button class="share-link" onclick="copyLink()">
+                            <i class="fas fa-copy"></i> Sao chép
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Support Card -->
+                <div class="sidebar-card"
+                    style="background:linear-gradient(135deg,#fff9f5,#fff5e6);border-color:#e67e2220;">
+                    <h4 style="color:#e67e22;"><i class="fas fa-headset"></i> Cần hỗ trợ?</h4>
+                    <p style="font-size:14px;color:#666;margin-bottom:16px;line-height:1.6;">
+                        Gặp vấn đề khi tải tài liệu? Liên hệ ngay để được giúp đỡ.
+                    </p>
+                    <a href="https://zalo.me/0971306143" target="_blank"
+                        style="display:block;width:100%;padding:12px;background:#0181f5;color:white;border:none;border-radius:12px;text-align:center;text-decoration:none;font-weight:600;transition:all 0.3s;">
+                        <i class="fas fa-comment"></i> Chat qua Zalo
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- RELATED DOCUMENTS -->
+        {% if related %}
+        <div class="related-section">
+            <div class="related-header">
+                <h3><i class="fas fa-book-open"></i> Tài liệu liên quan</h3>
+                <a href="/thu-vien">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="related-grid">
+                {% for rel in related %}
+                <a href="/thu-vien/chi-tiet/{{ rel.id }}" class="related-item">
+                    <div class="icon"><i class="fas {{ get_file_icon(rel.file_type) or 'fa-file' }}"></i></div>
+                    <div class="title">{{ rel.title }}</div>
+                    <div class="type">{{ rel.category_name or 'Tài liệu' }}</div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-row">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <img src="/static/img/default/logooyin.png" alt="Logo">
+                        <h3>NGOẠI NGỮ O-YIN</h3>
+                    </div>
+                    <p class="footer-desc">
+                        Trung tâm đào tạo tiếng Trung uy tín hàng đầu, với đội ngũ giảng viên giàu kinh nghiệm,
+                        phương pháp giảng dạy hiện đại, cam kết đầu ra chất lượng.
+                    </p>
+                    <div class="footer-social">
+                        <a href="https://www.facebook.com/profile.php?id=61564711545051" class="social-icon facebook"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="https://zalo.me/0971306143" class="social-icon zalo"><i class="fas fa-comment"
+                                style="font-size:18px;"></i></a>
+                        <a href="#" class="social-icon youtube"><i class="fab fa-youtube"></i></a>
+                        <a href="http://tiktok.com/@ngoainguoyin_24" class="social-icon tiktok"><i
+                                class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>📞 LIÊN HỆ</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-map-marker-alt"></i> Sầm Sơn, Thanh Hóa</li>
+                        <li><i class="fas fa-phone-alt"></i> 0971 306 143 (Hoàng Ngân)</li>
+                        <li><i class="fas fa-envelope"></i> ngoainguoyin@gmail.com</li>
+                        <li><i class="fas fa-clock"></i> Mọi lúc</li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>📚 KHÓA HỌC</h4>
+                    <ul class="footer-links" id="footerCategories">
+                        <!-- Categories sẽ load từ API -->
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>🛡️ HỖ TRỢ</h4>
+                    <ul class="footer-links">
+                        <li><a href="/chinh-sach-dieu-khoan">Chính sách & Điều khoản</a></li>
+                        <li><a href="/chinh-sach-bao-mat">Chính sách bảo mật</a></li>
+                        <li><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Ngoại Ngữ O-Yin. Tất cả các quyền được bảo lưu.</p>
+                <p>Thiết kế và phát triển bởi <span>O-Yin Team</span></p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // ============================================================
+        // MENU
+        // ============================================================
+        async function loadMenu() {
+            try {
+                const response = await fetch('/api/menu');
+                const data = await response.json();
+                const menuItems = data.items;
+                const menuContainer = document.getElementById('dynamic-menu');
+                if (!menuContainer) return;
+                menuContainer.innerHTML = '';
+                menuItems.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'nav-item';
+                    if (item.children && item.children.length > 0) {
+                        li.classList.add('has-dropdown');
+                        li.innerHTML = `
+                            <a href="${item.url}">${item.name}</a>
+                            <ul class="dropdown">
+                                ${renderChildren(item.children)}
+                            </ul>
+                        `;
+                    } else {
+                        li.innerHTML = `<a href="${item.url}">${item.name}</a>`;
+                    }
+                    menuContainer.appendChild(li);
+                });
+                if (window.innerWidth <= 768) {
+                    document.querySelectorAll('.has-dropdown > a').forEach(link => {
+                        link.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            const dropdown = this.nextElementSibling;
+                            if (dropdown) dropdown.classList.toggle('show');
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error('Lỗi tải menu:', error);
+            }
+        }
+
+        function renderChildren(children) {
+            let html = '';
+            children.forEach(child => {
+                if (child.children && child.children.length > 0) {
+                    html += `<li class="dropdown-sub"><span>${child.name}</span><ul class="sub-dropdown">${renderChildren(child.children)}</ul></li>`;
+                } else {
+                    html += `<li><a href="${child.url}">${child.name}</a></li>`;
+                }
+            });
+            return html;
+        }
+
+        // ============================================================
+        // STICKY NAV
+        // ============================================================
+        (function () {
+            const nav = document.querySelector('.nav-wrapper');
+            const header = document.querySelector('header');
+            if (!nav) return;
+            let navHeight = nav.offsetHeight;
+            let stickyOffset = header.offsetHeight;
+            function handleSticky() {
+                if (window.scrollY >= stickyOffset) {
+                    nav.classList.add('js-sticky');
+                    if (!document.querySelector('.sticky-spacer')) {
+                        const spacer = document.createElement('div');
+                        spacer.className = 'sticky-spacer';
+                        spacer.style.height = navHeight + 'px';
+                        nav.parentNode.insertBefore(spacer, nav);
+                    }
+                } else {
+                    nav.classList.remove('js-sticky');
+                    const spacer = document.querySelector('.sticky-spacer');
+                    if (spacer) spacer.remove();
+                }
+            }
+            const style = document.createElement('style');
+            style.textContent = `
+                .nav-wrapper.js-sticky {
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                    width: 100% !important;
+                    z-index: 10000 !important;
+                    animation: slideDown 0.3s ease !important;
+                    box-shadow: 0 4px 25px rgba(0,0,0,0.2) !important;
+                }
+                @keyframes slideDown {
+                    from { transform: translateY(-100%); }
+                    to { transform: translateY(0); }
+                }
+            `;
+            document.head.appendChild(style);
+            window.addEventListener('scroll', handleSticky);
+            window.addEventListener('resize', function () {
+                stickyOffset = header.offsetHeight;
+                navHeight = nav.offsetHeight;
+                handleSticky();
+            });
+            handleSticky();
+        })();
+
+        // ============================================================
+        // MOBILE MENU
+        // ============================================================
+        function initMobileMenu() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navMain = document.querySelector('.nav-main');
+            if (menuToggle && navMain) {
+                menuToggle.addEventListener('click', function () {
+                    navMain.classList.toggle('active');
+                    const bars = document.querySelectorAll('.bar');
+                    if (navMain.classList.contains('active')) {
+                        bars[0].style.transform = 'rotate(-45deg) translate(-5px, 6px)';
+                        bars[1].style.opacity = '0';
+                        bars[2].style.transform = 'rotate(45deg) translate(-5px, -6px)';
+                    } else {
+                        bars[0].style.transform = 'rotate(0) translate(0, 0)';
+                        bars[1].style.opacity = '1';
+                        bars[2].style.transform = 'rotate(0) translate(0, 0)';
+                    }
+                });
+            }
+        }
+
+        // ============================================================
+        // TRACK DOWNLOAD
+        // ============================================================
+        async function trackDownload(docId) {
+            try {
+                await fetch(`/api/document/download/${docId}`, { method: 'POST' });
+            } catch (e) {
+                console.log('Không thể cập nhật lượt tải');
+            }
+        }
+
+        // ============================================================
+        // COPY LINK
+        // ============================================================
+        function copyLink() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = document.querySelector('.share-link');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Đã sao chép!';
+                btn.style.background = '#4caf50';
+                btn.style.color = 'white';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '#f0f0f0';
+                    btn.style.color = '#555';
+                }, 2000);
+            }).catch(() => {
+                // Fallback
+                const input = document.createElement('input');
+                input.value = url;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                alert('Đã sao chép link!');
+            });
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function () {
+            loadMenu();
+            initMobileMenu();
+
+            // Tăng lượt xem
+            fetch(`/api/document/view/{{ doc.id }}`, { method: 'POST' })
+                .catch(err => console.log('Không thể cập nhật lượt xem'));
+
+            // Click outside to close mobile menu
+            document.addEventListener('click', function (event) {
+                if (window.innerWidth <= 768) {
+                    const menuToggle = document.querySelector('.menu-toggle');
+                    const navMain = document.querySelector('.nav-main');
+                    const isClickInside = menuToggle?.contains(event.target) || navMain?.contains(event.target);
+                    if (!isClickInside && navMain?.classList.contains('active')) {
+                        navMain.classList.remove('active');
+                        const bars = document.querySelectorAll('.bar');
+                        bars[0].style.transform = 'rotate(0) translate(0, 0)';
+                        bars[1].style.opacity = '1';
+                        bars[2].style.transform = 'rotate(0) translate(0, 0)';
+                    }
+                }
+            });
+
+            // Resize
+            window.addEventListener('resize', function () {
+                if (window.innerWidth > 768) {
+                    const navMain = document.querySelector('.nav-main');
+                    if (navMain) navMain.classList.remove('active');
+                    const bars = document.querySelectorAll('.bar');
+                    bars[0].style.transform = 'rotate(0) translate(0, 0)';
+                    bars[1].style.opacity = '1';
+                    bars[2].style.transform = 'rotate(0) translate(0, 0)';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

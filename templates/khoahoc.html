@@ -5,27 +5,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Khóa Học - Ngoại Ngữ OYin</title>
-    <link rel="stylesheet" href="../css/chungcss.css">
-    <link rel="stylesheet" href="../css/trangchucss.css">
-    <link rel="stylesheet" href="../css/khoahoc.css">
+    <link rel="stylesheet" href="/static/css/chungcss.css">
+    <link rel="stylesheet" href="/static/css/trangchucss.css">
+    <link rel="stylesheet" href="/static/css/khoahoc.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+    <link rel="icon" href="/static/img/default/favicon.png" type="image/png">
 </head>
 
 <body>
     <header>
         <div class="information">
             <div class="informationtext informationtextlogo">
-                <a href="/index.html"><img src="../img/logooyin.png" alt="Logo" class="informationimg" /></a>
+                <a href="/"><img src="/static/img/default/logooyin.png" alt="Logo" class="informationimg" /></a>
             </div>
             <div class="informationtext informationtextname">
                 <strong class="informationtextname2">NGOẠI NGỮ O-YIN</strong>
             </div>
             <div class="informationtext informationtextcall">
                 <div class="informationtextcallimg">
-                    <img src="../img/dienthoai.png" alt="Liên Hệ" class="callimg" />
+                    <img src="/static/img/default/dienthoai.png" alt="Liên Hệ" class="callimg" />
                 </div>
                 <div class="informationtextcall12">
                     <div class="informationtextcall1">LIÊN HỆ ZALO</div>
@@ -34,7 +35,7 @@
             </div>
             <div class="informationtext informationtextsupport">
                 <div class="informationtextsupportimg">
-                    <img src="../img/dongho.jpg" alt="Hỗ trợ" class="supportimg" />
+                    <img src="/static/img/default/dongho.jpg" alt="Hỗ trợ" class="supportimg" />
                 </div>
                 <div class="informationtextsupport12">
                     <div class="informationtextsupport1">HỖ TRỢ</div>
@@ -63,35 +64,90 @@
     </header>
 
     <main>
+        <!-- Hero Section -->
         <div class="courses-hero">
-            <div class="hero-content">
-                <div class="hero-badge">📚 HỌC TIẾNG TRUNG</div>
-                <h1 class="hero-title">Khóa Học Tiếng Trung</h1>
-                <p class="hero-subtitle">Chương trình đào tạo chất lượng cao, lộ trình rõ ràng</p>
-                <div class="hero-stats">
-                    <div class="hero-stat">
-                        <span class="stat-number">10+</span>
-                        <span class="stat-label">Khóa học</span>
+            <div class="hero-bg-pattern"></div>
+            <div class="hero-decoration-circle c1"></div>
+            <div class="hero-decoration-circle c2"></div>
+            <div class="hero-decoration-circle c3"></div>
+
+            <div class="hero-accent-line"></div>
+
+            <div class="hero-content-wrapper">
+                <!-- Phần bên trái -->
+                <div class="hero-left">
+                    <div class="hero-badge">
+                        <i class="fas fa-graduation-cap"></i> HỌC TIẾNG TRUNG
                     </div>
-                    <div class="hero-stat">
-                        <span class="stat-number">50+</span>
-                        <span class="stat-label">Học viên</span>
+                    <h1 class="hero-title">
+                        Khóa Học Tiếng Trung
+                    </h1>
+                    <p class="hero-subtitle">Chương trình đào tạo chất lượng cao, lộ trình rõ ràng</p>
+
+                    <div class="hero-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Tìm kiếm khóa học..." id="searchInput">
+                        <button onclick="searchCourse()"><i class="fas fa-arrow-right"></i></button>
                     </div>
-                    <div class="hero-stat">
-                        <span class="stat-number">100%</span>
-                        <span class="stat-label">Hài lòng</span>
+                </div>
+
+                <!-- Phần bên phải -->
+                <div class="hero-right">
+                    <div class="hero-stats-wrapper">
+                        <div class="hero-stat">
+                            <div class="stat-icon"><i class="fas fa-book-open"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-number">10+</span>
+                                <span class="stat-label">Khóa học</span>
+                            </div>
+                        </div>
+                        <div class="hero-stat">
+                            <div class="stat-icon"><i class="fas fa-users"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-number">150+</span>
+                                <span class="stat-label">Học viên</span>
+                            </div>
+                        </div>
+                        <div class="hero-stat">
+                            <div class="stat-icon"><i class="fas fa-star"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-number">100%</span>
+                                <span class="stat-label">Hài lòng</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hero-float-cards">
+                        <div class="hero-float-card card-1">
+                            <i class="fas fa-certificate"></i>
+                            <span>Chứng chỉ HSK</span>
+                        </div>
+                        <div class="hero-float-card card-2">
+                            <i class="fas fa-user-graduate"></i>
+                            <span>Giảng viên giàu kinh nghiệm</span>
+                        </div>
+                        <div class="hero-float-card card-3">
+                            <i class="fas fa-globe"></i>
+                            <span>Học online linh hoạt</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
+            <!-- Decoration Line -->
+            <div class="hero-accent-line"></div>
+        </div>
         <div class="courses-container">
             <div class="filter-tabs" id="filterTabs">
                 <div class="filter-tab active" data-filter="all">Tất cả</div>
             </div>
 
             <div class="courses-grid" id="coursesGrid">
-                <!-- Courses sẽ được load từ API -->
+                <!-- Loading -->
+                <div style="grid-column:1/-1;text-align:center;padding:40px;color:#999;">
+                    <i class="fas fa-spinner fa-spin" style="font-size:32px;"></i>
+                    <p>Đang tải khóa học...</p>
+                </div>
             </div>
         </div>
     </main>
@@ -101,7 +157,7 @@
             <div class="footer-row">
                 <div class="footer-col">
                     <div class="footer-logo">
-                        <img src="../img/logooyin.png" alt="Logo">
+                        <img src="/static/img/default/logooyin.png" alt="Logo">
                         <h3>NGOẠI NGỮ O-YIN</h3>
                     </div>
                     <p class="footer-desc">
@@ -109,10 +165,13 @@
                         phương pháp giảng dạy hiện đại, cam kết đầu ra chất lượng.
                     </p>
                     <div class="footer-social">
-                        <a href="#" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-icon zalo"><i class="fab fa-zalo"></i></a>
+                        <a href="https://www.facebook.com/profile.php?id=61564711545051" class="social-icon facebook"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="https://zalo.me/0971306143" class="social-icon zalo"><i class="fas fa-comment"
+                                style="font-size:18px;"></i></a>
                         <a href="#" class="social-icon youtube"><i class="fab fa-youtube"></i></a>
-                        <a href="#" class="social-icon tiktok"><i class="fab fa-tiktok"></i></a>
+                        <a href="http://tiktok.com/@ngoainguoyin_24" class="social-icon tiktok"><i
+                                class="fab fa-tiktok"></i></a>
                     </div>
                 </div>
                 <div class="footer-col">
@@ -120,8 +179,8 @@
                     <ul class="footer-contact">
                         <li><i class="fas fa-map-marker-alt"></i> Sầm Sơn, Thanh Hóa</li>
                         <li><i class="fas fa-phone-alt"></i> 0971 306 143 (Hoàng Ngân)</li>
-                        <li><i class="fas fa-envelope"></i> info@oyin.edu.vn</li>
-                        <li><i class="fas fa-clock"></i> Thứ 2 - Chủ Nhật: 8:00 - 21:00</li>
+                        <li><i class="fas fa-envelope"></i> ngoainguoyin@gmail.com</li>
+                        <li><i class="fas fa-clock"></i> Mọi lúc</li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -133,10 +192,9 @@
                 <div class="footer-col">
                     <h4>🛡️ HỖ TRỢ</h4>
                     <ul class="footer-links">
-                        <li><a href="#">Chính sách & Điều khoản</a></li>
-                        <li><a href="#">Chính sách bảo mật</a></li>
-                        <li><a href="#">Hướng dẫn thanh toán</a></li>
-                        <li><a href="#">Câu hỏi thường gặp</a></li>
+                        <li><a href="/chinh-sach-dieu-khoan">Chính sách & Điều khoản</a></li>
+                        <li><a href="/chinh-sach-bao-mat">Chính sách bảo mật</a></li>
+                        <li><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
                     </ul>
                 </div>
             </div>
@@ -146,9 +204,8 @@
             </div>
         </div>
     </footer>
-
     <script>
-        // ===== THAY THẾ HÀM loadMenu() =====
+        // ===== LOAD MENU =====
         async function loadMenu() {
             try {
                 const response = await fetch('/api/menu');
@@ -166,11 +223,11 @@
                     if (item.children && item.children.length > 0) {
                         li.classList.add('has-dropdown');
                         li.innerHTML = `
-                    <a href="${item.url}">${item.name}</a>
-                    <ul class="dropdown">
-                        ${renderChildren(item.children)}
-                    </ul>
-                `;
+                            <a href="${item.url}">${item.name}</a>
+                            <ul class="dropdown">
+                                ${renderChildren(item.children)}
+                            </ul>
+                        `;
                     } else {
                         li.innerHTML = `<a href="${item.url}">${item.name}</a>`;
                     }
@@ -178,7 +235,6 @@
                     menuContainer.appendChild(li);
                 });
 
-                // Thêm sự kiện click cho dropdown trên mobile
                 if (window.innerWidth <= 768) {
                     document.querySelectorAll('.has-dropdown > a').forEach(link => {
                         link.addEventListener('click', function (e) {
@@ -210,19 +266,18 @@
             }
         }
 
-        // ===== THÊM HÀM renderChildren() VÀO khoahoc.html =====
         function renderChildren(children) {
             let html = '';
             children.forEach(child => {
                 if (child.children && child.children.length > 0) {
                     html += `
-                <li class="dropdown-sub">
-                    <span>${child.name}</span>
-                    <ul class="sub-dropdown">
-                        ${renderChildren(child.children)}
-                    </ul>
-                </li>
-            `;
+                        <li class="dropdown-sub">
+                            <span>${child.name}</span>
+                            <ul class="sub-dropdown">
+                                ${renderChildren(child.children)}
+                            </ul>
+                        </li>
+                    `;
                 } else {
                     html += `<li><a href="${child.url}">${child.name}</a></li>`;
                 }
@@ -244,13 +299,11 @@
                 let coursesData = await coursesRes.json();
                 const categoriesData = await categoriesRes.json();
 
-                // XỬ LÝ DỮ LIỆU COURSES
+                // 👈 SỬA: Lấy đúng dữ liệu từ JSON
                 if (Array.isArray(coursesData)) {
                     allCourses = coursesData;
                 } else if (coursesData.items && Array.isArray(coursesData.items)) {
                     allCourses = coursesData.items;
-                } else if (typeof coursesData === 'object') {
-                    allCourses = Object.values(coursesData);
                 } else {
                     allCourses = [];
                 }
@@ -266,11 +319,11 @@
             } catch (error) {
                 console.error('❌ Lỗi tải dữ liệu:', error);
                 document.getElementById('coursesGrid').innerHTML = `
-                <div class="empty-courses">
-                    <h3>❌ Lỗi tải dữ liệu</h3>
-                    <p>${error.message}</p>
-                </div>
-            `;
+                    <div class="empty-courses">
+                        <h3>❌ Lỗi tải dữ liệu</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
             }
         }
 
@@ -293,7 +346,6 @@
             });
         }
 
-        // ===== HÀM RENDER COURSES - CHỈ GIỮ 1 BẢN =====
         function renderCourses(filter) {
             const grid = document.getElementById('coursesGrid');
             if (!grid) return;
@@ -303,18 +355,18 @@
                 const category = categories.find(c => c.slug === filter);
                 if (category) {
                     filtered = allCourses.filter(course => {
-                        return course.category_id === category.id || course.category === category.id;
+                        return course.category === category.id || course.category_id === category.id;
                     });
                 }
             }
 
             if (filtered.length === 0) {
                 grid.innerHTML = `
-                <div class="empty-courses">
-                    <h3>📭 Chưa có khóa học nào</h3>
-                    <p>Hãy chờ đợi khóa học tiếp theo</p>
-                </div>
-            `;
+                    <div class="empty-courses">
+                        <h3>📭 Chưa có khóa học nào</h3>
+                        <p>Hãy chờ đợi khóa học tiếp theo</p>
+                    </div>
+                `;
                 return;
             }
 
@@ -322,7 +374,6 @@
             categories.forEach(c => catMap[c.id] = c.name);
 
             grid.innerHTML = filtered.map(course => {
-                // ===== XỬ LÝ ẢNH: DÙNG SVG INLINE, KHÔNG GỌI default.jpg =====
                 let imgSrc = course.image || course.image_url || '';
                 if (!imgSrc) {
                     const colors = ['#e67e22', '#3498db', '#2ecc71', '#9b59b6', '#1abc9c', '#e74c3c', '#f39c12', '#2c3e50'];
@@ -331,33 +382,30 @@
                     imgSrc = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='220'%3E%3Crect fill='${bgColor}' width='400' height='220'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='30'%3E${(course.name || '📚').substring(0, 10)}%3C/text%3E%3C/svg%3E`;
                 }
 
-                const catName = catMap[course.category_id] || catMap[course.category] || 'Khóa học';
+                const catName = catMap[course.category] || catMap[course.category_id] || 'Khóa học';
+
+                // 👈 SỬA: link dùng ID
+                const detailUrl = course.id ? `/khoa-hoc/chi-tiet/${course.id}` : '#';
 
                 return `
-                <div class="course-card" onclick="viewCourse('${course.html_file}')">
-                    <div class="card-image">
-                        <img src="${imgSrc}" alt="${course.name}" onerror="this.parentElement.innerHTML='<span style=\\'display:flex;align-items:center;justify-content:center;height:100%;font-size:48px;\\'>📚</span>'">
-                        <span class="card-badge">${course.level || 'Cơ bản'}</span>
-                    </div>
-                    <div class="card-body">
-                        <span class="card-category">${catName}</span>
-                        <h3 class="card-title">${course.name}</h3>
-                        <p class="card-description">${course.description || 'Mô tả khóa học...'}</p>
-                        <div class="card-meta">
-                            <span class="card-price">${course.price || 'Liên hệ'}</span>
-                            <span class="card-duration"><i class="fas fa-clock"></i> ${course.duration || 'Linh hoạt'}</span>
-                            <button class="btn-detail">Xem chi tiết</button>
+                    <div class="course-card" onclick="window.location.href='${detailUrl}'">
+                        <div class="card-image">
+                            <img src="${imgSrc}" alt="${course.name}" onerror="this.parentElement.innerHTML='<span style=\\'display:flex;align-items:center;justify-content:center;height:100%;font-size:48px;\\'>📚</span>'">
+                            <span class="card-badge">${course.level || 'Cơ bản'}</span>
+                        </div>
+                        <div class="card-body">
+                            <span class="card-category">${catName}</span>
+                            <h3 class="card-title">${course.name}</h3>
+                            <p class="card-description">${course.description || 'Mô tả khóa học...'}</p>
+                            <div class="card-meta">
+                                <span class="card-price">${course.price || 'Liên hệ'}</span>
+                                <span class="card-duration"><i class="fas fa-clock"></i> ${course.duration || 'Linh hoạt'}</span>
+                                <button class="btn-detail">Xem chi tiết</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
             }).join('');
-        }
-
-        function viewCourse(htmlFile) {
-            if (htmlFile) {
-                window.location.href = `/html/khoahochtml/${htmlFile}`;
-            }
         }
 
         function renderFooterCategories() {
@@ -365,8 +413,8 @@
             if (!container) return;
 
             container.innerHTML = categories.map(cat => `
-            <li><a href="/khoa-hoc?category=${cat.slug}">${cat.name}</a></li>
-        `).join('');
+                <li><a href="/khoa-hoc?category=${cat.slug}">${cat.name}</a></li>
+            `).join('');
             container.innerHTML += `<li><a href="/khoa-hoc">Tất cả khóa học</a></li>`;
         }
 
@@ -393,9 +441,8 @@
                 });
             }
         });
-    </script>
-    <script>
-        // ========== STICKY NAVIGATION - JAVASCRIPT FORCE ==========
+
+        // ========== STICKY NAVIGATION ==========
         (function () {
             const nav = document.querySelector('.nav-wrapper');
             const header = document.querySelector('header');
@@ -407,9 +454,7 @@
 
             function handleSticky() {
                 if (window.scrollY >= stickyOffset) {
-                    // Thêm class sticky
                     nav.classList.add('js-sticky');
-                    // Tạo khoảng trống để nội dung không bị nhảy
                     if (!document.querySelector('.sticky-spacer')) {
                         const spacer = document.createElement('div');
                         spacer.className = 'sticky-spacer';
@@ -417,34 +462,30 @@
                         nav.parentNode.insertBefore(spacer, nav);
                     }
                 } else {
-                    // Xóa class sticky
                     nav.classList.remove('js-sticky');
-                    // Xóa khoảng trống
                     const spacer = document.querySelector('.sticky-spacer');
                     if (spacer) spacer.remove();
                 }
             }
 
-            // Thêm CSS cho class js-sticky
             const style = document.createElement('style');
             style.textContent = `
-        .nav-wrapper.js-sticky {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            width: 100% !important;
-            z-index: 10000 !important;
-            animation: slideDown 0.3s ease !important;
-        }
-        @keyframes slideDown {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(0); }
-        }
-    `;
+                .nav-wrapper.js-sticky {
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                    width: 100% !important;
+                    z-index: 10000 !important;
+                    animation: slideDown 0.3s ease !important;
+                }
+                @keyframes slideDown {
+                    from { transform: translateY(-100%); }
+                    to { transform: translateY(0); }
+                }
+            `;
             document.head.appendChild(style);
 
-            // Lắng nghe sự kiện scroll
             window.addEventListener('scroll', handleSticky);
             window.addEventListener('resize', function () {
                 stickyOffset = header.offsetHeight;
@@ -452,9 +493,139 @@
                 handleSticky();
             });
 
-            // Gọi một lần đầu
             handleSticky();
         })();
+        // ============================================
+        // TÌM KIẾM KHÓA HỌC
+        // ============================================
+
+        function searchCourse() {
+            const input = document.getElementById('searchInput');
+            const keyword = input.value.trim().toLowerCase();
+            const grid = document.getElementById('coursesGrid');
+
+            // Nếu không có từ khóa, hiển thị tất cả
+            if (!keyword) {
+                renderCourses('all');
+                return;
+            }
+
+            // Lọc khóa học theo từ khóa
+            const filtered = allCourses.filter(course => {
+                const name = (course.name || '').toLowerCase();
+                const description = (course.description || '').toLowerCase();
+                const level = (course.level || '').toLowerCase();
+                const category = (course.category_name || '').toLowerCase();
+
+                return name.includes(keyword) ||
+                    description.includes(keyword) ||
+                    level.includes(keyword) ||
+                    category.includes(keyword);
+            });
+
+            // Nếu không tìm thấy
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+            <div class="empty-search" style="grid-column:1/-1;text-align:center;padding:60px 20px;">
+                <div style="font-size:64px;margin-bottom:16px;">🔍</div>
+                <h3 style="color:#2c3e50;font-size:20px;margin-bottom:8px;">Không tìm thấy khóa học</h3>
+                <p style="color:#999;font-size:15px;">
+                    Không có khóa học nào phù hợp với "<strong style="color:#e67e22;">${keyword}</strong>"
+                </p>
+                <button onclick="resetSearch()" 
+                    style="margin-top:16px;padding:10px 30px;background:linear-gradient(135deg,#e67e22,#d35400);color:white;border:none;border-radius:30px;cursor:pointer;font-weight:600;font-size:14px;transition:all 0.3s;">
+                    <i class="fas fa-undo"></i> Xem tất cả
+                </button>
+            </div>
+        `;
+                return;
+            }
+
+            // Hiển thị kết quả tìm kiếm
+            const catMap = {};
+            categories.forEach(c => catMap[c.id] = c.name);
+
+            grid.innerHTML = filtered.map(course => {
+                let imgSrc = course.image || course.image_url || '';
+                if (!imgSrc) {
+                    const colors = ['#e67e22', '#3498db', '#2ecc71', '#9b59b6', '#1abc9c', '#e74c3c', '#f39c12', '#2c3e50'];
+                    const colorIndex = (course.name || '').length % colors.length;
+                    const bgColor = colors[colorIndex];
+                    imgSrc = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='220'%3E%3Crect fill='${bgColor}' width='400' height='220'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='30'%3E${(course.name || '📚').substring(0, 10)}%3C/text%3E%3C/svg%3E`;
+                }
+                const catName = catMap[course.category] || catMap[course.category_id] || 'Khóa học';
+                const detailUrl = course.id ? `/khoa-hoc/chi-tiet/${course.id}` : '#';
+
+                // Highlight từ khóa trong tên
+                let highlightedName = course.name || 'Không tên';
+                if (keyword) {
+                    const regex = new RegExp(`(${keyword})`, 'gi');
+                    highlightedName = highlightedName.replace(regex, '<span style="background:#f39c12;color:white;padding:0 4px;border-radius:3px;">$1</span>');
+                }
+
+                return `
+            <div class="course-card" onclick="window.location.href='${detailUrl}'">
+                <div class="card-image">
+                    <img src="${imgSrc}" alt="${course.name}" onerror="this.parentElement.innerHTML='<span style=\\'display:flex;align-items:center;justify-content:center;height:100%;font-size:48px;\\'>📚</span>'">
+                    <span class="card-badge">${course.level || 'Cơ bản'}</span>
+                </div>
+                <div class="card-body">
+                    <span class="card-category">${catName}</span>
+                    <h3 class="card-title">${highlightedName}</h3>
+                    <p class="card-description">${course.description || 'Mô tả khóa học...'}</p>
+                    <div class="card-meta">
+                        <span class="card-price">${course.price || 'Liên hệ'}</span>
+                        <span class="card-duration"><i class="fas fa-clock"></i> ${course.duration || 'Linh hoạt'}</span>
+                        <button class="btn-detail">Xem chi tiết</button>
+                    </div>
+                </div>
+            </div>
+        `;
+            }).join('');
+
+            // Cập nhật số lượng kết quả
+            const resultCount = document.createElement('div');
+            resultCount.style.cssText = 'grid-column:1/-1;text-align:center;padding:10px 0;color:#999;font-size:14px;';
+            resultCount.innerHTML = `Tìm thấy <strong style="color:#e67e22;">${filtered.length}</strong> khóa học phù hợp với "<strong style="color:#e67e22;">${keyword}</strong>"`;
+
+            // Thêm vào đầu grid
+            const firstChild = grid.firstChild;
+            if (firstChild && firstChild.classList && firstChild.classList.contains('search-result-info')) {
+                firstChild.remove();
+            }
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'search-result-info';
+            infoDiv.style.cssText = 'grid-column:1/-1;text-align:center;padding:10px 0;color:#999;font-size:14px;';
+            infoDiv.innerHTML = `Tìm thấy <strong style="color:#e67e22;">${filtered.length}</strong> khóa học phù hợp với "<strong style="color:#e67e22;">${keyword}</strong>"`;
+            grid.prepend(infoDiv);
+        }
+
+        // Reset tìm kiếm
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            renderCourses('all');
+        }
+
+        // Tìm kiếm khi nhấn Enter
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        searchCourse();
+                    }
+                });
+
+                // Thêm nút clear
+                searchInput.addEventListener('input', function () {
+                    if (this.value === '') {
+                        // Nếu xóa hết, hiển thị tất cả
+                        renderCourses('all');
+                    }
+                });
+            }
+        });
     </script>
 </body>
 

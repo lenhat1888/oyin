@@ -4,14 +4,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ngoại Ngữ OYin</title>
+    <title>Câu hỏi thường gặp - Ngoại Ngữ OYin</title>
     <link rel="stylesheet" href="/static/css/chungcss.css">
     <link rel="stylesheet" href="/static/css/trangchucss.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link
-        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="icon" href="/static/img/default/favicon.png" type="image/png">
+    <style>
+        .faq-hero {
+            position: relative;
+            background: linear-gradient(145deg, #4caf50 0%, #2e7d32 50%, #1b5e20 100%);
+            padding: 50px 20px 40px;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+            border-radius: 0 0 30px 30px;
+            box-shadow: 0 20px 60px rgba(76, 175, 80, 0.3);
+        }
+
+        .faq-hero h1 {
+            font-size: 38px;
+            font-weight: 800;
+            font-family: "Playfair Display", serif;
+        }
+
+        .faq-hero h1 span {
+            color: #ffd700;
+        }
+
+        .faq-hero p {
+            font-size: 16px;
+            opacity: 0.85;
+            margin-top: 6px;
+        }
+
+        .faq-container {
+            max-width: 900px;
+            margin: 40px auto 60px;
+            padding: 0 20px;
+        }
+
+        .faq-search {
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 50px;
+            padding: 4px 4px 4px 20px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f0f0f0;
+        }
+
+        .faq-search i {
+            color: #999;
+            font-size: 18px;
+        }
+
+        .faq-search input {
+            flex: 1;
+            border: none;
+            padding: 14px 16px;
+            font-size: 15px;
+            outline: none;
+            background: transparent;
+        }
+
+        .faq-search button {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .faq-search button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .faq-categories {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .faq-categories .cat-btn {
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: 2px solid #e9ecef;
+            background: transparent;
+            color: #666;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .faq-categories .cat-btn:hover {
+            border-color: #4caf50;
+            color: #4caf50;
+        }
+
+        .faq-categories .cat-btn.active {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            border-color: #4caf50;
+            color: white;
+        }
+
+        .faq-item {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #f0f0f0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            border-color: #4caf50;
+        }
+
+        .faq-question {
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s;
+            user-select: none;
+        }
+
+        .faq-question:hover {
+            background: #f8f9fa;
+        }
+
+        .faq-question h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .faq-question h3 .q-icon {
+            color: #4caf50;
+            font-size: 18px;
+        }
+
+        .faq-question .toggle-icon {
+            color: #999;
+            transition: transform 0.3s;
+            font-size: 16px;
+        }
+
+        .faq-question .toggle-icon.open {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
+            padding: 0 24px;
+        }
+
+        .faq-answer.open {
+            max-height: 300px;
+            padding: 0 24px 20px;
+        }
+
+        .faq-answer p {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #666;
+            margin: 0;
+        }
+
+        .faq-answer ul {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+
+        .faq-answer ul li {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #4caf50;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #2e7d32;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .faq-hero h1 {
+                font-size: 28px;
+            }
+
+            .faq-question {
+                padding: 14px 16px;
+            }
+
+            .faq-question h3 {
+                font-size: 14px;
+            }
+
+            .faq-search {
+                flex-wrap: wrap;
+                border-radius: 24px;
+                padding: 8px;
+            }
+
+            .faq-search button {
+                width: 100%;
+                border-radius: 16px;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .faq-hero {
+                border-radius: 0 0 16px 16px;
+                padding: 30px 16px;
+            }
+
+            .faq-hero h1 {
+                font-size: 24px;
+            }
+
+            .faq-item {
+                border-radius: 12px;
+            }
+
+            .faq-question h3 {
+                font-size: 13px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -61,136 +308,135 @@
             </div>
         </div>
     </header>
+
     <main>
-        <!-- ========== SLIDER FULL WIDTH 16:9 ========== -->
-        <section class="slider-section">
-            <div class="slider-container">
-                <div class="slider-wrapper" id="sliderWrapper">
-                </div>
-
-                <!-- Nút điều hướng -->
-                <button class="slider-btn prev-btn" id="prevBtn">❮</button>
-                <button class="slider-btn next-btn" id="nextBtn">❯</button>
-
-                <!-- Dấu dot -->
-                <div class="slider-dots" id="sliderDots"></div>
+        <section class="faq-hero">
+            <div class="hero-content">
+                <h1>Câu hỏi <span>thường gặp</span></h1>
+                <p>Những thắc mắc phổ biến về khóa học và dịch vụ tại O-Yin</p>
             </div>
         </section>
-        <!-- ========== KHÁC BIỆT VÀ CAM KẾT ========== -->
-        <section class="commitment-section">
-            <div class="commitment-container">
-                <div class="commitment-header">
-                    <h2 class="commitment-title">KHÁC BIỆT VÀ CAM KẾT</h2>
-                    <p class="commitment-subtitle">CỦA TIẾNG TRUNG O-YIN</p>
-                    <div class="title-underline"></div>
+
+        <div class="faq-container">
+            <!-- Search -->
+            <div class="faq-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="faqSearch" placeholder="Tìm kiếm câu hỏi...">
+                <button onclick="filterFAQ()"><i class="fas fa-search"></i> Tìm</button>
+            </div>
+
+            <!-- Categories -->
+            <div class="faq-categories" id="faqCategories">
+                <button class="cat-btn active" data-cat="all">📋 Tất cả</button>
+                <button class="cat-btn" data-cat="course">📚 Khóa học</button>
+                <button class="cat-btn" data-cat="payment">💰 Học phí</button>
+                <button class="cat-btn" data-cat="study">🎓 Học tập</button>
+                <button class="cat-btn" data-cat="other">📌 Khác</button>
+            </div>
+
+            <!-- FAQ List -->
+            <div id="faqList">
+                <!-- Course -->
+                <div class="faq-item" data-cat="course">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3><span class="q-icon"><i class="fas fa-question-circle"></i></span> Làm thế nào để đăng ký
+                            khóa học?</h3>
+                        <span class="toggle-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Bạn có thể đăng ký khóa học theo các cách sau:</p>
+                        <ul>
+                            <li>Đăng ký trực tiếp trên website qua trang <a href="/dang-ky"
+                                    style="color:#4caf50;font-weight:600;">Đăng ký</a></li>
+                            <li>Liên hệ qua Zalo: <strong>0971 306 143</strong></li>
+                            <li>Gọi hotline: <strong>0971 306 143</strong></li>
+                        </ul>
+                    </div>
                 </div>
 
-                <div class="commitment-grid">
-                    <!-- Item 1: Giáo trình thực tế dễ hiểu -->
-                    <div class="commitment-card">
-                        <div class="card-icon">
-                            <i class="fas fa-book-open"></i>
-                        </div>
-                        <h3>Giáo trình thực tế dễ hiểu</h3>
-                        <p>Nội dung cập nhật theo xu hướng mới nhất, tích hợp tình huống giao tiếp thực tế, trình bày
-                            khoa học, dễ hiểu, áp dụng ngay vào công việc và cuộc sống.</p>
+                <div class="faq-item" data-cat="payment">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3><span class="q-icon"><i class="fas fa-question-circle"></i></span> Học phí được tính như thế
+                            nào?</h3>
+                        <span class="toggle-icon"><i class="fas fa-chevron-down"></i></span>
                     </div>
-
-                    <!-- Item 2: Lớp học siêu nhỏ -->
-                    <div class="commitment-card">
-                        <div class="card-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h3>Lớp học siêu nhỏ 6 người</h3>
-                        <p>Tối đa 6 học viên/lớp, giáo viên kèm cặp sát sao từng người. Thực hành 1-1 thường xuyên, sửa
-                            lỗi phát âm, ngữ pháp và diễn đạt ngay trong buổi học.</p>
+                    <div class="faq-answer">
+                        <p>Học phí được tính theo từng khóa học và được niêm yết trên trang <a href="/khoa-hoc"
+                                style="color:#4caf50;font-weight:600;">Khóa học</a>. Mức phí bao gồm:</p>
+                        <ul>
+                            <li>Giáo trình và tài liệu học tập</li>
+                            <li>Học phí cho toàn bộ khóa học</li>
+                            <li>Chứng chỉ hoàn thành khóa học</li>
+                        </ul>
                     </div>
+                </div>
 
-                    <!-- Item 3: Giáo viên Trung - Việt -->
-                    <div class="commitment-card">
-                        <div class="card-icon">
-                            <i class="fas fa-handshake"></i>
-                        </div>
-                        <h3>Giáo viên Trung - Việt</h3>
-                        <p>Đội ngũ giáo viên bản ngữ Trung Quốc kết hợp giáo viên Việt Nam giàu kinh nghiệm. Giúp học
-                            viên phát âm chuẩn như người bản xứ, đồng thời dễ dàng tiếp thu và đặt câu hỏi bằng tiếng
-                            Việt khi cần.</p>
+                <div class="faq-item" data-cat="study">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3><span class="q-icon"><i class="fas fa-question-circle"></i></span> Có hỗ trợ học online
+                            không?</h3>
+                        <span class="toggle-icon"><i class="fas fa-chevron-down"></i></span>
                     </div>
-
-                    <!-- Item 4: Giảng viên trình độ cao -->
-                    <div class="commitment-card">
-                        <div class="card-icon">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                        </div>
-                        <h3>Giảng viên trình độ cao</h3>
-                        <p>100% giảng viên có trình độ Thạc sĩ trở lên, chuyên ngành tiếng Trung. Nhiều năm kinh nghiệm
-                            giảng dạy, tận tâm, nhiệt huyết, đồng hành cùng học viên trên mọi hành trình.</p>
+                    <div class="faq-answer">
+                        <p>O-Yin có hình thức học <strong>Online</strong>:</p>
+                        <ul>
+                            <li><strong>Online:</strong> Học qua Zoom/Google Meet, lịch học linh hoạt</li>
+                        </ul>
                     </div>
+                </div>
 
-                    <!-- Item 5: Phương pháp học hiện đại -->
-                    <div class="commitment-card">
-                        <div class="card-icon">
-                            <i class="fas fa-brain"></i>
-                        </div>
-                        <h3>Phương pháp học hiện đại</h3>
-                        <p>Kết hợp phương pháp phản xạ, học qua tình huống thực tế, thảo luận nhóm, trò chơi tương tác.
-                            Luyện tập cả 4 kỹ năng Nghe - Nói - Đọc - Viết một cách toàn diện.</p>
+                <div class="faq-item" data-cat="course">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3><span class="q-icon"><i class="fas fa-question-circle"></i></span> Lớp học có bao nhiêu học
+                            viên?</h3>
+                        <span class="toggle-icon"><i class="fas fa-chevron-down"></i></span>
                     </div>
+                    <div class="faq-answer">
+                        <p>O-Yin áp dụng mô hình <strong>lớp học siêu nhỏ</strong> với tối đa <strong>6 học
+                                viên/lớp</strong>. Điều này giúp giáo viên kèm cặp sát sao từng học viên.</p>
+                    </div>
+                </div>
 
-                    <!-- Item 6: Cam kết chất lượng -->
-                    <div class="commitment-card highlight">
-                        <div class="card-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h3>Cam kết chất lượng</h3>
-                        <p>Cam kết đầu ra bằng văn bản rõ ràng. Hỗ trợ học bù, học kèm 1-1 miễn phí cho học viên khi
-                            cần.</p>
+                <div class="faq-item" data-cat="study">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3><span class="q-icon"><i class="fas fa-question-circle"></i></span> Giáo viên có trình độ như
+                            thế nào?</h3>
+                        <span class="toggle-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>100% giảng viên tại O-Yin có trình độ cao trong việc đào tạo Tiếng Trung, chuyên ngành tiếng
+                            Trung. Nhiều giảng viên là người bản ngữ Trung Quốc, giàu kinh nghiệm giảng dạy.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-cat="other">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3><span class="q-icon"><i class="fas fa-question-circle"></i></span> Có chứng chỉ sau khi hoàn
+                            thành khóa học?</h3>
+                        <span class="toggle-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Có, học viên hoàn thành khóa học sẽ nhận được <strong>chứng chỉ hoàn thành</strong> từ Ngoại
+                            Ngữ O-Yin. Đối với các khóa luyện thi HSK, học viên sẽ được hỗ trợ đăng ký thi chứng chỉ HSK
+                            quốc tế.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-cat="other">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3><span class="q-icon"><i class="fas fa-question-circle"></i></span> Tôi có thể học thử trước
+                            không?</h3>
+                        <span class="toggle-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>O-Yin hỗ trợ <strong>học thử 1 buổi miễn phí</strong> cho tất cả các khóa học. Bạn có thể
+                            đăng ký qua Zalo hoặc hotline để sắp xếp lịch học thử.</p>
                     </div>
                 </div>
             </div>
-        </section>
-        <!-- ========== DANH MỤC KHÓA HỌC ========== -->
-        <section class="categories-section">
-            <div class="categories-container">
-                <div class="commitment-header">
-                    <h2 class="commitment-title">KHÓA HỌC CỦA CHÚNG TÔI</h2>
-                    <p class="commitment-subtitle">LỘ TRÌNH HỌC TẬP RÕ RÀNG, PHÙ HỢP MỌI ĐỐI TƯỢNG</p>
-                    <div class="title-underline"></div>
-                </div>
-                <div class="categories-grid" id="categoriesGrid">
-                    <!-- Categories sẽ được load từ API -->
-                </div>
-            </div>
-        </section>
-        <!-- ========== ĐÁNH GIÁ CỦA HỌC VIÊN ========== -->
-        <section class="reviews-section">
-            <div class="reviews-container">
-                <div class="reviews-header">
-                    <!-- <span class="reviews-icon">💬</span> -->
-                    <h2 class="reviews-title">Học viên nói gì về chúng tôi?</h2>
-                    <p class="reviews-subtitle">Những chia sẻ chân thực từ học viên đã và đang theo học tại O-Yin</p>
-                    <div class="title-underline"></div>
-                </div>
 
-                <div class="reviews-slider-wrapper">
-                    <div class="reviews-track" id="reviewsTrack">
-                        <!-- Reviews sẽ được load từ API -->
-                    </div>
-
-                    <!-- Nút điều hướng 2 bên -->
-                    <div class="reviews-controls">
-                        <button class="reviews-btn" id="reviewPrevBtn" aria-label="Previous">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <button class="reviews-btn" id="reviewNextBtn" aria-label="Next">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="reviews-dots" id="reviewsDots"></div>
-            </div>
-        </section>
+            <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> Quay lại trang chủ</a>
+        </div>
     </main>
 
     <!-- ========== FOOTER ========== -->
@@ -247,6 +493,90 @@
         </div>
     </footer>
 
+    <script>
+        // ===== TOGGLE FAQ =====
+        function toggleFaq(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('.toggle-icon i');
+
+            if (answer.classList.contains('open')) {
+                answer.classList.remove('open');
+                icon.className = 'fas fa-chevron-down';
+            } else {
+                // Đóng các câu hỏi khác
+                document.querySelectorAll('.faq-answer.open').forEach(el => {
+                    el.classList.remove('open');
+                    const parentIcon = el.closest('.faq-item').querySelector('.toggle-icon i');
+                    if (parentIcon) parentIcon.className = 'fas fa-chevron-down';
+                });
+                answer.classList.add('open');
+                icon.className = 'fas fa-chevron-up';
+            }
+        }
+
+        // ===== FILTER FAQ =====
+        function filterFAQ() {
+            const searchValue = document.getElementById('faqSearch').value.toLowerCase();
+            const items = document.querySelectorAll('.faq-item');
+            const activeCat = document.querySelector('.cat-btn.active');
+            const currentCat = activeCat ? activeCat.dataset.cat : 'all';
+
+            items.forEach(item => {
+                const question = item.querySelector('.faq-question h3').textContent.toLowerCase();
+                const answer = item.querySelector('.faq-answer')?.textContent.toLowerCase() || '';
+                const itemCat = item.dataset.cat;
+
+                const matchSearch = question.includes(searchValue) || answer.includes(searchValue);
+                const matchCat = currentCat === 'all' || itemCat === currentCat;
+
+                if (matchSearch && matchCat) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // ===== CATEGORY FILTER =====
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                filterFAQ();
+            });
+        });
+
+        // ===== SEARCH ON ENTER =====
+        document.getElementById('faqSearch').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                filterFAQ();
+            }
+        });
+
+        // ===== SEARCH ON INPUT =====
+        document.getElementById('faqSearch').addEventListener('input', function () {
+            if (this.value === '') {
+                filterFAQ();
+            }
+        });
+
+        // ===== LOAD MENU =====
+        async function loadMenu() {
+            try {
+                const response = await fetch('/api/menu');
+                const data = await response.json();
+                const menuContainer = document.getElementById('dynamic-menu');
+                if (!menuContainer) return;
+                // ... code load menu giống các trang khác
+            } catch (error) {
+                console.error('Lỗi tải menu:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadMenu();
+        });
+    </script>
     <script>
         // ===== LOAD MENU =====
         async function loadMenu() {

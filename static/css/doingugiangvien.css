@@ -1,0 +1,572 @@
+/* ===== HERO ===== */
+.teacher-hero {
+  position: relative;
+  background: linear-gradient(145deg, #e67e22 0%, #d35400 50%, #a04000 100%);
+  padding: 65px 20px 55px;
+  text-align: center;
+  color: white;
+  overflow: hidden;
+  border-radius: 0 0 30px 30px;
+  box-shadow: 0 20px 60px rgba(211, 84, 0, 0.3);
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.teacher-hero:hover {
+  transform: scale(1.01);
+  box-shadow: 0 25px 80px rgba(211, 84, 0, 0.4);
+}
+
+.teacher-hero .hero-bg-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.06;
+  background-image:
+    radial-gradient(circle at 20% 50%, #ffffff 2px, transparent 2px),
+    radial-gradient(circle at 80% 20%, #ffffff 2px, transparent 2px),
+    radial-gradient(circle at 40% 80%, #ffffff 2px, transparent 2px),
+    radial-gradient(circle at 70% 70%, #ffffff 2px, transparent 2px);
+  background-size: 80px 80px;
+  pointer-events: none;
+}
+
+.teacher-hero .hero-shape {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.teacher-hero .hero-shape.s1 {
+  width: 280px;
+  height: 280px;
+  bottom: -100px;
+  right: -60px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid rgba(255, 255, 255, 0.06);
+  animation: shapeFloat 8s ease-in-out infinite;
+}
+
+.teacher-hero .hero-shape.s2 {
+  width: 160px;
+  height: 160px;
+  top: -50px;
+  left: 20%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid rgba(255, 255, 255, 0.05);
+  animation: shapeFloat 6s ease-in-out infinite 2s;
+}
+
+@keyframes shapeFloat {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(-10px, -15px) scale(1.05);
+  }
+}
+
+.teacher-hero .hero-accent-line {
+  position: absolute;
+  left: 0;
+  top: 15%;
+  bottom: 15%;
+  width: 5px;
+  background: linear-gradient(180deg, #ffd700, #f39c12, #ffd700);
+  border-radius: 0 5px 5px 0;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  animation: accentPulse 2s ease-in-out infinite;
+}
+
+@keyframes accentPulse {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: scaleY(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scaleY(1.05);
+  }
+}
+
+.teacher-hero .hero-emoji {
+  position: absolute;
+  font-size: 40px;
+  opacity: 0.12;
+  animation: emojiFloat 14s linear infinite;
+  pointer-events: none;
+}
+
+.teacher-hero .hero-emoji.e1 {
+  top: 10%;
+  right: 10%;
+  animation-delay: 0s;
+}
+
+.teacher-hero .hero-emoji.e2 {
+  bottom: 15%;
+  right: 18%;
+  animation-delay: 5s;
+  font-size: 30px;
+}
+
+.teacher-hero .hero-emoji.e3 {
+  top: 25%;
+  left: 8%;
+  animation-delay: 9s;
+  font-size: 35px;
+}
+
+@keyframes emojiFloat {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.08;
+  }
+
+  25% {
+    transform: translateY(-20px) rotate(10deg);
+    opacity: 0.18;
+  }
+
+  50% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.08;
+  }
+
+  75% {
+    transform: translateY(20px) rotate(-10deg);
+    opacity: 0.18;
+  }
+
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.08;
+  }
+}
+
+.teacher-hero .hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.teacher-hero .hero-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  padding: 6px 24px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #ffd700;
+  border: 1px solid rgba(255, 215, 0, 0.15);
+  margin-bottom: 14px;
+  animation: slideDown 0.8s ease-out;
+}
+
+.teacher-hero h1 {
+  font-size: 44px;
+  font-weight: 800;
+  color: white;
+  font-family: "Playfair Display", serif;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  animation: slideDown 0.8s ease-out 0.1s both;
+}
+
+.teacher-hero h1 span {
+  color: #ffd700;
+}
+
+.teacher-hero p {
+  font-size: 18px;
+  opacity: 0.85;
+  margin-top: 6px;
+  max-width: 550px;
+  margin-left: auto;
+  margin-right: auto;
+  animation: slideDown 0.8s ease-out 0.2s both;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.teacher-hero .hero-deco {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 18px;
+  animation: slideDown 0.8s ease-out 0.4s both;
+}
+
+.teacher-hero .hero-deco span {
+  width: 10px;
+  height: 10px;
+  background: #ffd700;
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: dotPulse 2s ease-in-out infinite;
+}
+
+.teacher-hero .hero-deco span:nth-child(2) {
+  width: 40px;
+  border-radius: 10px;
+  opacity: 0.6;
+  animation-delay: 0.5s;
+}
+
+.teacher-hero .hero-deco span:nth-child(3) {
+  animation-delay: 1s;
+}
+
+@keyframes dotPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(1.2);
+  }
+}
+
+/* ===== TEACHER GRID ===== */
+.teachers-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 60px 20px 80px;
+}
+
+.teachers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.teacher-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.04);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+.teacher-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 21px;
+  background-size: 200% 200%;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: -1;
+  animation: gradientMove 3s ease-in-out infinite;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.teacher-card:hover::before {
+  opacity: 1;
+}
+
+.teacher-card:hover {
+  transform: translateY(-14px) scale(1.02);
+  box-shadow: 0 30px 70px rgba(230, 126, 34, 0.15);
+  border-color: #e67e22;
+}
+
+.teacher-card .card-image {
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.teacher-card .card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.teacher-card:hover .card-image img {
+  transform: scale(1.08);
+}
+
+.teacher-card .card-image .card-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(230, 126, 34, 0.9);
+  backdrop-filter: blur(10px);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  color: white;
+  font-weight: 600;
+}
+
+.teacher-card .card-image .card-experience {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: white;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.teacher-card .card-image .card-experience i {
+  color: #ffd700;
+}
+
+.teacher-card .card-body {
+  padding: 22px 20px 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.teacher-card .card-body .teacher-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 4px;
+  transition: color 0.3s ease;
+  font-family: "Playfair Display", serif;
+}
+
+.teacher-card:hover .teacher-name {
+  color: #e67e22;
+}
+
+.teacher-card .card-body .teacher-title {
+  font-size: 14px;
+  color: #e67e22;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.teacher-card .card-body .teacher-desc {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.7;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.teacher-card .card-body .teacher-specialties {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.teacher-card .card-body .teacher-specialties .tag {
+  font-size: 11px;
+  background: #f0f0f0;
+  color: #888;
+  padding: 2px 12px;
+  border-radius: 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.teacher-card:hover .teacher-specialties .tag {
+  background: #fff5e6;
+  color: #e67e22;
+}
+
+.teacher-card .card-body .btn-view {
+  display: inline-block;
+  padding: 8px 28px;
+  background: linear-gradient(135deg, #e67e22, #d35400);
+  color: white;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: auto;
+  align-self: flex-start;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.teacher-card .btn-view::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.teacher-card:hover .btn-view::before {
+  left: 100%;
+}
+
+.teacher-card .btn-view:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 25px rgba(230, 126, 34, 0.35);
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  grid-column: 1/-1;
+  background: white;
+  border-radius: 20px;
+  border: 1px solid #f0f0f0;
+}
+
+.empty-state .icon-wrapper {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 24px;
+  background: linear-gradient(135deg, #f8f9fa, #f1f3f5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: #ddd;
+  transition: all 0.3s;
+}
+
+.empty-state:hover .icon-wrapper {
+  background: linear-gradient(135deg, #fff5e6, #fdebd0);
+  color: #e67e22;
+  transform: scale(1.05);
+}
+
+.empty-state h3 {
+  font-size: 24px;
+  color: #2c3e50;
+  margin-bottom: 8px;
+  font-family: "Playfair Display", serif;
+}
+
+.empty-state p {
+  color: #999;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .teacher-hero {
+    border-radius: 0 0 16px 16px;
+    padding: 45px 20px 35px;
+    min-height: auto;
+  }
+
+  .teacher-hero h1 {
+    font-size: 30px;
+  }
+
+  .teacher-hero p {
+    font-size: 15px;
+  }
+
+  .teacher-hero .hero-shape,
+  .teacher-hero .hero-emoji,
+  .teacher-hero .hero-accent-line {
+    display: none;
+  }
+
+  .teachers-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .teacher-card .card-image {
+    height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .teacher-hero {
+    border-radius: 0 0 12px 12px;
+    padding: 30px 16px;
+  }
+
+  .teacher-hero h1 {
+    font-size: 24px;
+  }
+
+  .teacher-hero p {
+    font-size: 14px;
+  }
+
+  .teacher-hero .hero-badge {
+    font-size: 11px;
+    padding: 4px 16px;
+  }
+
+  .teachers-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .teacher-card .card-image {
+    height: 240px;
+  }
+}

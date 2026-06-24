@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📰 Tin tức - Ngoại Ngữ OYin</title>
+    <link rel="stylesheet" href="/static/css/chungcss.css">
+    <link rel="stylesheet" href="/static/css/trangchucss.css">
+    <link rel="stylesheet" href="/static/css/tintuc.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="icon" href="/static/img/default/favicon.png" type="image/png">
+</head>
+
+<body>
+    <header>
+        <div class="information">
+            <div class="informationtext informationtextlogo">
+                <a href="/"><img src="/static/img/default/logooyin.png" alt="Logo" class="informationimg" /></a>
+            </div>
+            <div class="informationtext informationtextname">
+                <strong class="informationtextname2">NGOẠI NGỮ O-YIN</strong>
+            </div>
+            <div class="informationtext informationtextcall">
+                <div class="informationtextcallimg">
+                    <img src="/static/img/default/dienthoai.png" alt="Liên Hệ" class="callimg" />
+                </div>
+                <div class="informationtextcall12">
+                    <div class="informationtextcall1">LIÊN HỆ ZALO</div>
+                    <div class="informationtextcall2">0971 306 143(Hoàng Ngân)</div>
+                </div>
+            </div>
+            <div class="informationtext informationtextsupport">
+                <div class="informationtextsupportimg">
+                    <img src="/static/img/default/dongho.jpg" alt="Hỗ trợ" class="supportimg" />
+                </div>
+                <div class="informationtextsupport12">
+                    <div class="informationtextsupport1">HỖ TRỢ</div>
+                    <div class="informationtextsupport2">24/7</div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-wrapper">
+            <div class="mobile-menu">
+                <div class="menu-toggle">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+            </div>
+            <div class="nav-main">
+                <ul class="nav-list" id="dynamic-menu">
+                    <li>Đang tải menu...</li>
+                </ul>
+            </div>
+            <div class="register-btn">
+                <a href="/dang-ky">ĐĂNG KÝ</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- ===== HERO ===== -->
+        <section class="news-hero">
+            <!-- Background Pattern -->
+            <div class="hero-bg-pattern"></div>
+
+            <!-- Decoration Shapes -->
+            <div class="hero-shape s1"></div>
+            <div class="hero-shape s2"></div>
+            <div class="hero-shape s3"></div>
+
+            <!-- Floating Emojis -->
+            <div class="hero-emoji e1">📰</div>
+            <div class="hero-emoji e2">📢</div>
+            <div class="hero-emoji e3">⭐</div>
+            <div class="hero-emoji e4">🎯</div>
+
+            <!-- Accent Line -->
+            <div class="hero-accent-line"></div>
+
+            <!-- Content -->
+            <div class="hero-content">
+                <div class="hero-badge">📰 CẬP NHẬT MỚI NHẤT</div>
+                <h1>Tin tức O-Yin</h1>
+                <p>Những thông tin mới nhất về hoạt động và sự kiện của trung tâm</p>
+                <div class="hero-deco">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SEARCH ===== -->
+        <div class="search-container">
+            <div class="search-wrapper">
+                <span class="search-icon"><i class="fas fa-search"></i></span>
+                <input type="text" id="searchInput" placeholder="Tìm kiếm tin tức..." autocomplete="off">
+                <button class="search-btn" id="searchBtn">
+                    <i class="fas fa-search"></i> Tìm kiếm
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== NEWS CONTENT ===== -->
+        <div class="news-container">
+            <!-- Filter Tabs -->
+            <div class="news-filters" id="newsFilters">
+                <button class="news-filter active" data-filter="all">📋 Tất cả</button>
+            </div>
+
+            <!-- News Grid -->
+            <div class="news-grid" id="newsGrid">
+                <!-- Loading -->
+                <div class="loading-grid">
+                    <div class="loading-card">
+                        <div class="loading-image"></div>
+                        <div class="loading-line"></div>
+                        <div class="loading-line short"></div>
+                    </div>
+                    <div class="loading-card">
+                        <div class="loading-image"></div>
+                        <div class="loading-line"></div>
+                        <div class="loading-line short"></div>
+                    </div>
+                    <div class="loading-card">
+                        <div class="loading-image"></div>
+                        <div class="loading-line"></div>
+                        <div class="loading-line short"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-row">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <img src="/static/img/default/logooyin.png" alt="Logo">
+                        <h3>NGOẠI NGỮ O-YIN</h3>
+                    </div>
+                    <p class="footer-desc">
+                        Trung tâm đào tạo tiếng Trung uy tín hàng đầu, với đội ngũ giảng viên giàu kinh nghiệm,
+                        phương pháp giảng dạy hiện đại, cam kết đầu ra chất lượng.
+                    </p>
+                    <div class="footer-social">
+                        <a href="https://www.facebook.com/profile.php?id=61564711545051" class="social-icon facebook"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="https://zalo.me/0971306143" class="social-icon zalo"><i class="fas fa-comment"
+                                style="font-size:18px;"></i></a>
+                        <a href="#" class="social-icon youtube"><i class="fab fa-youtube"></i></a>
+                        <a href="http://tiktok.com/@ngoainguoyin_24" class="social-icon tiktok"><i
+                                class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>📞 LIÊN HỆ</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-map-marker-alt"></i> Sầm Sơn, Thanh Hóa</li>
+                        <li><i class="fas fa-phone-alt"></i> 0971 306 143 (Hoàng Ngân)</li>
+                        <li><i class="fas fa-envelope"></i> ngoainguoyin@gmail.com</li>
+                        <li><i class="fas fa-clock"></i> Mọi lúc</li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>📚 KHÓA HỌC</h4>
+                    <ul class="footer-links" id="footerCategories">
+                        <!-- Categories sẽ load từ API -->
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>🛡️ HỖ TRỢ</h4>
+                    <ul class="footer-links">
+                        <li><a href="/chinh-sach-dieu-khoan">Chính sách & Điều khoản</a></li>
+                        <li><a href="/chinh-sach-bao-mat">Chính sách bảo mật</a></li>
+                        <li><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Ngoại Ngữ O-Yin. Tất cả các quyền được bảo lưu.</p>
+                <p>Thiết kế và phát triển bởi <span>O-Yin Team</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================================
+        // MENU
+        // ============================================================
+        async function loadMenu() {
+            try {
+                const response = await fetch('/api/menu');
+                const data = await response.json();
+                const menuContainer = document.getElementById('dynamic-menu');
+                if (!menuContainer) return;
+                menuContainer.innerHTML = '';
+                data.items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'nav-item';
+                    if (item.children && item.children.length > 0) {
+                        li.classList.add('has-dropdown');
+                        li.innerHTML = `
+                        <a href="${item.url}">${item.name}</a>
+                        <ul class="dropdown">
+                            ${renderChildren(item.children)}
+                        </ul>
+                    `;
+                    } else {
+                        li.innerHTML = `<a href="${item.url}">${item.name}</a>`;
+                    }
+                    menuContainer.appendChild(li);
+                });
+                if (window.innerWidth <= 768) {
+                    document.querySelectorAll('.has-dropdown > a').forEach(link => {
+                        link.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            const dropdown = this.nextElementSibling;
+                            if (dropdown) dropdown.classList.toggle('show');
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error('Lỗi tải menu:', error);
+            }
+        }
+
+        function renderChildren(children) {
+            let html = '';
+            children.forEach(child => {
+                if (child.children && child.children.length > 0) {
+                    html += `<li class="dropdown-sub"><span>${child.name}</span><ul class="sub-dropdown">${renderChildren(child.children)}</ul></li>`;
+                } else {
+                    html += `<li><a href="${child.url}">${child.name}</a></li>`;
+                }
+            });
+            return html;
+        }
+
+        // ===== LOAD FOOTER CATEGORIES =====
+        async function loadFooterCategories() {
+            try {
+                const response = await fetch('/api/data/categories');
+                const data = await response.json();
+                const container = document.getElementById('footerCategories');
+                if (!container) return;
+                container.innerHTML = (data.categories || []).map(cat =>
+                    `<li><a href="/khoa-hoc?category=${cat.slug}">${cat.name}</a></li>`
+                ).join('');
+                container.innerHTML += `<li><a href="/khoa-hoc">Tất cả khóa học</a></li>`;
+            } catch (error) {
+                console.error('Lỗi tải footer:', error);
+            }
+        }
+
+        // ============================================================
+        // STICKY NAV
+        // ============================================================
+        (function () {
+            const nav = document.querySelector('.nav-wrapper');
+            const header = document.querySelector('header');
+            if (!nav) return;
+            let navHeight = nav.offsetHeight;
+            let stickyOffset = header.offsetHeight;
+
+            function handleSticky() {
+                if (window.scrollY >= stickyOffset) {
+                    nav.classList.add('js-sticky');
+                    if (!document.querySelector('.sticky-spacer')) {
+                        const spacer = document.createElement('div');
+                        spacer.className = 'sticky-spacer';
+                        spacer.style.height = navHeight + 'px';
+                        nav.parentNode.insertBefore(spacer, nav);
+                    }
+                } else {
+                    nav.classList.remove('js-sticky');
+                    const spacer = document.querySelector('.sticky-spacer');
+                    if (spacer) spacer.remove();
+                }
+            }
+
+            const style = document.createElement('style');
+            style.textContent = `
+            .nav-wrapper.js-sticky {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                width: 100% !important;
+                z-index: 10000 !important;
+                animation: slideDown 0.3s ease !important;
+                box-shadow: 0 4px 25px rgba(0,0,0,0.2) !important;
+            }
+            @keyframes slideDown {
+                from { transform: translateY(-100%); }
+                to { transform: translateY(0); }
+            }
+        `;
+            document.head.appendChild(style);
+            window.addEventListener('scroll', handleSticky);
+            window.addEventListener('resize', function () {
+                stickyOffset = header.offsetHeight;
+                navHeight = nav.offsetHeight;
+                handleSticky();
+            });
+            handleSticky();
+        })();
+
+        // ============================================================
+        // MOBILE MENU
+        // ============================================================
+        function initMobileMenu() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navMain = document.querySelector('.nav-main');
+            if (menuToggle && navMain) {
+                menuToggle.addEventListener('click', function () {
+                    navMain.classList.toggle('active');
+                    const bars = document.querySelectorAll('.bar');
+                    if (navMain.classList.contains('active')) {
+                        bars[0].style.transform = 'rotate(-45deg) translate(-5px, 6px)';
+                        bars[1].style.opacity = '0';
+                        bars[2].style.transform = 'rotate(45deg) translate(-5px, -6px)';
+                    } else {
+                        bars[0].style.transform = 'rotate(0) translate(0, 0)';
+                        bars[1].style.opacity = '1';
+                        bars[2].style.transform = 'rotate(0) translate(0, 0)';
+                    }
+                });
+            }
+        }
+
+        // ============================================================
+        // NEWS DATA
+        // ============================================================
+        let allNews = [];
+        let categories = [];
+        let currentFilter = 'all';
+        let currentSearch = '';
+
+        async function loadNews() {
+            try {
+                const [newsRes, catsRes] = await Promise.all([
+                    fetch('/api/data/news'),
+                    fetch('/api/data/categories')
+                ]);
+
+                const newsData = await newsRes.json();
+                const catsData = await catsRes.json();
+
+                allNews = newsData.items || [];
+                categories = catsData.categories || [];
+
+                renderFilters();
+                renderNews('all');
+            } catch (error) {
+                console.error('❌ Lỗi tải tin tức:', error);
+                document.getElementById('newsGrid').innerHTML = `
+                <div class="empty-state">
+                    <div class="icon-wrapper"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h3>Không thể tải dữ liệu</h3>
+                    <p>Vui lòng thử lại sau hoặc liên hệ quản trị viên.</p>
+                </div>
+            `;
+            }
+        }
+
+        // ============================================================
+        // RENDER FILTERS
+        // ============================================================
+        function renderFilters() {
+            const container = document.getElementById('newsFilters');
+            if (!container) return;
+
+            let html = `<button class="news-filter active" data-filter="all">📋 Tất cả</button>`;
+            categories.forEach(cat => {
+                const count = allNews.filter(n => n.category === cat.name).length;
+                if (count > 0) {
+                    html += `<button class="news-filter" data-filter="${cat.name}">${cat.icon || '📂'} ${cat.name}</button>`;
+                }
+            });
+            container.innerHTML = html;
+
+            container.querySelectorAll('.news-filter').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    container.querySelectorAll('.news-filter').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    document.getElementById('searchInput').value = '';
+                    currentSearch = '';
+                    renderNews(currentFilter);
+                });
+            });
+        }
+
+        // ============================================================
+        // RENDER NEWS
+        // ============================================================
+        function renderNews(filter) {
+            const grid = document.getElementById('newsGrid');
+            if (!grid) return;
+
+            let filtered = allNews;
+
+            if (filter !== 'all') {
+                filtered = filtered.filter(n => n.category === filter);
+            }
+
+            if (currentSearch) {
+                const keyword = currentSearch.toLowerCase();
+                filtered = filtered.filter(n =>
+                    (n.title || '').toLowerCase().includes(keyword) ||
+                    (n.summary || n.content || '').toLowerCase().includes(keyword) ||
+                    (n.author || '').toLowerCase().includes(keyword)
+                );
+            }
+
+            filtered.sort((a, b) => {
+                const dateA = new Date(a.created_at || 0);
+                const dateB = new Date(b.created_at || 0);
+                return dateB - dateA;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon-wrapper"><i class="fas fa-search"></i></div>
+                    <h3>Không tìm thấy tin tức</h3>
+                    <p>${currentSearch ? `Không có tin tức nào phù hợp với "${currentSearch}"` : 'Danh mục này chưa có tin tức nào.'}</p>
+                    ${currentSearch ? `<button onclick="clearSearch()"><i class="fas fa-undo"></i> Xóa tìm kiếm</button>` : ''}
+                </div>
+            `;
+                return;
+            }
+
+            let resultInfo = '';
+            if (currentSearch) {
+                resultInfo = `
+                <div class="search-result-info">
+                    Tìm thấy <strong style="color:#e67e22;">${filtered.length}</strong> tin tức phù hợp với "<strong style="color:#e67e22;">${currentSearch}</strong>"
+                </div>
+            `;
+            }
+
+            const cardsHtml = filtered.map(item => {
+                const imageUrl = item.image || '/static/img/news/default.jpg';
+                const detailUrl = item.id ? `/tin-tuc/chi-tiet/${item.id}` : '#';
+
+                return `
+                <div class="news-card" onclick="window.location.href='${detailUrl}'">
+                    <div class="card-image">
+                        <img src="${imageUrl}" alt="${item.title}" onerror="this.src='/static/img/news/default.jpg'">
+                        ${item.is_new ? `<span class="card-badge"><i class="fas fa-star"></i> Mới</span>` : ''}
+                        ${item.category ? `<span class="card-category">${item.category}</span>` : ''}
+                    </div>
+                    <div class="card-body">
+                        <div class="news-meta">
+                            <span><i class="fas fa-calendar-alt"></i> ${item.created_at ? item.created_at.split(' ')[0] : 'Chưa có'}</span>
+                            <span><i class="fas fa-user"></i> ${item.author || 'Admin'}</span>
+                            ${item.view_count ? `<span><i class="fas fa-eye"></i> ${item.view_count}</span>` : ''}
+                        </div>
+                        <h3 class="news-title">${item.title}</h3>
+                        <p class="news-summary">${item.summary || (item.content ? item.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...' : '')}</p>
+                        <div class="news-footer">
+                            <a href="${detailUrl}" class="btn-read" onclick="event.stopPropagation()">
+                                Đọc tiếp <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <span class="date"><i class="fas fa-calendar-alt"></i> ${item.created_at ? item.created_at.split(' ')[0] : ''}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).join('');
+
+            grid.innerHTML = resultInfo + cardsHtml;
+        }
+
+        // ============================================================
+        // SEARCH
+        // ============================================================
+        function performSearch() {
+            const input = document.getElementById('searchInput');
+            currentSearch = input.value.trim();
+            renderNews(currentFilter);
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            currentSearch = '';
+            renderNews(currentFilter);
+        }
+
+        // ============================================================
+        // KEYBOARD SHORTCUT
+        // ============================================================
+        document.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+            if (e.key === 'Escape') {
+                const input = document.getElementById('searchInput');
+                if (input.value) {
+                    input.value = '';
+                    clearSearch();
+                }
+                input.blur();
+            }
+        });
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function () {
+            loadMenu();
+            loadFooterCategories();  // 👈 THÊM DÒNG NÀY
+            loadNews();
+            initMobileMenu();
+
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+
+            searchBtn.addEventListener('click', performSearch);
+            searchInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') performSearch();
+            });
+
+            searchInput.addEventListener('input', function () {
+                if (this.value === '') {
+                    currentSearch = '';
+                    renderNews(currentFilter);
+                }
+            });
+
+            document.addEventListener('click', function (event) {
+                if (window.innerWidth <= 768) {
+                    const menuToggle = document.querySelector('.menu-toggle');
+                    const navMain = document.querySelector('.nav-main');
+                    const isClickInside = menuToggle?.contains(event.target) || navMain?.contains(event.target);
+                    if (!isClickInside && navMain?.classList.contains('active')) {
+                        navMain.classList.remove('active');
+                        const bars = document.querySelectorAll('.bar');
+                        bars[0].style.transform = 'rotate(0) translate(0, 0)';
+                        bars[1].style.opacity = '1';
+                        bars[2].style.transform = 'rotate(0) translate(0, 0)';
+                    }
+                }
+            });
+
+            window.addEventListener('resize', function () {
+                if (window.innerWidth > 768) {
+                    const navMain = document.querySelector('.nav-main');
+                    if (navMain) navMain.classList.remove('active');
+                    const bars = document.querySelectorAll('.bar');
+                    bars[0].style.transform = 'rotate(0) translate(0, 0)';
+                    bars[1].style.opacity = '1';
+                    bars[2].style.transform = 'rotate(0) translate(0, 0)';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
