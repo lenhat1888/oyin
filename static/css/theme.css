@@ -1,0 +1,1532 @@
+/* ============================================================
+   O-YIN THEME - RED & GOLD (TƯƠI SÁNG)
+   ============================================================ */
+
+:root {
+  /* Màu đỏ chủ đạo - TƯƠI SÁNG HƠN */
+  --red-primary: #c41e24;
+  --red-dark: #8b1a1a;
+  --red-light: #e63946;
+  --red-rgb: 196, 30, 36;
+
+  /* Màu vàng nhấn - TƯƠI SÁNG HƠN */
+  --gold: #f5c518;
+  --gold-light: #ffe066;
+  --gold-dark: #d4a017;
+  --gold-rgb: 245, 197, 24;
+
+  /* Màu be - NỀN ẤM ÁP */
+  --beige: #fdf0d5;
+  --beige-dark: #f5e6cc;
+  --beige-light: #fefcf3;
+
+  /* Gradient */
+  --gradient-primary: linear-gradient(135deg, #c41e24, #8b1a1a);
+  --gradient-gold: linear-gradient(135deg, #f5c518, #d4a017);
+  --gradient-hero: linear-gradient(
+    145deg,
+    #c41e24 0%,
+    #8b1a1a 50%,
+    #5c0e0e 100%
+  );
+  --gradient-card: linear-gradient(135deg, #c41e24, #e63946);
+
+  /* Shadows */
+  --shadow-primary: 0 20px 60px rgba(196, 30, 36, 0.3);
+  --shadow-primary-hover: 0 25px 80px rgba(196, 30, 36, 0.4);
+  --shadow-gold: 0 20px 60px rgba(245, 197, 24, 0.25);
+  --shadow-gold-hover: 0 25px 80px rgba(245, 197, 24, 0.35);
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.informationtextname2 {
+  color: var(--red-primary) !important;
+}
+
+.informationimg {
+  border-color: var(--red-primary) !important;
+}
+
+.informationtextcall:hover {
+  background: rgba(196, 30, 36, 0.06) !important;
+  border-color: var(--red-primary) !important;
+  box-shadow: 0 4px 12px rgba(196, 30, 36, 0.15) !important;
+}
+
+.informationtextcall2 {
+  color: var(--red-primary) !important;
+}
+
+.informationtextsupport:hover {
+  border-color: var(--gold) !important;
+  box-shadow: 0 4px 12px rgba(245, 197, 24, 0.2) !important;
+}
+
+/* ============================================================
+   NAVIGATION - ĐỎ + VÀNG
+   ============================================================ */
+
+.nav-wrapper {
+  background: var(--gradient-primary) !important;
+  box-shadow: 0 4px 20px rgba(196, 30, 36, 0.25) !important;
+}
+
+.nav-item > a {
+  color: #ffffff !important;
+}
+
+.nav-item > a::after {
+  background: var(--gold) !important;
+}
+
+.nav-item > a:hover {
+  color: var(--gold-light) !important;
+}
+
+.nav-item > a:hover::after {
+  background: var(--gold) !important;
+}
+
+.nav-item.active > a {
+  color: var(--gold) !important;
+}
+
+.nav-item.active > a::after {
+  background: var(--gold) !important;
+}
+
+/* Dropdown */
+.dropdown {
+  border-top: 3px solid var(--gold) !important;
+}
+
+.dropdown li a {
+  color: #333 !important;
+}
+
+.dropdown li a:hover {
+  background: rgba(196, 30, 36, 0.08) !important;
+  color: var(--red-primary) !important;
+}
+
+.dropdown li a::before {
+  background: var(--red-primary) !important;
+}
+
+.dropdown-sub > span {
+  color: #333 !important;
+}
+
+.dropdown-sub > span::after {
+  color: var(--red-primary) !important;
+}
+
+.sub-dropdown li a:hover {
+  background: rgba(196, 30, 36, 0.06) !important;
+  color: var(--red-primary) !important;
+}
+
+/* Register Button */
+.register-btn a {
+  background: var(--gradient-gold) !important;
+  color: #8b1a1a !important;
+  box-shadow: 0 4px 15px rgba(245, 197, 24, 0.3) !important;
+}
+
+.register-btn a:hover {
+  background: #ffe066 !important;
+  box-shadow: 0 6px 25px rgba(245, 197, 24, 0.4) !important;
+  color: #5c0e0e !important;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+.footer::before {
+  background: linear-gradient(
+    90deg,
+    var(--gold),
+    var(--red-primary),
+    var(--gold)
+  ) !important;
+}
+
+.footer-logo img {
+  border-color: var(--gold) !important;
+}
+
+.footer-logo h3 {
+  background: var(--gradient-gold) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.footer-links a:hover {
+  color: var(--gold) !important;
+}
+
+.footer-bottom span {
+  color: var(--gold) !important;
+}
+
+.social-icon:hover {
+  background: var(--gradient-gold) !important;
+  color: var(--red-dark) !important;
+}
+
+.footer-col h4::after {
+  background: var(--gradient-gold) !important;
+}
+
+/* ============================================================
+   HERO - ĐỎ + VÀNG TƯƠI SÁNG
+   ============================================================ */
+
+.about-hero,
+.dangky-hero,
+.news-hero,
+.schedule-hero,
+.teacher-hero,
+.library-hero,
+.policy-hero,
+.faq-hero,
+.courses-hero {
+  background: var(--gradient-hero) !important;
+  box-shadow: var(--shadow-primary) !important;
+}
+
+.about-hero:hover,
+.dangky-hero:hover,
+.news-hero:hover,
+.schedule-hero:hover,
+.teacher-hero:hover,
+.library-hero:hover,
+.courses-hero:hover {
+  box-shadow: var(--shadow-primary-hover) !important;
+}
+
+/* Hero accent line - Vàng */
+.about-hero .hero-accent-line,
+.dangky-hero .hero-accent-line,
+.news-hero .hero-accent-line,
+.schedule-hero .hero-accent-line,
+.teacher-hero .hero-accent-line,
+.library-hero .hero-accent-line,
+.courses-hero .hero-accent-line {
+  background: linear-gradient(
+    180deg,
+    var(--gold),
+    var(--gold-dark),
+    var(--gold)
+  ) !important;
+  box-shadow: 0 0 30px rgba(245, 197, 24, 0.3) !important;
+}
+
+/* Hero badge - Vàng */
+.about-hero .hero-badge,
+.dangky-hero .hero-badge,
+.news-hero .hero-badge,
+.schedule-hero .hero-badge,
+.teacher-hero .hero-badge,
+.library-hero .hero-badge,
+.courses-hero .hero-badge {
+  color: var(--gold) !important;
+  border-color: rgba(245, 197, 24, 0.2) !important;
+}
+
+/* Hero title - VÀNG TƯƠI SÁNG */
+.about-hero h1,
+.dangky-hero h1,
+.news-hero h1,
+.schedule-hero h1,
+.teacher-hero h1,
+.library-hero h1,
+.policy-hero h1,
+.faq-hero h1,
+.courses-hero .hero-title {
+  color: var(--gold) !important;
+  text-shadow: 0 4px 20px rgba(245, 197, 24, 0.15) !important;
+}
+
+.about-hero h1 span,
+.dangky-hero h1 span,
+.news-hero h1 span,
+.schedule-hero h1 span,
+.teacher-hero h1 span,
+.library-hero h1 span {
+  color: var(--gold-light) !important;
+}
+
+/* Hero subtitle - Be ấm */
+.about-hero p,
+.dangky-hero p,
+.news-hero p,
+.schedule-hero p,
+.teacher-hero p,
+.library-hero .subtitle,
+.policy-hero p,
+.faq-hero p,
+.courses-hero .hero-subtitle {
+  color: #fdf0d5 !important;
+  opacity: 0.95 !important;
+}
+
+/* Hero decoration dots - Vàng */
+.about-hero .hero-deco span,
+.dangky-hero .hero-deco span,
+.news-hero .hero-deco span,
+.schedule-hero .hero-deco span,
+.teacher-hero .hero-deco span,
+.library-hero .hero-deco span {
+  background: var(--gold) !important;
+}
+
+/* Hero search - Vàng */
+.hero-search button,
+.schedule-hero .hero-search button {
+  background: var(--gradient-gold) !important;
+  color: var(--red-dark) !important;
+}
+
+.hero-search button:hover,
+.schedule-hero .hero-search button:hover {
+  box-shadow: 0 4px 25px rgba(245, 197, 24, 0.4) !important;
+}
+
+.hero-search:focus-within {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 4px rgba(245, 197, 24, 0.15) !important;
+}
+
+.hero-search:focus-within i {
+  color: var(--gold) !important;
+}
+
+/* Hero stats - Vàng */
+.hero-stat:hover .stat-number {
+  color: var(--gold) !important;
+}
+
+.hero-stat:hover {
+  border-color: rgba(245, 197, 24, 0.2) !important;
+  background: rgba(245, 197, 24, 0.08) !important;
+}
+
+.stat-icon {
+  background: rgba(245, 197, 24, 0.15) !important;
+  color: var(--gold) !important;
+}
+
+.hero-stat:hover .stat-icon {
+  background: rgba(245, 197, 24, 0.25) !important;
+}
+
+/* Hero float cards - Vàng */
+.hero-float-card i {
+  color: var(--gold) !important;
+}
+
+.hero-float-card:hover {
+  background: rgba(245, 197, 24, 0.15) !important;
+}
+
+/* ============================================================
+   SLIDER
+   ============================================================ */
+
+.dot.active {
+  background: var(--red-primary) !important;
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 25px rgba(196, 30, 36, 0.4) !important;
+}
+
+.slider-btn:hover {
+  background: var(--gradient-primary) !important;
+  border-color: var(--gold) !important;
+  box-shadow: 0 8px 30px rgba(196, 30, 36, 0.4) !important;
+}
+
+/* ============================================================
+   COMMITMENT SECTION
+   ============================================================ */
+
+.commitment-title::after {
+  background: var(--gradient-primary) !important;
+}
+
+.commitment-subtitle {
+  color: var(--red-primary) !important;
+}
+
+.commitment-card::before {
+  background: linear-gradient(
+    135deg,
+    transparent 40%,
+    var(--red-primary) 100%
+  ) !important;
+}
+
+.commitment-card:hover {
+  border-color: var(--red-primary) !important;
+  box-shadow: 0 25px 60px rgba(196, 30, 36, 0.12) !important;
+}
+
+.commitment-card:hover h3 {
+  color: var(--red-primary) !important;
+}
+
+.commitment-card h3::after {
+  background: var(--gradient-primary) !important;
+}
+
+.card-icon i {
+  color: var(--red-primary) !important;
+}
+
+.commitment-card:hover .card-icon {
+  background: var(--gradient-primary) !important;
+  box-shadow: 0 8px 30px rgba(196, 30, 36, 0.25) !important;
+}
+
+.commitment-card:hover .card-icon i {
+  color: #ffffff !important;
+}
+
+/* Highlight card - Đỏ + Vàng */
+.commitment-card.highlight {
+  background: var(--gradient-hero) !important;
+  border: 2px solid var(--gold) !important;
+}
+
+.commitment-card.highlight .card-icon {
+  background: rgba(245, 197, 24, 0.2) !important;
+}
+
+.commitment-card.highlight .card-icon i {
+  color: var(--gold) !important;
+}
+
+.commitment-card.highlight h3 {
+  color: var(--gold) !important;
+}
+
+.commitment-card.highlight h3::after {
+  background: var(--gold) !important;
+}
+
+.commitment-card.highlight p {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.commitment-card.highlight:hover {
+  box-shadow: 0 25px 60px rgba(196, 30, 36, 0.4) !important;
+}
+
+.commitment-card.highlight:hover .card-icon {
+  background: var(--gradient-gold) !important;
+}
+
+.commitment-card.highlight:hover .card-icon i {
+  color: var(--red-dark) !important;
+}
+
+/* ============================================================
+   CATEGORIES SECTION
+   ============================================================ */
+
+.categories-section::before {
+  background: linear-gradient(
+    90deg,
+    var(--red-primary),
+    var(--gold),
+    var(--red-primary)
+  ) !important;
+  background-size: 200% 100% !important;
+}
+
+.category-card:hover {
+  border-color: var(--red-primary) !important;
+  box-shadow: 0 30px 70px rgba(196, 30, 36, 0.15) !important;
+}
+
+.category-card:hover .category-icon {
+  background: var(--gradient-primary) !important;
+  box-shadow: 0 8px 25px rgba(196, 30, 36, 0.3) !important;
+}
+
+.category-card:hover .category-icon i {
+  color: #ffffff !important;
+}
+
+.category-card:hover h3 {
+  color: var(--red-primary) !important;
+}
+
+.category-content .btn-view {
+  background: var(--gradient-primary) !important;
+}
+
+.category-content .btn-view:hover {
+  box-shadow: 0 8px 25px rgba(196, 30, 36, 0.35) !important;
+}
+
+/* ============================================================
+   REVIEWS SECTION - ĐỎ + VÀNG
+   ============================================================ */
+
+.reviews-section::before,
+.reviews-section::after {
+  color: var(--red-primary) !important;
+  opacity: 0.04 !important;
+}
+
+.reviews-title span {
+  color: var(--red-primary) !important;
+}
+
+.review-card:hover {
+  border-color: var(--red-primary) !important;
+  box-shadow: 0 20px 60px rgba(196, 30, 36, 0.1) !important;
+}
+
+.review-card::before {
+  color: var(--red-primary) !important;
+}
+
+.review-stars i {
+  color: var(--gold) !important;
+}
+
+.review-stars i.empty {
+  color: #e0e0e0 !important;
+}
+
+.review-card:hover .review-author {
+  border-color: var(--red-primary) !important;
+}
+
+.review-avatar {
+  background: var(--gradient-primary) !important;
+}
+
+.review-card:hover .review-avatar {
+  box-shadow: 0 4px 20px rgba(196, 30, 36, 0.3) !important;
+}
+
+.review-author-name .verified {
+  color: var(--gold-dark) !important;
+}
+
+.reviews-dot.active {
+  background: var(--red-primary) !important;
+  box-shadow: 0 0 20px rgba(196, 30, 36, 0.2) !important;
+}
+
+.reviews-dot:hover {
+  background: var(--red-primary) !important;
+}
+
+.reviews-btn {
+  border-color: var(--red-primary) !important;
+  color: var(--red-primary) !important;
+}
+
+.reviews-btn:hover {
+  background: var(--gradient-primary) !important;
+  border-color: var(--gold) !important;
+}
+
+/* ============================================================
+   KHÓA HỌC
+   ============================================================ */
+
+.courses-hero .hero-title .highlight {
+  color: var(--gold-light) !important;
+}
+
+.courses-hero .hero-title .highlight::after {
+  background: var(--gradient-gold) !important;
+}
+
+/* Filter tabs */
+.filter-tab:hover {
+  color: var(--red-primary) !important;
+}
+
+.filter-tab.active {
+  background: var(--gradient-primary) !important;
+  box-shadow: 0 8px 25px rgba(196, 30, 36, 0.3) !important;
+}
+
+/* Course card */
+.course-card:hover {
+  border-color: var(--red-primary) !important;
+  box-shadow: 0 20px 50px rgba(196, 30, 36, 0.15) !important;
+}
+
+.card-badge {
+  background: var(--gradient-primary) !important;
+  box-shadow: 0 4px 15px rgba(196, 30, 36, 0.3) !important;
+}
+
+.course-card:hover .card-category {
+  background: var(--red-primary) !important;
+}
+
+.course-card:hover .card-title {
+  color: var(--red-primary) !important;
+}
+
+.course-card:hover .card-meta {
+  border-color: var(--red-primary) !important;
+}
+
+.card-price {
+  color: var(--red-primary) !important;
+}
+
+.btn-detail {
+  background: var(--gradient-primary) !important;
+}
+
+.btn-detail:hover {
+  box-shadow: 0 4px 20px rgba(196, 30, 36, 0.4) !important;
+}
+
+/* ============================================================
+   CHI TIẾT KHÓA HỌC
+   ============================================================ */
+
+.course-hero {
+  background: var(--gradient-hero) !important;
+}
+
+.course-hero .hero-badge i {
+  color: var(--gold) !important;
+}
+
+.course-hero .badge {
+  color: #fdf0d5 !important;
+}
+
+.course-hero .badge i {
+  color: var(--gold) !important;
+}
+
+/* Quick info */
+.quick-info-item i {
+  color: var(--red-primary) !important;
+}
+
+/* Register button */
+.btn-register {
+  background: var(--gradient-primary) !important;
+}
+
+.btn-register:hover {
+  box-shadow: 0 6px 20px rgba(196, 30, 36, 0.3) !important;
+}
+
+.price {
+  color: var(--red-primary) !important;
+}
+
+/* Content */
+.course-main h2 i {
+  color: var(--red-primary) !important;
+}
+
+.description {
+  border-left-color: var(--red-primary) !important;
+}
+
+.description strong,
+.description b {
+  color: var(--red-primary) !important;
+}
+
+/* Benefits */
+.benefit-item {
+  border-color: #fdebd0 !important;
+}
+
+.benefit-item:hover {
+  border-color: var(--red-primary) !important;
+  box-shadow: 0 6px 20px rgba(196, 30, 36, 0.12) !important;
+}
+
+.benefit-icon {
+  background: var(--red-primary) !important;
+}
+
+.benefit-text {
+  color: #2c3e50 !important;
+}
+
+/* Outcomes */
+.outcome-icon {
+  background: var(--gold-dark) !important;
+}
+
+/* Curriculum */
+.curriculum-item:hover {
+  background: linear-gradient(135deg, #fff5f5, #ffe6e6) !important;
+  border-color: var(--red-primary) !important;
+  border-left-color: var(--red-primary) !important;
+}
+
+.curriculum-item:hover .curriculum-week {
+  color: var(--red-dark) !important;
+}
+
+.curriculum-item:hover .curriculum-content h4 {
+  color: var(--red-primary) !important;
+}
+
+.curriculum-week {
+  color: var(--red-primary) !important;
+}
+
+/* Sidebar */
+.sidebar-card h4 i {
+  color: var(--red-primary) !important;
+}
+
+.sidebar-card[style*="background:linear-gradient(135deg,#fff9f5,#fff)"] {
+  border-color: rgba(196, 30, 36, 0.15) !important;
+}
+
+.sidebar-card[style*="background:linear-gradient(135deg,#fff9f5,#fff)"] h4 {
+  color: var(--red-primary) !important;
+}
+
+/* Related */
+.related-courses .related-item:hover {
+  border-color: var(--red-primary) !important;
+  box-shadow: 0 12px 40px rgba(196, 30, 36, 0.12) !important;
+}
+
+.related-courses .related-item .price {
+  color: var(--red-primary) !important;
+}
+
+/* ============================================================
+   LỊCH KHAI GIẢNG
+   ============================================================ */
+
+.schedule-filter:hover {
+  color: var(--red-primary) !important;
+}
+
+.schedule-filter.active {
+  background: var(--gradient-primary) !important;
+  box-shadow: 0 8px 25px rgba(196, 30, 36, 0.3) !important;
+}
+
+.schedule-card:hover {
+  border-color: var(--red-primary) !important;
+  box-shadow: 0 15px 50px rgba(196, 30, 36, 0.12) !important;
+}
+
+.schedule-card:hover .course-name {
+  color: var(--red-primary) !important;
+}
+
+.badge-category {
+  background: rgba(196, 30, 36, 0.08) !important;
+  color: var(--red-primary) !important;
+}
+
+.badge-status {
+  background: rgba(245, 197, 24, 0.15) !important;
+  color: var(--gold-dark) !important;
+}
+
+.schedule-card .detail-item i {
+  color: var(--red-primary) !important;
+}
+
+.schedule-card .price {
+  color: var(--red-primary) !important;
+}
+
+.schedule-card .btn-register {
+  background: var(--gradient-primary) !important;
+}
+
+.schedule-card .btn-register:hover {
+  box-shadow: 0 8px 30px rgba(196, 30, 36, 0.4) !important;
+}
+
+.schedule-empty button {
+  background: var(--gradient-primary) !important;
+}
+
+.schedule-empty button:hover {
+  box-shadow: 0 6px 20px rgba(196, 30, 36, 0.3) !important;
+}
+
+/* ============================================================
+   TIN TỨC
+   ============================================================ */
+
+.news-filter:hover {
+  color: var(--red-primary) !important;
+}
+
+.news-filter.active {
+  background: var(--gradient-primary) !important;
+  box-shadow: 0 8px 25px rgba(196, 30, 36, 0.3) !important;
+}
+
+.news-card:hover {
+  border-color: var(--red-primary) !important;
+  box-shadow: 0 25px 70px rgba(196, 30, 36, 0.15) !important;
+}
+
+.news-card::before {
+  background: linear-gradient(
+    90deg,
+    var(--red-primary),
+    var(--gold),
+    var(--red-primary)
+  ) !important;
+}
+
+.news-card .card-image .card-badge {
+  background: var(--gradient-primary) !important;
+}
+
+.news-card .card-image .card-category {
+  background: rgba(196, 30, 36, 0.9) !important;
+}
+
+.news-card:hover .card-image .card-category {
+  background: var(--red-primary) !important;
+}
+
+.news-card .card-body .news-meta i {
+  color: var(--red-primary) !important;
+}
+
+.news-card:hover .card-body .news-title {
+  color: var(--red-primary) !important;
+}
+
+.news-card .card-body .news-footer .btn-read {
+  background: var(--gradient-primary) !important;
+}
+
+.news-card .card-body .news-footer .btn-read:hover {
+  box-shadow: 0 4px 20px rgba(196, 30, 36, 0.3) !important;
+}
+
+.news-card .card-body .news-footer .date i {
+  color: var(--red-primary) !important;
+}
+
+/* Search */
+.search-wrapper:focus-within {
+  box-shadow:
+    0 25px 70px rgba(196, 30, 36, 0.15),
+    0 0 0 2px var(--red-primary) !important;
+}
+
+.search-wrapper:focus-within .search-icon {
+  color: var(--red-primary) !important;
+}
+
+.search-wrapper .search-btn {
+  background: var(--gradient-primary) !important;
+}
+
+.search-wrapper .search-btn:hover {
+  box-shadow: 0 8px 30px rgba(196, 30, 36, 0.35) !important;
+}
+
+/* Empty state */
+.empty-state button {
+  background: var(--gradient-primary) !important;
+}
+
+.empty-state button:hover {
+  box-shadow: 0 6px 20px rgba(196, 30, 36, 0.3) !important;
+}
+
+/* ============================================================
+   THƯ VIỆN
+   ============================================================ */
+
+.library-hero .hero-stats .stat .number {
+  color: var(--gold) !important;
+}
+
+.sidebar-title i {
+  color: var(--red-primary) !important;
+}
+
+.sidebar-reset:hover {
+  color: var(--red-primary) !important;
+  background: rgba(196, 30, 36, 0.06) !important;
+}
+
+.category-tree .cat-link:hover {
+  background: rgba(196, 30, 36, 0.06) !important;
+  color: var(--red-primary) !important;
+  border-left-color: var(--red-primary) !important;
+}
+
+.category-tree .cat-link.active {
+  background: var(--gradient-primary) !important;
+  box-shadow: 0 4px 20px rgba(196, 30, 36, 0.25) !important;
+}
+
+.category-tree .cat-link .icon.default {
+  background: rgba(196, 30, 36, 0.08) !important;
+  color: var(--red-primary) !important;
+}
+
+.category-tree .cat-link.active .icon.default {
+  background: rgba(245, 197, 24, 0.2) !important;
+  color: var(--gold) !important;
+}
+
+.category-tree .cat-link.active .count {
+  background: rgba(245, 197, 24, 0.2) !important;
+  color: var(--gold) !important;
+}
+
+/* Document card */
+.document-card:hover {
+  border-color: var(--red-primary) !important;
+  box-shadow: 0 20px 60px rgba(196, 30, 36, 0.12) !important;
+}
+
+.document-card::before {
+  background: linear-gradient(
+    90deg,
+    var(--red-primary),
+    var(--gold),
+    var(--red-primary)
+  ) !important;
+}
+
+.document-card .card-preview .file-icon {
+  color: var(--red-primary) !important;
+}
+
+.document-card .card-preview .download-badge {
+  background: rgba(196, 30, 36, 0.85) !important;
+}
+
+.document-card:hover .card-body .doc-title {
+  color: var(--red-primary) !important;
+}
+
+.document-card .card-body .doc-category {
+  color: var(--red-primary) !important;
+  background: rgba(196, 30, 36, 0.06) !important;
+}
+
+.document-card:hover .card-body .doc-category {
+  background: var(--red-primary) !important;
+  color: white !important;
+}
+
+.document-card:hover .doc-tags .tag {
+  background: rgba(196, 30, 36, 0.06) !important;
+  color: var(--red-primary) !important;
+}
+
+.document-card .card-body .doc-meta .actions .btn-preview {
+  background: rgba(196, 30, 36, 0.08) !important;
+  color: var(--red-primary) !important;
+}
+
+.document-card .card-body .doc-meta .actions .btn-preview:hover {
+  background: var(--red-primary) !important;
+  color: white !important;
+}
+
+.document-card .card-body .doc-meta .actions .btn-download {
+  background: var(--red-primary) !important;
+  color: white !important;
+}
+
+.document-card .card-body .doc-meta .actions .btn-download:hover {
+  background: var(--red-dark) !important;
+  box-shadow: 0 4px 15px rgba(196, 30, 36, 0.3) !important;
+}
+
+/* ============================================================
+   CHI TIẾT TÀI LIỆU
+   ============================================================ */
+
+.doc-main:hover {
+  border-color: var(--red-primary) !important;
+}
+
+.breadcrumb a {
+  color: var(--red-primary) !important;
+}
+
+.breadcrumb a:hover {
+  color: var(--red-dark) !important;
+}
+
+.doc-main .doc-meta-top .meta-item i {
+  color: var(--red-primary) !important;
+}
+
+.doc-description {
+  border-left-color: var(--red-primary) !important;
+}
+
+.doc-description h3 i {
+  color: var(--red-primary) !important;
+}
+
+.doc-tags .tag {
+  background: rgba(196, 30, 36, 0.06) !important;
+  color: var(--red-primary) !important;
+  border-color: rgba(196, 30, 36, 0.15) !important;
+}
+
+.doc-tags .tag:hover {
+  background: var(--red-primary) !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(196, 30, 36, 0.2) !important;
+}
+
+.doc-actions .btn-download {
+  background: var(--gradient-primary) !important;
+  box-shadow: 0 4px 20px rgba(196, 30, 36, 0.25) !important;
+}
+
+.doc-actions .btn-download:hover {
+  box-shadow: 0 12px 40px rgba(196, 30, 36, 0.35) !important;
+}
+
+.doc-actions .btn-outline {
+  color: var(--red-primary) !important;
+  border-color: var(--red-primary) !important;
+}
+
+.doc-actions .btn-outline:hover {
+  background: var(--red-primary) !important;
+  color: white !important;
+  box-shadow: 0 8px 25px rgba(196, 30, 36, 0.2) !important;
+}
+
+.doc-sidebar .sidebar-card:hover {
+  border-color: var(--red-primary) !important;
+}
+
+.doc-sidebar .sidebar-card h4 i {
+  color: var(--red-primary) !important;
+}
+
+.doc-sidebar .sidebar-card .info-row .value .highlight {
+  color: var(--red-primary) !important;
+}
+
+.share-link:hover {
+  background: var(--red-primary) !important;
+  color: white !important;
+}
+
+.sidebar-card[style*="background:linear-gradient(135deg,#fff9f5,#fff5e6)"] {
+  border-color: rgba(196, 30, 36, 0.15) !important;
+}
+
+.sidebar-card[style*="background:linear-gradient(135deg,#fff9f5,#fff5e6)"] h4 {
+  color: var(--red-primary) !important;
+}
+
+/* Related */
+.related-section .related-header h3 i {
+  color: var(--red-primary) !important;
+}
+
+.related-section .related-header a {
+  color: var(--red-primary) !important;
+}
+
+.related-section .related-header a:hover {
+  color: var(--red-dark) !important;
+}
+
+.related-section .related-item:hover {
+  border-color: var(--red-primary) !important;
+  box-shadow: 0 12px 40px rgba(196, 30, 36, 0.12) !important;
+}
+
+.related-section .related-item .icon {
+  color: var(--red-primary) !important;
+}
+
+.related-section .related-item:hover .icon {
+  color: var(--gold) !important;
+}
+
+/* ============================================================
+   ĐỘI NGŨ GIẢNG VIÊN
+   ============================================================ */
+
+.teacher-card:hover {
+  border-color: var(--red-primary) !important;
+  box-shadow: 0 30px 70px rgba(196, 30, 36, 0.15) !important;
+}
+
+.teacher-card:hover .teacher-name {
+  color: var(--red-primary) !important;
+}
+
+.teacher-card .teacher-title {
+  color: var(--red-primary) !important;
+}
+
+.teacher-card .card-image .card-badge {
+  background: rgba(196, 30, 36, 0.9) !important;
+}
+
+.teacher-card .card-image .card-experience i {
+  color: var(--gold) !important;
+}
+
+.teacher-card:hover .teacher-specialties .tag {
+  background: rgba(196, 30, 36, 0.06) !important;
+  color: var(--red-primary) !important;
+}
+
+.teacher-card .btn-view {
+  background: var(--gradient-primary) !important;
+}
+
+.teacher-card .btn-view:hover {
+  box-shadow: 0 8px 25px rgba(196, 30, 36, 0.35) !important;
+}
+
+.empty-state:hover .icon-wrapper {
+  background: rgba(196, 30, 36, 0.06) !important;
+  color: var(--red-primary) !important;
+}
+
+/* ============================================================
+   CHI TIẾT GIẢNG VIÊN
+   ============================================================ */
+
+.teacher-info .teacher-title {
+  color: var(--red-primary) !important;
+}
+
+.teacher-info .teacher-meta .meta-item i {
+  color: var(--red-primary) !important;
+}
+
+.teacher-info .teacher-specialties h3 i {
+  color: var(--red-primary) !important;
+}
+
+.teacher-info .teacher-specialties .tags .tag:hover {
+  background: var(--red-primary) !important;
+  color: white !important;
+}
+
+.teacher-info .teacher-contact .btn-primary {
+  background: var(--gradient-primary) !important;
+}
+
+.teacher-info .teacher-contact .btn-primary:hover {
+  box-shadow: 0 8px 25px rgba(196, 30, 36, 0.3) !important;
+}
+
+.teacher-info .teacher-contact .btn-outline {
+  color: var(--red-primary) !important;
+  border-color: var(--red-primary) !important;
+}
+
+.teacher-info .teacher-contact .btn-outline:hover {
+  background: var(--red-primary) !important;
+  color: white !important;
+}
+
+.teacher-status {
+  background: var(--gradient-primary) !important;
+}
+
+.related-item:hover {
+  border-color: var(--red-primary) !important;
+  box-shadow: 0 12px 40px rgba(196, 30, 36, 0.12) !important;
+}
+
+/* ============================================================
+   ĐĂNG KÝ
+   ============================================================ */
+
+.form-wrapper:hover {
+  border-color: var(--red-primary) !important;
+  box-shadow: 0 10px 50px rgba(196, 30, 36, 0.08) !important;
+}
+
+.form-wrapper::before {
+  background: linear-gradient(
+    135deg,
+    transparent 40%,
+    var(--red-primary) 100%
+  ) !important;
+}
+
+.form-header h2 i {
+  color: var(--red-primary) !important;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--red-primary) !important;
+  box-shadow: 0 0 0 4px rgba(196, 30, 36, 0.1) !important;
+}
+
+.btn-submit {
+  background: var(--gradient-primary) !important;
+}
+
+.btn-submit:hover {
+  box-shadow: 0 10px 35px rgba(196, 30, 36, 0.35) !important;
+}
+
+.form-footer p:hover {
+  color: var(--red-primary) !important;
+}
+
+.form-footer p i {
+  color: var(--red-primary) !important;
+}
+
+.sidebar-card:hover {
+  border-color: var(--red-primary) !important;
+  box-shadow: 0 12px 45px rgba(196, 30, 36, 0.08) !important;
+}
+
+.sidebar-card::before {
+  background: var(--gradient-primary) !important;
+}
+
+.sidebar-card h3 i {
+  color: var(--red-primary) !important;
+}
+
+.sidebar-card p i {
+  color: var(--red-primary) !important;
+}
+
+.sidebar-card.highlight {
+  background: var(--gradient-hero) !important;
+  border: 2px solid var(--gold) !important;
+}
+
+.sidebar-card.highlight h3 i {
+  color: var(--gold) !important;
+}
+
+.sidebar-card.highlight p i {
+  color: var(--gold) !important;
+}
+
+.sidebar-card.highlight:hover {
+  box-shadow: 0 15px 50px rgba(196, 30, 36, 0.35) !important;
+}
+
+/* ============================================================
+   CHÍNH SÁCH BẢO MẬT / ĐIỀU KHOẢN
+   ============================================================ */
+
+.policy-hero {
+  background: var(--gradient-hero) !important;
+  box-shadow: var(--shadow-primary) !important;
+}
+
+.policy-content h2 i {
+  color: var(--red-primary) !important;
+}
+
+.policy-content .highlight-box {
+  border-left-color: var(--red-primary) !important;
+}
+
+.back-link {
+  color: var(--red-primary) !important;
+}
+
+.back-link:hover {
+  color: var(--red-dark) !important;
+}
+
+/* ============================================================
+   FAQ
+   ============================================================ */
+
+.faq-hero {
+  background: var(--gradient-hero) !important;
+  box-shadow: var(--shadow-primary) !important;
+}
+
+.faq-item:hover {
+  border-color: var(--red-primary) !important;
+}
+
+.faq-question h3 .q-icon {
+  color: var(--red-primary) !important;
+}
+
+.faq-categories .cat-btn:hover {
+  border-color: var(--red-primary) !important;
+  color: var(--red-primary) !important;
+}
+
+.faq-categories .cat-btn.active {
+  background: var(--gradient-primary) !important;
+  border-color: var(--red-primary) !important;
+}
+
+.faq-search button {
+  background: var(--gradient-primary) !important;
+}
+
+.faq-search button:hover {
+  box-shadow: 0 4px 20px rgba(196, 30, 36, 0.3) !important;
+}
+
+/* ============================================================
+   CTA BOTTOM - CUỐI TRANG
+   ============================================================ */
+
+.cta-bottom {
+  padding: 70px 20px 80px;
+  background: var(--gradient-hero) !important;
+  position: relative;
+  overflow: hidden;
+  border-radius: 30px 30px 0 0;
+  margin-top: 20px;
+}
+
+.cta-bottom::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(
+    circle,
+    rgba(245, 197, 24, 0.05),
+    transparent 70%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.cta-bottom::after {
+  content: "";
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(
+    circle,
+    rgba(245, 197, 24, 0.03),
+    transparent 70%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.cta-bottom-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.cta-bottom-icon {
+  font-size: 56px;
+  margin-bottom: 12px;
+  display: block;
+  animation: ctaIconFloat 3s ease-in-out infinite;
+}
+
+@keyframes ctaIconFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.cta-bottom-content h2 {
+  font-size: 38px;
+  font-weight: 800;
+  font-family: "Playfair Display", serif;
+  color: var(--gold) !important;
+  margin-bottom: 12px;
+}
+
+.cta-bottom-content p {
+  font-size: 17px;
+  color: #fdf0d5 !important;
+  line-height: 1.8;
+  max-width: 600px;
+  margin: 0 auto 24px;
+}
+
+.cta-bottom-content p strong {
+  color: var(--gold-light) !important;
+}
+
+.cta-bottom-stats {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-bottom: 28px;
+}
+
+.cta-bottom-stats .stat {
+  text-align: center;
+}
+
+.cta-bottom-stats .stat .number {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--gold) !important;
+  display: block;
+}
+
+.cta-bottom-stats .stat .label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.cta-bottom-buttons {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cta-bottom-btn-primary {
+  padding: 16px 44px;
+  background: var(--gradient-gold) !important;
+  color: #8b1a1a !important;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 17px;
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 6px 30px rgba(245, 197, 24, 0.3);
+}
+
+.cta-bottom-btn-primary:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 12px 45px rgba(245, 197, 24, 0.4);
+}
+
+.cta-bottom-btn-zalo {
+  padding: 16px 34px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  color: white;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.cta-bottom-btn-zalo:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+}
+
+.cta-bottom-note {
+  margin-top: 20px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.cta-bottom-note i {
+  color: var(--gold) !important;
+  margin-right: 6px;
+}
+
+/* ============================================================
+   ADMIN
+   ============================================================ */
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+  border-left-color: var(--red-primary) !important;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .cta-bottom {
+    padding: 50px 20px 60px;
+    border-radius: 20px 20px 0 0;
+  }
+  .cta-bottom-content h2 {
+    font-size: 30px;
+  }
+  .cta-bottom-stats {
+    gap: 30px;
+  }
+  .cta-bottom-stats .stat .number {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cta-bottom {
+    padding: 40px 16px 50px;
+    border-radius: 16px 16px 0 0;
+  }
+  .cta-bottom-content h2 {
+    font-size: 24px;
+  }
+  .cta-bottom-content p {
+    font-size: 15px;
+  }
+  .cta-bottom-stats {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cta-bottom-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  .cta-bottom-btn-primary,
+  .cta-bottom-btn-zalo {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+}

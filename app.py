@@ -2073,6 +2073,192 @@ def api_update_schedule(schedule_id):
         print(f"❌ Lỗi cập nhật lịch khai giảng: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
+from flask import request, redirect, url_for, session, render_template_string
+import hashlib
+import os
+
+# ============================================
+# CẤU HÌNH MẬT KHẨU ADMIN
+# ============================================
+ADMIN_USERNAME = "admin"
+# Mật khẩu: admin@oyin2024 (mã hóa SHA256)
+ADMIN_PASSWORD_HASH = hashlib.sha256("admin@oyin2024".encode()).hexdigest() 
+
+def check_admin_auth():
+    """Kiểm tra xác thực admin"""
+    if 'admin_logged_in' not in session or session['admin_logged_in'] != True:
+        return False
+    return True
+
+# ============================================
+# ROUTE ĐĂNG NHẬP ADMIN
+# ============================================
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    """Trang đăng nhập admin"""
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+        
+        # Mã hóa mật khẩu nhập vào để so sánh
+        password_hash = hashlib.sha256(password.encode()).hexdigest()
+        
+        if username == ADMIN_USERNAME and password_hash == ADMIN_PASSWORD_HASH:
+            session['admin_logged_in'] = True
+            return redirect('/admin/dashboard')
+        else:
+            return render_template_string(LOGIN_HTML, error="❌ Sai tên đăng nhập hoặc mật khẩu!")
+    
+    return render_template_string(LOGIN_HTML)
+
+# ============================================
+# ROUTE ĐĂNG XUẤT
+# ============================================
+@app.route('/admin/logout')
+def admin_logout():
+    """Đăng xuất admin"""
+    session.pop('admin_logged_in', None)
+    return redirect('/admin/login')
+
+LOGIN_HTML = '''
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập Admin - OYin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Be Vietnam Pro', sans-serif; }
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #e67e22 0%, #d35400 100%);
+        }
+        .login-container {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-container .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .login-container h1 {
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 6px;
+        }
+        .login-container p.sub {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        .login-container .form-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+        .login-container .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .login-container .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            outline: none;
+        }
+        .login-container .form-group input:focus {
+            border-color: #e67e22;
+        }
+        .login-container .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .login-container .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(230,126,34,0.3);
+        }
+        .login-container .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #fde8e8;
+            border-radius: 8px;
+        }
+        .login-container .footer-text {
+            margin-top: 16px;
+            font-size: 13px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">🔐</div>
+        <h1>OYin Admin</h1>
+        <p class="sub">Đăng nhập để quản trị website</p>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+        
+        <form method="POST">
+            <div class="form-group">
+                <label>Tên đăng nhập</label>
+                <input type="text" name="username" placeholder="Nhập tên đăng nhập..." required autofocus>
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu</label>
+                <input type="password" name="password" placeholder="Nhập mật khẩu..." required>
+            </div>
+            <button type="submit" class="btn-login">🚀 Đăng nhập</button>
+        </form>
+        <p class="footer-text">Liên hệ quản trị viên nếu quên mật khẩu</p>
+    </div>
+</body>
+</html>
+'''
+
+# ============================================
+# MIDDLEWARE BẢO VỆ ADMIN
+# ============================================
+@app.before_request
+def protect_admin_routes():
+    """Kiểm tra xác thực trước khi vào các route admin"""
+    admin_routes = ['/admin/dashboard', '/admin/courses', '/admin/menu']
+    
+    # Nếu route hiện tại là admin và chưa đăng nhập
+    if any(request.path.startswith(route) for route in admin_routes):
+        if not check_admin_auth():
+            return redirect('/admin/login')
+    
+    # Cho phép vào /admin/login
+    if request.path == '/admin/login':
+        return None
+    
+app.secret_key = os.environ.get('SECRET_KEY', 'oyin-2024')
+
 # ============================================
 # MAIN
 # ============================================

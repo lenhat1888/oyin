@@ -219,10 +219,11 @@
 
 .schedule-hero p {
   font-size: 18px;
+  color: #f5e6d3;
   opacity: 0.9;
   position: relative;
   z-index: 1;
-  max-width: 600px;
+  max-width: 650px;
   margin: 0 auto 20px;
   animation: titleSlide 0.8s ease-out 0.2s both;
 }

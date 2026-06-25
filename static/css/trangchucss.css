@@ -957,6 +957,215 @@
 }
 
 /* ============================================================
+   CTA BOTTOM - CUỐI TRANG (TỐI ƯU)
+   ============================================================ */
+.cta-bottom {
+  padding: 70px 20px 80px;
+  background: linear-gradient(145deg, #aa0815 0%, #7a0510 50%, #4a030a 100%);
+  position: relative;
+  overflow: hidden;
+  border-radius: 30px 30px 0 0;
+  margin-top: 20px;
+}
+
+/* Hiệu ứng nền */
+.cta-bottom::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.05), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.cta-bottom::after {
+  content: "";
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.03), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.cta-bottom-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.cta-bottom-icon {
+  font-size: 56px;
+  margin-bottom: 12px;
+  display: block;
+  animation: ctaIconFloat 3s ease-in-out infinite;
+}
+
+@keyframes ctaIconFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.cta-bottom-content h2 {
+  font-size: 38px;
+  font-weight: 800;
+  font-family: "Playfair Display", serif;
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+.cta-bottom-content p {
+  font-size: 17px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.8;
+  max-width: 600px;
+  margin: 0 auto 24px;
+}
+
+.cta-bottom-content p strong {
+  color: #ffd700;
+}
+
+.cta-bottom-stats {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-bottom: 28px;
+}
+
+.cta-bottom-stats .stat {
+  text-align: center;
+}
+
+.cta-bottom-stats .stat .number {
+  font-size: 32px;
+  font-weight: 800;
+  color: #ffd700;
+  display: block;
+}
+
+.cta-bottom-stats .stat .label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.cta-bottom-buttons {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cta-bottom-btn-primary {
+  padding: 16px 44px;
+  background: linear-gradient(135deg, #ffd700, #f5a623);
+  color: #7a0510;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 17px;
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 6px 30px rgba(255, 215, 0, 0.3);
+}
+
+.cta-bottom-btn-primary:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 12px 45px rgba(255, 215, 0, 0.4);
+}
+
+.cta-bottom-btn-zalo {
+  padding: 16px 34px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  color: white;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.cta-bottom-btn-zalo:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+}
+
+.cta-bottom-note {
+  margin-top: 20px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.cta-bottom-note i {
+  color: #ffd700;
+  margin-right: 6px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .cta-bottom {
+    padding: 50px 20px 60px;
+    border-radius: 20px 20px 0 0;
+  }
+  .cta-bottom-content h2 {
+    font-size: 30px;
+  }
+  .cta-bottom-stats {
+    gap: 30px;
+  }
+  .cta-bottom-stats .stat .number {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cta-bottom {
+    padding: 40px 16px 50px;
+    border-radius: 16px 16px 0 0;
+  }
+  .cta-bottom-content h2 {
+    font-size: 24px;
+  }
+  .cta-bottom-content p {
+    font-size: 15px;
+  }
+  .cta-bottom-stats {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cta-bottom-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  .cta-bottom-btn-primary,
+  .cta-bottom-btn-zalo {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+}
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 
