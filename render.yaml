@@ -1,4 +1,5 @@
 services:
+  # ===== WEB SERVICE =====
   - type: web
     name: oyin-website
     env: python
@@ -11,3 +12,16 @@ services:
         sync: false
       - key: MONGO_DB
         value: oyin_db
+      - key: APP_URL
+        value: https://ngoainguoyin.vn/
+
+  # ===== CRON JOB - GIỮ WEB KHÔNG BỊ SLEEP =====
+  - type: cron
+    name: keep-alive
+    env: python
+    schedule: "*/5 * * * *" # Chạy mỗi 5 phút
+    buildCommand: pip install requests
+    startCommand: python cron.py
+    envVars:
+      - key: APP_URL
+        value: https://ngoainguoyin.vn/
