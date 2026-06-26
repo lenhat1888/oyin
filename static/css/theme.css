@@ -1,41 +1,44 @@
 /* ============================================================
-   O-YIN THEME - RED & GOLD (TƯƠI SÁNG)
+   O-YIN THEME - CUSTOM COLORS
+   Đỏ: #73060C, #B73B07, #CD3301
+   Vàng: #F8DD64
    ============================================================ */
 
 :root {
-  /* Màu đỏ chủ đạo - TƯƠI SÁNG HƠN */
-  --red-primary: #c41e24;
-  --red-dark: #8b1a1a;
-  --red-light: #e63946;
-  --red-rgb: 196, 30, 36;
+  /* ===== MÀU ĐỎ ===== */
+  --red-darkest: #73060c; /* Đỏ đậm nhất - nền tối */
+  --red-primary: #b73b07; /* Đỏ gạch - màu chính */
+  --red-bright: #cd3301; /* Đỏ cam tươi - highlight */
+  --red-orange: #e04a0a; /* Cam đỏ - chuyển tiếp */
+  --red-rgb: 183, 59, 7;
 
-  /* Màu vàng nhấn - TƯƠI SÁNG HƠN */
-  --gold: #f5c518;
-  --gold-light: #ffe066;
-  --gold-dark: #d4a017;
-  --gold-rgb: 245, 197, 24;
+  /* ===== MÀU VÀNG ===== */
+  --gold: #f8dd64; /* Vàng chính từ logo */
+  --gold-light: #fae88a; /* Vàng sáng */
+  --gold-dark: #d4b840; /* Vàng đậm */
+  --gold-rgb: 248, 221, 100;
 
-  /* Màu be - NỀN ẤM ÁP */
-  --beige: #fdf0d5;
-  --beige-dark: #f5e6cc;
-  --beige-light: #fefcf3;
+  /* ===== MÀU NỀN ===== */
+  --beige: #fdf5e6; /* Be ấm - nền chính */
+  --beige-dark: #f5edd6; /* Be trung tính */
+  --beige-light: #fefcf8; /* Trắng ấm */
 
-  /* Gradient */
-  --gradient-primary: linear-gradient(135deg, #c41e24, #8b1a1a);
-  --gradient-gold: linear-gradient(135deg, #f5c518, #d4a017);
+  /* ===== GRADIENT ===== */
+  --gradient-primary: linear-gradient(135deg, #b73b07, #73060c);
   --gradient-hero: linear-gradient(
     145deg,
-    #c41e24 0%,
-    #8b1a1a 50%,
-    #5c0e0e 100%
+    #73060c 0%,
+    #b73b07 40%,
+    #cd3301 100%
   );
-  --gradient-card: linear-gradient(135deg, #c41e24, #e63946);
+  --gradient-gold: linear-gradient(135deg, #f8dd64, #d4b840);
+  --gradient-red-gold: linear-gradient(135deg, #cd3301, #f8dd64);
 
-  /* Shadows */
-  --shadow-primary: 0 20px 60px rgba(196, 30, 36, 0.3);
-  --shadow-primary-hover: 0 25px 80px rgba(196, 30, 36, 0.4);
-  --shadow-gold: 0 20px 60px rgba(245, 197, 24, 0.25);
-  --shadow-gold-hover: 0 25px 80px rgba(245, 197, 24, 0.35);
+  /* ===== SHADOWS ===== */
+  --shadow-primary: 0 20px 60px rgba(183, 59, 7, 0.3);
+  --shadow-primary-hover: 0 25px 80px rgba(183, 59, 7, 0.4);
+  --shadow-gold: 0 20px 60px rgba(248, 221, 100, 0.25);
+  --shadow-red-gold: 0 20px 60px rgba(205, 51, 1, 0.3);
 }
 
 /* ============================================================
@@ -44,6 +47,7 @@
 
 .informationtextname2 {
   color: var(--red-primary) !important;
+  font-family: "Times New Roman", Times, serif !important;
 }
 
 .informationimg {
@@ -51,9 +55,8 @@
 }
 
 .informationtextcall:hover {
-  background: rgba(196, 30, 36, 0.06) !important;
+  background: rgba(183, 59, 7, 0.06) !important;
   border-color: var(--red-primary) !important;
-  box-shadow: 0 4px 12px rgba(196, 30, 36, 0.15) !important;
 }
 
 .informationtextcall2 {
@@ -62,16 +65,16 @@
 
 .informationtextsupport:hover {
   border-color: var(--gold) !important;
-  box-shadow: 0 4px 12px rgba(245, 197, 24, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(248, 221, 100, 0.2) !important;
 }
 
 /* ============================================================
-   NAVIGATION - ĐỎ + VÀNG
+   NAVIGATION
    ============================================================ */
 
 .nav-wrapper {
   background: var(--gradient-primary) !important;
-  box-shadow: 0 4px 20px rgba(196, 30, 36, 0.25) !important;
+  box-shadow: 0 4px 20px rgba(183, 59, 7, 0.25) !important;
 }
 
 .nav-item > a {
@@ -103,12 +106,8 @@
   border-top: 3px solid var(--gold) !important;
 }
 
-.dropdown li a {
-  color: #333 !important;
-}
-
 .dropdown li a:hover {
-  background: rgba(196, 30, 36, 0.08) !important;
+  background: rgba(183, 59, 7, 0.08) !important;
   color: var(--red-primary) !important;
 }
 
@@ -116,30 +115,26 @@
   background: var(--red-primary) !important;
 }
 
-.dropdown-sub > span {
-  color: #333 !important;
-}
-
 .dropdown-sub > span::after {
   color: var(--red-primary) !important;
 }
 
 .sub-dropdown li a:hover {
-  background: rgba(196, 30, 36, 0.06) !important;
+  background: rgba(183, 59, 7, 0.06) !important;
   color: var(--red-primary) !important;
 }
 
 /* Register Button */
 .register-btn a {
   background: var(--gradient-gold) !important;
-  color: #8b1a1a !important;
-  box-shadow: 0 4px 15px rgba(245, 197, 24, 0.3) !important;
+  color: var(--red-darkest) !important;
+  box-shadow: 0 4px 15px rgba(248, 221, 100, 0.3) !important;
 }
 
 .register-btn a:hover {
-  background: #ffe066 !important;
-  box-shadow: 0 6px 25px rgba(245, 197, 24, 0.4) !important;
-  color: #5c0e0e !important;
+  background: #fae88a !important;
+  box-shadow: 0 6px 25px rgba(248, 221, 100, 0.4) !important;
+  color: #4a0300 !important;
 }
 
 /* ============================================================
@@ -150,7 +145,7 @@
   background: linear-gradient(
     90deg,
     var(--gold),
-    var(--red-primary),
+    var(--red-bright),
     var(--gold)
   ) !important;
 }
@@ -175,7 +170,7 @@
 
 .social-icon:hover {
   background: var(--gradient-gold) !important;
-  color: var(--red-dark) !important;
+  color: var(--red-darkest) !important;
 }
 
 .footer-col h4::after {
@@ -183,7 +178,7 @@
 }
 
 /* ============================================================
-   HERO - ĐỎ + VÀNG TƯƠI SÁNG
+   HERO - GRADIENT ĐỎ ĐẬM → ĐỎ GẠCH → ĐỎ CAM
    ============================================================ */
 
 .about-hero,
@@ -223,7 +218,7 @@
     var(--gold-dark),
     var(--gold)
   ) !important;
-  box-shadow: 0 0 30px rgba(245, 197, 24, 0.3) !important;
+  box-shadow: 0 0 30px rgba(248, 221, 100, 0.3) !important;
 }
 
 /* Hero badge - Vàng */
@@ -235,10 +230,10 @@
 .library-hero .hero-badge,
 .courses-hero .hero-badge {
   color: var(--gold) !important;
-  border-color: rgba(245, 197, 24, 0.2) !important;
+  border-color: rgba(248, 221, 100, 0.2) !important;
 }
 
-/* Hero title - VÀNG TƯƠI SÁNG */
+/* Hero title - VÀNG CHÍNH */
 .about-hero h1,
 .dangky-hero h1,
 .news-hero h1,
@@ -249,7 +244,7 @@
 .faq-hero h1,
 .courses-hero .hero-title {
   color: var(--gold) !important;
-  text-shadow: 0 4px 20px rgba(245, 197, 24, 0.15) !important;
+  text-shadow: 0 4px 20px rgba(248, 221, 100, 0.15) !important;
 }
 
 .about-hero h1 span,
@@ -271,11 +266,11 @@
 .policy-hero p,
 .faq-hero p,
 .courses-hero .hero-subtitle {
-  color: #fdf0d5 !important;
+  color: var(--beige) !important;
   opacity: 0.95 !important;
 }
 
-/* Hero decoration dots - Vàng */
+/* Hero decoration dots */
 .about-hero .hero-deco span,
 .dangky-hero .hero-deco span,
 .news-hero .hero-deco span,
@@ -285,53 +280,52 @@
   background: var(--gold) !important;
 }
 
-/* Hero search - Vàng */
+/* Hero search */
 .hero-search button,
 .schedule-hero .hero-search button {
   background: var(--gradient-gold) !important;
-  color: var(--red-dark) !important;
+  color: var(--red-darkest) !important;
 }
 
 .hero-search button:hover,
 .schedule-hero .hero-search button:hover {
-  box-shadow: 0 4px 25px rgba(245, 197, 24, 0.4) !important;
+  box-shadow: 0 4px 25px rgba(248, 221, 100, 0.4) !important;
 }
 
 .hero-search:focus-within {
   border-color: var(--gold) !important;
-  box-shadow: 0 0 0 4px rgba(245, 197, 24, 0.15) !important;
+  box-shadow: 0 0 0 4px rgba(248, 221, 100, 0.15) !important;
 }
 
 .hero-search:focus-within i {
   color: var(--gold) !important;
 }
 
-/* Hero stats - Vàng */
+/* Hero stats */
 .hero-stat:hover .stat-number {
   color: var(--gold) !important;
 }
 
 .hero-stat:hover {
-  border-color: rgba(245, 197, 24, 0.2) !important;
-  background: rgba(245, 197, 24, 0.08) !important;
+  border-color: rgba(248, 221, 100, 0.2) !important;
+  background: rgba(248, 221, 100, 0.08) !important;
 }
 
 .stat-icon {
-  background: rgba(245, 197, 24, 0.15) !important;
+  background: rgba(248, 221, 100, 0.15) !important;
   color: var(--gold) !important;
 }
 
 .hero-stat:hover .stat-icon {
-  background: rgba(245, 197, 24, 0.25) !important;
+  background: rgba(248, 221, 100, 0.25) !important;
 }
 
-/* Hero float cards - Vàng */
 .hero-float-card i {
   color: var(--gold) !important;
 }
 
 .hero-float-card:hover {
-  background: rgba(245, 197, 24, 0.15) !important;
+  background: rgba(248, 221, 100, 0.15) !important;
 }
 
 /* ============================================================
@@ -339,15 +333,15 @@
    ============================================================ */
 
 .dot.active {
-  background: var(--red-primary) !important;
+  background: var(--red-bright) !important;
   border-color: var(--gold) !important;
-  box-shadow: 0 0 25px rgba(196, 30, 36, 0.4) !important;
+  box-shadow: 0 0 25px rgba(205, 51, 1, 0.4) !important;
 }
 
 .slider-btn:hover {
   background: var(--gradient-primary) !important;
   border-color: var(--gold) !important;
-  box-shadow: 0 8px 30px rgba(196, 30, 36, 0.4) !important;
+  box-shadow: 0 8px 30px rgba(183, 59, 7, 0.4) !important;
 }
 
 /* ============================================================
@@ -372,7 +366,7 @@
 
 .commitment-card:hover {
   border-color: var(--red-primary) !important;
-  box-shadow: 0 25px 60px rgba(196, 30, 36, 0.12) !important;
+  box-shadow: 0 25px 60px rgba(183, 59, 7, 0.12) !important;
 }
 
 .commitment-card:hover h3 {
@@ -389,21 +383,21 @@
 
 .commitment-card:hover .card-icon {
   background: var(--gradient-primary) !important;
-  box-shadow: 0 8px 30px rgba(196, 30, 36, 0.25) !important;
+  box-shadow: 0 8px 30px rgba(183, 59, 7, 0.25) !important;
 }
 
 .commitment-card:hover .card-icon i {
   color: #ffffff !important;
 }
 
-/* Highlight card - Đỏ + Vàng */
+/* Highlight card - Đỏ đậm + Vàng */
 .commitment-card.highlight {
   background: var(--gradient-hero) !important;
   border: 2px solid var(--gold) !important;
 }
 
 .commitment-card.highlight .card-icon {
-  background: rgba(245, 197, 24, 0.2) !important;
+  background: rgba(248, 221, 100, 0.2) !important;
 }
 
 .commitment-card.highlight .card-icon i {
@@ -423,7 +417,7 @@
 }
 
 .commitment-card.highlight:hover {
-  box-shadow: 0 25px 60px rgba(196, 30, 36, 0.4) !important;
+  box-shadow: 0 25px 60px rgba(183, 59, 7, 0.4) !important;
 }
 
 .commitment-card.highlight:hover .card-icon {
@@ -431,7 +425,7 @@
 }
 
 .commitment-card.highlight:hover .card-icon i {
-  color: var(--red-dark) !important;
+  color: var(--red-darkest) !important;
 }
 
 /* ============================================================
@@ -443,19 +437,19 @@
     90deg,
     var(--red-primary),
     var(--gold),
-    var(--red-primary)
+    var(--red-bright)
   ) !important;
   background-size: 200% 100% !important;
 }
 
 .category-card:hover {
   border-color: var(--red-primary) !important;
-  box-shadow: 0 30px 70px rgba(196, 30, 36, 0.15) !important;
+  box-shadow: 0 30px 70px rgba(183, 59, 7, 0.15) !important;
 }
 
 .category-card:hover .category-icon {
   background: var(--gradient-primary) !important;
-  box-shadow: 0 8px 25px rgba(196, 30, 36, 0.3) !important;
+  box-shadow: 0 8px 25px rgba(183, 59, 7, 0.3) !important;
 }
 
 .category-card:hover .category-icon i {
@@ -471,11 +465,11 @@
 }
 
 .category-content .btn-view:hover {
-  box-shadow: 0 8px 25px rgba(196, 30, 36, 0.35) !important;
+  box-shadow: 0 8px 25px rgba(183, 59, 7, 0.35) !important;
 }
 
 /* ============================================================
-   REVIEWS SECTION - ĐỎ + VÀNG
+   REVIEWS SECTION
    ============================================================ */
 
 .reviews-section::before,
@@ -490,7 +484,7 @@
 
 .review-card:hover {
   border-color: var(--red-primary) !important;
-  box-shadow: 0 20px 60px rgba(196, 30, 36, 0.1) !important;
+  box-shadow: 0 20px 60px rgba(183, 59, 7, 0.1) !important;
 }
 
 .review-card::before {
@@ -514,7 +508,7 @@
 }
 
 .review-card:hover .review-avatar {
-  box-shadow: 0 4px 20px rgba(196, 30, 36, 0.3) !important;
+  box-shadow: 0 4px 20px rgba(183, 59, 7, 0.3) !important;
 }
 
 .review-author-name .verified {
@@ -522,12 +516,12 @@
 }
 
 .reviews-dot.active {
-  background: var(--red-primary) !important;
-  box-shadow: 0 0 20px rgba(196, 30, 36, 0.2) !important;
+  background: var(--red-bright) !important;
+  box-shadow: 0 0 20px rgba(205, 51, 1, 0.2) !important;
 }
 
 .reviews-dot:hover {
-  background: var(--red-primary) !important;
+  background: var(--red-bright) !important;
 }
 
 .reviews-btn {
@@ -552,25 +546,23 @@
   background: var(--gradient-gold) !important;
 }
 
-/* Filter tabs */
 .filter-tab:hover {
   color: var(--red-primary) !important;
 }
 
 .filter-tab.active {
   background: var(--gradient-primary) !important;
-  box-shadow: 0 8px 25px rgba(196, 30, 36, 0.3) !important;
+  box-shadow: 0 8px 25px rgba(183, 59, 7, 0.3) !important;
 }
 
-/* Course card */
 .course-card:hover {
   border-color: var(--red-primary) !important;
-  box-shadow: 0 20px 50px rgba(196, 30, 36, 0.15) !important;
+  box-shadow: 0 20px 50px rgba(183, 59, 7, 0.15) !important;
 }
 
 .card-badge {
   background: var(--gradient-primary) !important;
-  box-shadow: 0 4px 15px rgba(196, 30, 36, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(183, 59, 7, 0.3) !important;
 }
 
 .course-card:hover .card-category {
@@ -594,7 +586,7 @@
 }
 
 .btn-detail:hover {
-  box-shadow: 0 4px 20px rgba(196, 30, 36, 0.4) !important;
+  box-shadow: 0 4px 20px rgba(183, 59, 7, 0.4) !important;
 }
 
 /* ============================================================
@@ -610,32 +602,29 @@
 }
 
 .course-hero .badge {
-  color: #fdf0d5 !important;
+  color: var(--beige) !important;
 }
 
 .course-hero .badge i {
   color: var(--gold) !important;
 }
 
-/* Quick info */
 .quick-info-item i {
   color: var(--red-primary) !important;
 }
 
-/* Register button */
 .btn-register {
   background: var(--gradient-primary) !important;
 }
 
 .btn-register:hover {
-  box-shadow: 0 6px 20px rgba(196, 30, 36, 0.3) !important;
+  box-shadow: 0 6px 20px rgba(183, 59, 7, 0.3) !important;
 }
 
 .price {
   color: var(--red-primary) !important;
 }
 
-/* Content */
 .course-main h2 i {
   color: var(--red-primary) !important;
 }
@@ -649,38 +638,31 @@
   color: var(--red-primary) !important;
 }
 
-/* Benefits */
 .benefit-item {
-  border-color: #fdebd0 !important;
+  border-color: var(--beige-dark) !important;
 }
 
 .benefit-item:hover {
   border-color: var(--red-primary) !important;
-  box-shadow: 0 6px 20px rgba(196, 30, 36, 0.12) !important;
+  box-shadow: 0 6px 20px rgba(183, 59, 7, 0.12) !important;
 }
 
 .benefit-icon {
   background: var(--red-primary) !important;
 }
 
-.benefit-text {
-  color: #2c3e50 !important;
-}
-
-/* Outcomes */
 .outcome-icon {
   background: var(--gold-dark) !important;
 }
 
-/* Curriculum */
 .curriculum-item:hover {
-  background: linear-gradient(135deg, #fff5f5, #ffe6e6) !important;
+  background: linear-gradient(135deg, #fff5f0, #ffe8e0) !important;
   border-color: var(--red-primary) !important;
   border-left-color: var(--red-primary) !important;
 }
 
 .curriculum-item:hover .curriculum-week {
-  color: var(--red-dark) !important;
+  color: var(--red-darkest) !important;
 }
 
 .curriculum-item:hover .curriculum-content h4 {
@@ -691,23 +673,21 @@
   color: var(--red-primary) !important;
 }
 
-/* Sidebar */
 .sidebar-card h4 i {
   color: var(--red-primary) !important;
 }
 
 .sidebar-card[style*="background:linear-gradient(135deg,#fff9f5,#fff)"] {
-  border-color: rgba(196, 30, 36, 0.15) !important;
+  border-color: rgba(183, 59, 7, 0.15) !important;
 }
 
 .sidebar-card[style*="background:linear-gradient(135deg,#fff9f5,#fff)"] h4 {
   color: var(--red-primary) !important;
 }
 
-/* Related */
 .related-courses .related-item:hover {
   border-color: var(--red-primary) !important;
-  box-shadow: 0 12px 40px rgba(196, 30, 36, 0.12) !important;
+  box-shadow: 0 12px 40px rgba(183, 59, 7, 0.12) !important;
 }
 
 .related-courses .related-item .price {
@@ -724,12 +704,12 @@
 
 .schedule-filter.active {
   background: var(--gradient-primary) !important;
-  box-shadow: 0 8px 25px rgba(196, 30, 36, 0.3) !important;
+  box-shadow: 0 8px 25px rgba(183, 59, 7, 0.3) !important;
 }
 
 .schedule-card:hover {
   border-color: var(--red-primary) !important;
-  box-shadow: 0 15px 50px rgba(196, 30, 36, 0.12) !important;
+  box-shadow: 0 15px 50px rgba(183, 59, 7, 0.12) !important;
 }
 
 .schedule-card:hover .course-name {
@@ -737,12 +717,12 @@
 }
 
 .badge-category {
-  background: rgba(196, 30, 36, 0.08) !important;
+  background: rgba(183, 59, 7, 0.08) !important;
   color: var(--red-primary) !important;
 }
 
 .badge-status {
-  background: rgba(245, 197, 24, 0.15) !important;
+  background: rgba(248, 221, 100, 0.15) !important;
   color: var(--gold-dark) !important;
 }
 
@@ -759,7 +739,7 @@
 }
 
 .schedule-card .btn-register:hover {
-  box-shadow: 0 8px 30px rgba(196, 30, 36, 0.4) !important;
+  box-shadow: 0 8px 30px rgba(183, 59, 7, 0.4) !important;
 }
 
 .schedule-empty button {
@@ -767,7 +747,7 @@
 }
 
 .schedule-empty button:hover {
-  box-shadow: 0 6px 20px rgba(196, 30, 36, 0.3) !important;
+  box-shadow: 0 6px 20px rgba(183, 59, 7, 0.3) !important;
 }
 
 /* ============================================================
@@ -780,12 +760,12 @@
 
 .news-filter.active {
   background: var(--gradient-primary) !important;
-  box-shadow: 0 8px 25px rgba(196, 30, 36, 0.3) !important;
+  box-shadow: 0 8px 25px rgba(183, 59, 7, 0.3) !important;
 }
 
 .news-card:hover {
   border-color: var(--red-primary) !important;
-  box-shadow: 0 25px 70px rgba(196, 30, 36, 0.15) !important;
+  box-shadow: 0 25px 70px rgba(183, 59, 7, 0.15) !important;
 }
 
 .news-card::before {
@@ -793,7 +773,7 @@
     90deg,
     var(--red-primary),
     var(--gold),
-    var(--red-primary)
+    var(--red-bright)
   ) !important;
 }
 
@@ -802,7 +782,7 @@
 }
 
 .news-card .card-image .card-category {
-  background: rgba(196, 30, 36, 0.9) !important;
+  background: rgba(183, 59, 7, 0.9) !important;
 }
 
 .news-card:hover .card-image .card-category {
@@ -822,17 +802,16 @@
 }
 
 .news-card .card-body .news-footer .btn-read:hover {
-  box-shadow: 0 4px 20px rgba(196, 30, 36, 0.3) !important;
+  box-shadow: 0 4px 20px rgba(183, 59, 7, 0.3) !important;
 }
 
 .news-card .card-body .news-footer .date i {
   color: var(--red-primary) !important;
 }
 
-/* Search */
 .search-wrapper:focus-within {
   box-shadow:
-    0 25px 70px rgba(196, 30, 36, 0.15),
+    0 25px 70px rgba(183, 59, 7, 0.15),
     0 0 0 2px var(--red-primary) !important;
 }
 
@@ -845,16 +824,15 @@
 }
 
 .search-wrapper .search-btn:hover {
-  box-shadow: 0 8px 30px rgba(196, 30, 36, 0.35) !important;
+  box-shadow: 0 8px 30px rgba(183, 59, 7, 0.35) !important;
 }
 
-/* Empty state */
 .empty-state button {
   background: var(--gradient-primary) !important;
 }
 
 .empty-state button:hover {
-  box-shadow: 0 6px 20px rgba(196, 30, 36, 0.3) !important;
+  box-shadow: 0 6px 20px rgba(183, 59, 7, 0.3) !important;
 }
 
 /* ============================================================
@@ -871,39 +849,38 @@
 
 .sidebar-reset:hover {
   color: var(--red-primary) !important;
-  background: rgba(196, 30, 36, 0.06) !important;
+  background: rgba(183, 59, 7, 0.06) !important;
 }
 
 .category-tree .cat-link:hover {
-  background: rgba(196, 30, 36, 0.06) !important;
+  background: rgba(183, 59, 7, 0.06) !important;
   color: var(--red-primary) !important;
   border-left-color: var(--red-primary) !important;
 }
 
 .category-tree .cat-link.active {
   background: var(--gradient-primary) !important;
-  box-shadow: 0 4px 20px rgba(196, 30, 36, 0.25) !important;
+  box-shadow: 0 4px 20px rgba(183, 59, 7, 0.25) !important;
 }
 
 .category-tree .cat-link .icon.default {
-  background: rgba(196, 30, 36, 0.08) !important;
+  background: rgba(183, 59, 7, 0.08) !important;
   color: var(--red-primary) !important;
 }
 
 .category-tree .cat-link.active .icon.default {
-  background: rgba(245, 197, 24, 0.2) !important;
+  background: rgba(248, 221, 100, 0.2) !important;
   color: var(--gold) !important;
 }
 
 .category-tree .cat-link.active .count {
-  background: rgba(245, 197, 24, 0.2) !important;
+  background: rgba(248, 221, 100, 0.2) !important;
   color: var(--gold) !important;
 }
 
-/* Document card */
 .document-card:hover {
   border-color: var(--red-primary) !important;
-  box-shadow: 0 20px 60px rgba(196, 30, 36, 0.12) !important;
+  box-shadow: 0 20px 60px rgba(183, 59, 7, 0.12) !important;
 }
 
 .document-card::before {
@@ -911,7 +888,7 @@
     90deg,
     var(--red-primary),
     var(--gold),
-    var(--red-primary)
+    var(--red-bright)
   ) !important;
 }
 
@@ -920,7 +897,7 @@
 }
 
 .document-card .card-preview .download-badge {
-  background: rgba(196, 30, 36, 0.85) !important;
+  background: rgba(183, 59, 7, 0.85) !important;
 }
 
 .document-card:hover .card-body .doc-title {
@@ -929,7 +906,7 @@
 
 .document-card .card-body .doc-category {
   color: var(--red-primary) !important;
-  background: rgba(196, 30, 36, 0.06) !important;
+  background: rgba(183, 59, 7, 0.06) !important;
 }
 
 .document-card:hover .card-body .doc-category {
@@ -938,12 +915,12 @@
 }
 
 .document-card:hover .doc-tags .tag {
-  background: rgba(196, 30, 36, 0.06) !important;
+  background: rgba(183, 59, 7, 0.06) !important;
   color: var(--red-primary) !important;
 }
 
 .document-card .card-body .doc-meta .actions .btn-preview {
-  background: rgba(196, 30, 36, 0.08) !important;
+  background: rgba(183, 59, 7, 0.08) !important;
   color: var(--red-primary) !important;
 }
 
@@ -958,8 +935,8 @@
 }
 
 .document-card .card-body .doc-meta .actions .btn-download:hover {
-  background: var(--red-dark) !important;
-  box-shadow: 0 4px 15px rgba(196, 30, 36, 0.3) !important;
+  background: var(--red-darkest) !important;
+  box-shadow: 0 4px 15px rgba(183, 59, 7, 0.3) !important;
 }
 
 /* ============================================================
@@ -975,7 +952,7 @@
 }
 
 .breadcrumb a:hover {
-  color: var(--red-dark) !important;
+  color: var(--red-darkest) !important;
 }
 
 .doc-main .doc-meta-top .meta-item i {
@@ -991,24 +968,24 @@
 }
 
 .doc-tags .tag {
-  background: rgba(196, 30, 36, 0.06) !important;
+  background: rgba(183, 59, 7, 0.06) !important;
   color: var(--red-primary) !important;
-  border-color: rgba(196, 30, 36, 0.15) !important;
+  border-color: rgba(183, 59, 7, 0.15) !important;
 }
 
 .doc-tags .tag:hover {
   background: var(--red-primary) !important;
   color: white !important;
-  box-shadow: 0 4px 15px rgba(196, 30, 36, 0.2) !important;
+  box-shadow: 0 4px 15px rgba(183, 59, 7, 0.2) !important;
 }
 
 .doc-actions .btn-download {
   background: var(--gradient-primary) !important;
-  box-shadow: 0 4px 20px rgba(196, 30, 36, 0.25) !important;
+  box-shadow: 0 4px 20px rgba(183, 59, 7, 0.25) !important;
 }
 
 .doc-actions .btn-download:hover {
-  box-shadow: 0 12px 40px rgba(196, 30, 36, 0.35) !important;
+  box-shadow: 0 12px 40px rgba(183, 59, 7, 0.35) !important;
 }
 
 .doc-actions .btn-outline {
@@ -1019,7 +996,7 @@
 .doc-actions .btn-outline:hover {
   background: var(--red-primary) !important;
   color: white !important;
-  box-shadow: 0 8px 25px rgba(196, 30, 36, 0.2) !important;
+  box-shadow: 0 8px 25px rgba(183, 59, 7, 0.2) !important;
 }
 
 .doc-sidebar .sidebar-card:hover {
@@ -1040,14 +1017,13 @@
 }
 
 .sidebar-card[style*="background:linear-gradient(135deg,#fff9f5,#fff5e6)"] {
-  border-color: rgba(196, 30, 36, 0.15) !important;
+  border-color: rgba(183, 59, 7, 0.15) !important;
 }
 
 .sidebar-card[style*="background:linear-gradient(135deg,#fff9f5,#fff5e6)"] h4 {
   color: var(--red-primary) !important;
 }
 
-/* Related */
 .related-section .related-header h3 i {
   color: var(--red-primary) !important;
 }
@@ -1057,12 +1033,12 @@
 }
 
 .related-section .related-header a:hover {
-  color: var(--red-dark) !important;
+  color: var(--red-darkest) !important;
 }
 
 .related-section .related-item:hover {
   border-color: var(--red-primary) !important;
-  box-shadow: 0 12px 40px rgba(196, 30, 36, 0.12) !important;
+  box-shadow: 0 12px 40px rgba(183, 59, 7, 0.12) !important;
 }
 
 .related-section .related-item .icon {
@@ -1079,7 +1055,7 @@
 
 .teacher-card:hover {
   border-color: var(--red-primary) !important;
-  box-shadow: 0 30px 70px rgba(196, 30, 36, 0.15) !important;
+  box-shadow: 0 30px 70px rgba(183, 59, 7, 0.15) !important;
 }
 
 .teacher-card:hover .teacher-name {
@@ -1091,7 +1067,7 @@
 }
 
 .teacher-card .card-image .card-badge {
-  background: rgba(196, 30, 36, 0.9) !important;
+  background: rgba(183, 59, 7, 0.9) !important;
 }
 
 .teacher-card .card-image .card-experience i {
@@ -1099,7 +1075,7 @@
 }
 
 .teacher-card:hover .teacher-specialties .tag {
-  background: rgba(196, 30, 36, 0.06) !important;
+  background: rgba(183, 59, 7, 0.06) !important;
   color: var(--red-primary) !important;
 }
 
@@ -1108,11 +1084,11 @@
 }
 
 .teacher-card .btn-view:hover {
-  box-shadow: 0 8px 25px rgba(196, 30, 36, 0.35) !important;
+  box-shadow: 0 8px 25px rgba(183, 59, 7, 0.35) !important;
 }
 
 .empty-state:hover .icon-wrapper {
-  background: rgba(196, 30, 36, 0.06) !important;
+  background: rgba(183, 59, 7, 0.06) !important;
   color: var(--red-primary) !important;
 }
 
@@ -1142,7 +1118,7 @@
 }
 
 .teacher-info .teacher-contact .btn-primary:hover {
-  box-shadow: 0 8px 25px rgba(196, 30, 36, 0.3) !important;
+  box-shadow: 0 8px 25px rgba(183, 59, 7, 0.3) !important;
 }
 
 .teacher-info .teacher-contact .btn-outline {
@@ -1161,7 +1137,7 @@
 
 .related-item:hover {
   border-color: var(--red-primary) !important;
-  box-shadow: 0 12px 40px rgba(196, 30, 36, 0.12) !important;
+  box-shadow: 0 12px 40px rgba(183, 59, 7, 0.12) !important;
 }
 
 /* ============================================================
@@ -1170,7 +1146,7 @@
 
 .form-wrapper:hover {
   border-color: var(--red-primary) !important;
-  box-shadow: 0 10px 50px rgba(196, 30, 36, 0.08) !important;
+  box-shadow: 0 10px 50px rgba(183, 59, 7, 0.08) !important;
 }
 
 .form-wrapper::before {
@@ -1189,7 +1165,7 @@
 .form-group select:focus,
 .form-group textarea:focus {
   border-color: var(--red-primary) !important;
-  box-shadow: 0 0 0 4px rgba(196, 30, 36, 0.1) !important;
+  box-shadow: 0 0 0 4px rgba(183, 59, 7, 0.1) !important;
 }
 
 .btn-submit {
@@ -1197,7 +1173,7 @@
 }
 
 .btn-submit:hover {
-  box-shadow: 0 10px 35px rgba(196, 30, 36, 0.35) !important;
+  box-shadow: 0 10px 35px rgba(183, 59, 7, 0.35) !important;
 }
 
 .form-footer p:hover {
@@ -1210,7 +1186,7 @@
 
 .sidebar-card:hover {
   border-color: var(--red-primary) !important;
-  box-shadow: 0 12px 45px rgba(196, 30, 36, 0.08) !important;
+  box-shadow: 0 12px 45px rgba(183, 59, 7, 0.08) !important;
 }
 
 .sidebar-card::before {
@@ -1239,11 +1215,11 @@
 }
 
 .sidebar-card.highlight:hover {
-  box-shadow: 0 15px 50px rgba(196, 30, 36, 0.35) !important;
+  box-shadow: 0 15px 50px rgba(183, 59, 7, 0.35) !important;
 }
 
 /* ============================================================
-   CHÍNH SÁCH BẢO MẬT / ĐIỀU KHOẢN
+   CHÍNH SÁCH
    ============================================================ */
 
 .policy-hero {
@@ -1264,7 +1240,7 @@
 }
 
 .back-link:hover {
-  color: var(--red-dark) !important;
+  color: var(--red-darkest) !important;
 }
 
 /* ============================================================
@@ -1299,11 +1275,11 @@
 }
 
 .faq-search button:hover {
-  box-shadow: 0 4px 20px rgba(196, 30, 36, 0.3) !important;
+  box-shadow: 0 4px 20px rgba(183, 59, 7, 0.3) !important;
 }
 
 /* ============================================================
-   CTA BOTTOM - CUỐI TRANG
+   CTA BOTTOM
    ============================================================ */
 
 .cta-bottom {
@@ -1324,7 +1300,7 @@
   height: 500px;
   background: radial-gradient(
     circle,
-    rgba(245, 197, 24, 0.05),
+    rgba(248, 221, 100, 0.05),
     transparent 70%
   );
   border-radius: 50%;
@@ -1340,7 +1316,7 @@
   height: 400px;
   background: radial-gradient(
     circle,
-    rgba(245, 197, 24, 0.03),
+    rgba(248, 221, 100, 0.03),
     transparent 70%
   );
   border-radius: 50%;
@@ -1382,7 +1358,7 @@
 
 .cta-bottom-content p {
   font-size: 17px;
-  color: #fdf0d5 !important;
+  color: var(--beige) !important;
   line-height: 1.8;
   max-width: 600px;
   margin: 0 auto 24px;
@@ -1425,7 +1401,7 @@
 .cta-bottom-btn-primary {
   padding: 16px 44px;
   background: var(--gradient-gold) !important;
-  color: #8b1a1a !important;
+  color: var(--red-darkest) !important;
   border-radius: 50px;
   font-weight: 700;
   font-size: 17px;
@@ -1434,12 +1410,12 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 6px 30px rgba(245, 197, 24, 0.3);
+  box-shadow: 0 6px 30px rgba(248, 221, 100, 0.3);
 }
 
 .cta-bottom-btn-primary:hover {
   transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 12px 45px rgba(245, 197, 24, 0.4);
+  box-shadow: 0 12px 45px rgba(248, 221, 100, 0.4);
 }
 
 .cta-bottom-btn-zalo {
