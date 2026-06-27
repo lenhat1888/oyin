@@ -24,13 +24,11 @@ load_dotenv()
 app = Flask(__name__, 
             static_folder='static',      
             static_url_path='/static',   
-            template_folder='.')      
+            template_folder='.')
 
 # ============================================
 # JINJA2 FILTERS
 # ============================================
-
-import json
 
 @app.template_filter('fromjson')
 def fromjson_filter(value):
@@ -42,7 +40,7 @@ def fromjson_filter(value):
             return json.loads(value)
         return value
     except:
-        return []    
+        return []
 
 # ============================================
 # KẾT NỐI MONGODB
@@ -54,17 +52,31 @@ MONGO_DB = os.environ.get('MONGO_DB', 'oyin_db')
 mongo_client = None
 db = None
 
-try:
-    if MONGO_URI:
-        mongo_client = MongoClient(MONGO_URI)
-        mongo_client.admin.command('ping')
-        db = mongo_client[MONGO_DB]
-        print(f"✅ Kết nối MongoDB thành công! Database: {MONGO_DB}")
-    else:
-        print("⚠️ MONGO_URI không có trong .env, sử dụng JSON fallback")
-except Exception as e:
-    print(f"❌ Lỗi kết nối MongoDB: {e}")
-    print("⚠️ Sử dụng JSON fallback")
+def get_db():
+    """Lấy kết nối MongoDB (tạo mới nếu chưa có)"""
+    global db, mongo_client
+    if db is not None:
+        return db
+    
+    try:
+        if MONGO_URI:
+            mongo_client = MongoClient(
+                MONGO_URI,
+                serverSelectionTimeoutMS=5000,
+                socketTimeoutMS=5000,
+                connectTimeoutMS=5000
+            )
+            mongo_client.admin.command('ping')
+            db = mongo_client[MONGO_DB]
+            print(f"✅ Kết nối MongoDB thành công! Database: {MONGO_DB}")
+            return db
+        else:
+            print("⚠️ MONGO_URI không có trong .env, sử dụng JSON fallback")
+            return None
+    except Exception as e:
+        print(f"❌ Lỗi kết nối MongoDB: {e}")
+        print("⚠️ Sử dụng JSON fallback")
+        return None
 
 # ============================================
 # HÀM DÙNG CHUNG
@@ -72,9 +84,10 @@ except Exception as e:
 
 def save_data(collection_name, data):
     """Lưu dữ liệu vào MongoDB và JSON"""
-    if db is not None:
+    current_db = get_db()
+    if current_db is not None:
         try:
-            collection = db[collection_name]
+            collection = current_db[collection_name]
             collection.delete_many({})
             
             if collection_name == 'categories':
@@ -103,21 +116,13 @@ def save_data(collection_name, data):
     except Exception as e:
         print(f"⚠️ Lỗi lưu JSON {collection_name}: {e}")
         return False
-    
-def get_default_categories():
-    """Danh mục mặc định"""
-    return [
-        {"id": "hsk", "name": "HSK", "icon": "fa-graduation-cap", "description": "Luyện thi HSK", "slug": "hsk", "active": True, "order": 1},
-        {"id": "hsk30", "name": "HSK 3.0", "icon": "fa-star", "description": "HSK 3.0", "slug": "hsk30", "active": True, "order": 2},
-        {"id": "tre-em", "name": "Tiếng Trung Trẻ Em", "icon": "fa-child", "description": "Tiếng Trung trẻ em", "slug": "tre-em", "active": True, "order": 3},
-        {"id": "nguoi-lon", "name": "Tiếng Trung Người Lớn", "icon": "fa-user-tie", "description": "Tiếng Trung người lớn", "slug": "nguoi-lon", "active": True, "order": 4}
-    ]
 
 def load_data(collection_name):
     """Đọc dữ liệu từ MongoDB hoặc JSON"""
-    if db is not None:
+    current_db = get_db()
+    if current_db is not None:
         try:
-            collection = db[collection_name]
+            collection = current_db[collection_name]
             items = list(collection.find({}, {'_id': 0}))
             items = convert_objectid(items)
             
@@ -139,6 +144,15 @@ def load_data(collection_name):
             print(f"⚠️ Lỗi đọc MongoDB {collection_name}: {e}")
     
     return load_data_json(collection_name)
+
+def get_default_categories():
+    """Danh mục mặc định"""
+    return [
+        {"id": "hsk", "name": "HSK", "icon": "fa-graduation-cap", "description": "Luyện thi HSK", "slug": "hsk", "active": True, "order": 1},
+        {"id": "hsk30", "name": "HSK 3.0", "icon": "fa-star", "description": "HSK 3.0", "slug": "hsk30", "active": True, "order": 2},
+        {"id": "tre-em", "name": "Tiếng Trung Trẻ Em", "icon": "fa-child", "description": "Tiếng Trung trẻ em", "slug": "tre-em", "active": True, "order": 3},
+        {"id": "nguoi-lon", "name": "Tiếng Trung Người Lớn", "icon": "fa-user-tie", "description": "Tiếng Trung người lớn", "slug": "nguoi-lon", "active": True, "order": 4}
+    ]
 
 def save_data_json(filename, data):
     """Ghi dữ liệu vào file JSON trong thư mục data/"""
@@ -178,67 +192,6 @@ def convert_objectid(data):
     else:
         return data
 
-
-# ============================================
-# CHUYỂN ĐƯỜNG DẪN
-# ============================================
-
-def fix_static_paths(content):
-    """Hàm chuyển đổi đường dẫn tĩnh sang đường dẫn Flask"""
-    # Thay thế src="../../css/ -> src="/static/css/
-    content = content.replace('src="../../css/', 'src="/static/css/')
-    content = content.replace('src="../css/', 'src="/static/css/')
-    content = content.replace('src="css/', 'src="/static/css/')
-    
-    # Thay thế href="../../css/ -> href="/static/css/
-    content = content.replace('href="../../css/', 'href="/static/css/')
-    content = content.replace('href="../css/', 'href="/static/css/')
-    content = content.replace('href="css/', 'href="/static/css/')
-    
-    # Thay thế src="../../img/ -> src="/static/img/
-    content = content.replace('src="../../img/', 'src="/static/img/')
-    content = content.replace('src="../img/', 'src="/static/img/')
-    content = content.replace('src="img/', 'src="/static/img/')
-    
-    # Thay thế href="../../ -> href="/
-    content = content.replace('href="../../index.html', 'href="/')
-    content = content.replace('href="../index.html', 'href="/')
-    content = content.replace('href="index.html', 'href="/')
-    
-    # Thay thế link đăng ký
-    content = content.replace('../../html/dangkyhtml/dangkyhtml.html', '/dang-ky')
-    content = content.replace('../dangkyhtml/dangkyhtml.html', '/dang-ky')
-    content = content.replace('html/dangkyhtml/dangkyhtml.html', '/dang-ky')
-    
-    # Thay thế link khóa học chi tiết
-    import re
-    pattern = r'href="(?:\.\./)+html/khoahochtml/([^"]+\.html)"'
-    content = re.sub(pattern, r'href="/khoa-hoc/chi-tiet/\1"', content)
-    
-    pattern = r'href="html/khoahochtml/([^"]+\.html)"'
-    content = re.sub(pattern, r'href="/khoa-hoc/chi-tiet/\1"', content)
-    
-    # Thay thế link lịch khai giảng
-    content = content.replace('../../html/lichkhaigianghtml/lichkhaigianghtml.html', '/lich-khai-giang')
-    content = content.replace('../lichkhaigianghtml/lichkhaigianghtml.html', '/lich-khai-giang')
-    
-    # Thay thế link đăng ký
-    content = content.replace('href="../../html/dangkyhtml/dangkyhtml.html"', 'href="/dang-ky"')
-    content = content.replace('href="../dangkyhtml/dangkyhtml.html"', 'href="/dang-ky"')
-    
-    # Thay thế link trang chủ
-    content = content.replace('href="../../index.html"', 'href="/"')
-    content = content.replace('href="../index.html"', 'href="/"')
-    
-    # Thay thế link khoa-hoc
-    content = content.replace('href="../../html/khoahochtml/khoahoc.html"', 'href="/khoa-hoc"')
-    content = content.replace('href="../khoahochtml/khoahoc.html"', 'href="/khoa-hoc"')
-    
-    # Sửa link "/html/khoahochtml/" -> "/khoa-hoc/chi-tiet/"
-    content = content.replace('/html/khoahochtml/', '/khoa-hoc/chi-tiet/')
-    
-    return content
-
 # ============================================
 # CẤU HÌNH EMAIL
 # ============================================
@@ -259,55 +212,8 @@ print(f"📧 Email: {app.config['MAIL_USERNAME']}")
 print(f"📧 Password: {'*' * len(app.config['MAIL_PASSWORD']) if app.config['MAIL_PASSWORD'] else 'Không có'}")
 
 # ============================================
-# 👇 THÊM QUEUE & WORKER (BẮT ĐẦU)
+# HÀM GỬI EMAIL (PHẢI ĐỊNH NGHĨA TRƯỚC KHI DÙNG)
 # ============================================
-
-# Queue toàn cục để xử lý email
-email_queue = queue.Queue()
-
-def email_worker():
-    """Worker xử lý email trong background"""
-    print("🚀 Email worker đã khởi động!")
-    while True:
-        try:
-            # Lấy email từ queue (timeout 5s)
-            data = email_queue.get(timeout=5)
-            if data is None:
-                break
-            
-            print(f"📧 Worker nhận email cho {data.get('email')}")
-            
-            # Gửi email với app context và retry
-            with app.app_context():
-                success = False
-                for attempt in range(3):
-                    try:
-                        send_registration_email(data)
-                        print(f"✅ Email gửi thành công cho {data.get('email')} (lần {attempt+1})")
-                        success = True
-                        break
-                    except Exception as e:
-                        print(f"⚠️ Lần {attempt+1} thất bại: {e}")
-                        if attempt < 2:
-                            time.sleep(2)
-                
-                if not success:
-                    print(f"❌ Email thất bại sau 3 lần thử cho {data.get('email')}")
-            
-            email_queue.task_done()
-            
-        except queue.Empty:
-            # Timeout, tiếp tục vòng lặp
-            continue
-        except Exception as e:
-            print(f"❌ Lỗi worker: {e}")
-            import traceback
-            traceback.print_exc()
-
-# Khởi động worker khi app start
-worker_thread = threading.Thread(target=email_worker, daemon=True)
-worker_thread.start()
-print("🚀 Email worker thread đã khởi động!")
 
 def send_registration_email(data):
     """Gửi email xác nhận đăng ký"""
@@ -377,45 +283,70 @@ Ngày đăng ký: {data.get('created_at')}
         return False
 
 # ============================================
-# HÀM GỬI EMAIL BẤT ĐỒNG BỘ VỚI RETRY
+# QUEUE & WORKER XỬ LÝ EMAIL
 # ============================================
 
-def send_email_with_retry(data, max_retries=3):
-    """Gửi email với cơ chế retry - CÓ APP CONTEXT"""
-    for attempt in range(max_retries):
-        try:
-            print(f"📧 Lần gửi thứ {attempt + 1}/{max_retries} cho {data.get('email')}")
-            
-            # 👇 QUAN TRỌNG: SỬ DỤNG APP CONTEXT
-            with app.app_context():
-                send_registration_email(data)
-            
-            print(f"✅ Email đã được gửi thành công cho {data.get('email')}!")
-            return True
-        except Exception as e:
-            print(f"⚠️ Lần {attempt + 1} thất bại: {e}")
-            if attempt < max_retries - 1:
-                time.sleep(2)  # Chờ 2s rồi thử lại
-            else:
-                print(f"❌ Gửi email thất bại sau {max_retries} lần thử cho {data.get('email')}")
-                import traceback
-                traceback.print_exc()
-                return False
+email_queue = queue.Queue()
 
-def send_email_async(data):
-    """Gửi email trong background thread"""
-    try:
-        start_time = time.time()
-        success = send_email_with_retry(data)
-        elapsed = time.time() - start_time
-        if success:
-            print(f"✅ Email gửi thành công! Thời gian: {elapsed:.2f}s")
-        else:
-            print(f"❌ Email gửi thất bại sau {elapsed:.2f}s")
-    except Exception as e:
-        print(f"❌ Lỗi gửi email background: {e}")
-        import traceback
-        traceback.print_exc()
+def email_worker():
+    """Worker xử lý email trong background"""
+    print("🚀 Email worker đã khởi động!")
+    while True:
+        try:
+            data = email_queue.get(timeout=5)
+            if data is None:
+                break
+            
+            print(f"📧 Worker nhận email cho {data.get('email')}")
+            
+            with app.app_context():
+                # Đảm bảo có kết nối MongoDB
+                get_db()
+                
+                success = False
+                for attempt in range(3):
+                    try:
+                        send_registration_email(data)
+                        print(f"✅ Email gửi thành công cho {data.get('email')} (lần {attempt+1})")
+                        success = True
+                        break
+                    except Exception as e:
+                        print(f"⚠️ Lần {attempt+1} thất bại: {e}")
+                        if attempt < 2:
+                            time.sleep(2)
+                
+                if not success:
+                    print(f"❌ Email thất bại sau 3 lần thử cho {data.get('email')}")
+            
+            email_queue.task_done()
+            
+        except queue.Empty:
+            continue
+        except Exception as e:
+            print(f"❌ Lỗi worker: {e}")
+            import traceback
+            traceback.print_exc()
+
+# ============================================
+# KHỞI TẠO WORKER (SAU KHI ĐÃ ĐỊNH NGHĨA HÀM)
+# ============================================
+
+worker_thread = None
+
+def start_worker():
+    """Khởi động worker nếu chưa chạy"""
+    global worker_thread
+    if worker_thread is None or not worker_thread.is_alive():
+        print("🚀 Đang khởi tạo email worker...")
+        worker_thread = threading.Thread(target=email_worker, daemon=True)
+        worker_thread.start()
+        print("🚀 Email worker đã khởi động!")
+
+# Khởi tạo kết nối MongoDB
+db = get_db()
+
+# Khởi động worker (SAU KHI ĐÃ ĐỊNH NGHĨA email_worker)
+start_worker()
 
 # ============================================
 # API ĐĂNG KÝ KHÓA HỌC (DÙNG QUEUE)
@@ -555,7 +486,8 @@ def save_menu(menu_data):
 def api_migrate():
     """API chuyển dữ liệu từ JSON sang MongoDB"""
     try:
-        if db is None:
+        current_db = get_db()  # 👈 THÊM
+        if current_db is None:
             return jsonify({"success": False, "error": "Không có kết nối MongoDB"}), 400
         
         collections = ['slides', 'categories', 'documents', 'news']
@@ -563,7 +495,7 @@ def api_migrate():
         
         for name in collections:
             json_data = load_data_json(f'{name}.json')
-            collection = db[name]
+            collection = current_db[name]  # 👈 SỬA
             collection.delete_many({})
             
             if name == 'categories':
@@ -578,7 +510,7 @@ def api_migrate():
         courses_data = load_data('courses') 
         courses_items = courses_data.get('items', [])  
         if courses_data:
-            collection = db['courses']
+            collection = current_db['courses']  # 👈 SỬA
             collection.delete_many({})
             collection.insert_many(courses_data)
             migrated.append(f"courses: {len(courses_data)} items")
@@ -2405,5 +2337,6 @@ def test_email():
 # ============================================
 
 if __name__ == '__main__':
+    # Worker đã được khởi động ở trên, chỉ cần chạy app
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=True, host='0.0.0.0', port=port)
