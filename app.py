@@ -282,79 +282,41 @@ Ngày đăng ký: {data.get('created_at')}
         traceback.print_exc()
         return False
 
-# ============================================
-# QUEUE & WORKER XỬ LÝ EMAIL
-# ============================================
+# Khởi tạo kết nối MongoDB
+db = get_db()
 
-email_queue = queue.Queue()
-
-def email_worker():
-    """Worker xử lý email trong background"""
-    print("🚀 Email worker đã khởi động!")
-    while True:
+def send_email_async(data):
+    """Gửi email trong background thread"""
+    with app.app_context():
         try:
-            data = email_queue.get(timeout=5)
-            if data is None:
-                break
-            
-            print(f"📧 Worker nhận email cho {data.get('email')}")
-            
-            with app.app_context():
-                # Đảm bảo có kết nối MongoDB
-                get_db()
-                
-                success = False
-                for attempt in range(3):
-                    try:
-                        send_registration_email(data)
-                        print(f"✅ Email gửi thành công cho {data.get('email')} (lần {attempt+1})")
-                        success = True
-                        break
-                    except Exception as e:
-                        print(f"⚠️ Lần {attempt+1} thất bại: {e}")
-                        if attempt < 2:
-                            time.sleep(2)
-                
-                if not success:
-                    print(f"❌ Email thất bại sau 3 lần thử cho {data.get('email')}")
-            
-            email_queue.task_done()
-            
-        except queue.Empty:
-            continue
+            print(f"📧 Thread bắt đầu gửi email cho {data.get('email')}")
+            for attempt in range(3):
+                try:
+                    send_registration_email(data)
+                    print(f"✅ Email gửi thành công cho {data.get('email')} (lần {attempt+1})")
+                    return True
+                except Exception as e:
+                    print(f"⚠️ Lần {attempt+1} thất bại: {e}")
+                    if attempt < 2:
+                        time.sleep(2)
+            print(f"❌ Email thất bại sau 3 lần thử cho {data.get('email')}")
+            return False
         except Exception as e:
-            print(f"❌ Lỗi worker: {e}")
+            print(f"❌ Lỗi thread: {e}")
             import traceback
             traceback.print_exc()
-
-# ============================================
-# KHỞI TẠO WORKER (SAU KHI ĐÃ ĐỊNH NGHĨA HÀM)
-# ============================================
-
-worker_thread = None
-
-def start_worker():
-    """Khởi động worker nếu chưa chạy"""
-    global worker_thread
-    if worker_thread is None or not worker_thread.is_alive():
-        print("🚀 Đang khởi tạo email worker...")
-        worker_thread = threading.Thread(target=email_worker, daemon=True)
-        worker_thread.start()
-        print("🚀 Email worker đã khởi động!")
+            return False
 
 # Khởi tạo kết nối MongoDB
 db = get_db()
 
-# Khởi động worker (SAU KHI ĐÃ ĐỊNH NGHĨA email_worker)
-start_worker()
-
 # ============================================
-# API ĐĂNG KÝ KHÓA HỌC (DÙNG QUEUE)
+# API ĐĂNG KÝ KHÓA HỌC (DÙNG THREADING)
 # ============================================
 
 @app.route('/api/dang-ky', methods=['POST'])
 def submit_registration():
-    """API nhận đăng ký từ form - DÙNG QUEUE"""
+    """API nhận đăng ký từ form - DÙNG THREADING"""
     try:
         data = request.get_json()
         print("📥 Dữ liệu nhận được:", data)
@@ -409,9 +371,11 @@ def submit_registration():
         save_data('registrations', registrations)
         print("✅ Đã lưu đăng ký thành công!")
         
-        # 👇 ĐƯA VÀO QUEUE THAY VÌ THREAD
-        email_queue.put(new_registration)
-        print(f"📧 Đã đưa email vào queue (size: {email_queue.qsize()})")
+        # 👇 GỬI EMAIL BẰNG THREAD (KHÔNG DÙNG QUEUE)
+        thread = threading.Thread(target=send_email_async, args=(new_registration,))
+        thread.daemon = True
+        thread.start()
+        print("📧 Đã khởi tạo thread gửi email (background)")
         
         # 👇 TRẢ VỀ RESPONSE NGAY LẬP TỨC
         return jsonify({
@@ -427,7 +391,7 @@ def submit_registration():
             "success": False,
             "error": "Có lỗi xảy ra, vui lòng thử lại sau"
         }), 500
-    
+
 # ============================================
 # MENU
 # ============================================
@@ -2289,18 +2253,6 @@ app.secret_key = os.environ.get('SECRET_KEY', 'oyin-2024')
 # ============================================
 # ROUTE KIỂM TRA QUEUE (TÙY CHỌN)
 # ============================================
-
-@app.route('/queue-status')
-def queue_status():
-    """Kiểm tra trạng thái queue - Dùng để debug"""
-    return f"""
-    <h2>📊 Trạng thái Queue Email</h2>
-    <p>Số email đang chờ: <strong>{email_queue.qsize()}</strong></p>
-    <p>Worker đang chạy: <strong>{worker_thread.is_alive()}</strong></p>
-    <p>Worker thread ID: {worker_thread.ident}</p>
-    <hr>
-    <a href="/admin/dashboard">⬅️ Về Dashboard</a>
-    """
 
 @app.route('/test-email')
 def test_email():
