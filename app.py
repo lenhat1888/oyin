@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, render_template, jsonify, request, send_from_directory, render_template_string
+from flask import Flask, render_template, jsonify, request, send_from_directory, render_template_string, g, current_app
 import json
 import os
 import re
@@ -11,6 +11,8 @@ from bson import ObjectId
 from flask_mail import Mail, Message
 from flask import redirect
 from flask import request
+import threading
+import time
 
 # ============================================
 # LOAD ENV & INIT FLASK
@@ -255,6 +257,33 @@ mail = Mail(app)
 print(f"📧 Email: {app.config['MAIL_USERNAME']}")
 print(f"📧 Password: {'*' * len(app.config['MAIL_PASSWORD']) if app.config['MAIL_PASSWORD'] else 'Không có'}")
 
+@app.after_request
+def send_pending_email(response):
+    """Gửi email sau khi response đã được gửi về client"""
+    if hasattr(g, 'pending_email'):
+        print("=" * 50)
+        print(f"📧 BẮT ĐẦU GỬI EMAIL BACKGROUND")
+        print(f"⏱️ Thời gian: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"📧 Email: {g.pending_email.get('email')}")
+        print(f"👤 Họ tên: {g.pending_email.get('full_name')}")
+        print("=" * 50)
+        
+        try:
+            start_time = time.time()
+            send_registration_email(g.pending_email)
+            elapsed = time.time() - start_time
+            print(f"✅ Gửi email thành công! Thời gian: {elapsed:.2f}s")
+        except Exception as e:
+            print(f"❌ Lỗi gửi email after_request: {e}")
+            import traceback
+            traceback.print_exc()
+        
+        g.pending_email = None
+    else:
+        print("ℹ️ Không có email pending để gửi")
+    
+    return response
+
 def send_registration_email(data):
     """Gửi email xác nhận đăng ký"""
     try:
@@ -323,16 +352,91 @@ Ngày đăng ký: {data.get('created_at')}
         return False
 
 # ============================================
-# API ĐĂNG KÝ KHÓA HỌC
+# HÀM GỬI EMAIL BẤT ĐỒNG BỘ VỚI RETRY
+# ============================================
+
+def send_email_with_retry(data, max_retries=3):
+    """Gửi email với cơ chế retry"""
+    for attempt in range(max_retries):
+        try:
+            print(f"📧 Lần gửi thứ {attempt + 1}/{max_retries} cho {data.get('email')}")
+            send_registration_email(data)
+            print(f"✅ Email đã được gửi thành công cho {data.get('email')}!")
+            return True
+        except Exception as e:
+            print(f"⚠️ Lần {attempt + 1} thất bại: {e}")
+            if attempt < max_retries - 1:
+                time.sleep(2)  # Chờ 2s rồi thử lại
+            else:
+                print(f"❌ Gửi email thất bại sau {max_retries} lần thử cho {data.get('email')}")
+                return False
+
+def send_email_async(data):
+    """Gửi email trong background thread"""
+    try:
+        start_time = time.time()
+        success = send_email_with_retry(data)
+        elapsed = time.time() - start_time
+        if success:
+            print(f"✅ Email gửi thành công! Thời gian: {elapsed:.2f}s")
+        else:
+            print(f"❌ Email gửi thất bại sau {elapsed:.2f}s")
+    except Exception as e:
+        print(f"❌ Lỗi gửi email background: {e}")
+
+# ============================================
+# HÀM GỬI EMAIL BẤT ĐỒNG BỘ VỚI RETRY
+# ============================================
+
+def send_email_with_retry(data, max_retries=3):
+    """Gửi email với cơ chế retry - CÓ APP CONTEXT"""
+    for attempt in range(max_retries):
+        try:
+            print(f"📧 Lần gửi thứ {attempt + 1}/{max_retries} cho {data.get('email')}")
+            
+            # 👇 QUAN TRỌNG: SỬ DỤNG APP CONTEXT
+            with app.app_context():
+                send_registration_email(data)
+            
+            print(f"✅ Email đã được gửi thành công cho {data.get('email')}!")
+            return True
+        except Exception as e:
+            print(f"⚠️ Lần {attempt + 1} thất bại: {e}")
+            if attempt < max_retries - 1:
+                time.sleep(2)  # Chờ 2s rồi thử lại
+            else:
+                print(f"❌ Gửi email thất bại sau {max_retries} lần thử cho {data.get('email')}")
+                import traceback
+                traceback.print_exc()
+                return False
+
+def send_email_async(data):
+    """Gửi email trong background thread"""
+    try:
+        start_time = time.time()
+        success = send_email_with_retry(data)
+        elapsed = time.time() - start_time
+        if success:
+            print(f"✅ Email gửi thành công! Thời gian: {elapsed:.2f}s")
+        else:
+            print(f"❌ Email gửi thất bại sau {elapsed:.2f}s")
+    except Exception as e:
+        print(f"❌ Lỗi gửi email background: {e}")
+        import traceback
+        traceback.print_exc()
+
+# ============================================
+# API ĐĂNG KÝ KHÓA HỌC (BẤT ĐỒNG BỘ)
 # ============================================
 
 @app.route('/api/dang-ky', methods=['POST'])
 def submit_registration():
-    """API nhận đăng ký từ form"""
+    """API nhận đăng ký từ form - KHÔNG BLOCK RESPONSE"""
     try:
         data = request.get_json()
         print("📥 Dữ liệu nhận được:", data)
         
+        # Validate required fields
         required_fields = ['full_name', 'phone', 'email', 'course']
         for field in required_fields:
             if not data.get(field):
@@ -341,6 +445,7 @@ def submit_registration():
                     "error": f"Vui lòng nhập {field}"
                 }), 400
         
+        # Validate email
         email = data.get('email', '').strip()
         if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
             return jsonify({
@@ -348,6 +453,7 @@ def submit_registration():
                 "error": "Email không hợp lệ"
             }), 400
         
+        # Validate phone
         phone = data.get('phone', '').strip()
         if not re.match(r'^[0-9]{10,11}$', phone):
             return jsonify({
@@ -355,6 +461,7 @@ def submit_registration():
                 "error": "Số điện thoại không hợp lệ (10-11 số)"
             }), 400
         
+        # Load and save registration
         registrations = load_data('registrations')
         if 'items' not in registrations:
             registrations['items'] = []
@@ -379,18 +486,16 @@ def submit_registration():
         save_data('registrations', registrations)
         print("✅ Đã lưu đăng ký thành công!")
         
-        email_sent = False
-        try:
-            send_registration_email(new_registration)
-            email_sent = True
-            print("✅ Đã gửi email thành công!")
-        except Exception as e:
-            print(f"⚠️ Lỗi gửi email: {e}")
+        # 👇 GỬI EMAIL BẤT ĐỒNG BỘ - KHÔNG CHỜ
+        thread = threading.Thread(target=send_email_async, args=(new_registration,))
+        thread.daemon = True
+        thread.start()
+        print("📧 Đã khởi tạo thread gửi email trong background (response sẽ về ngay)")
         
+        # 👇 TRẢ VỀ RESPONSE NGAY LẬP TỨC
         return jsonify({
             "success": True,
-            "message": "Đăng ký thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất.",
-            "email_sent": email_sent
+            "message": "Đăng ký thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất."
         })
         
     except Exception as e:
@@ -401,7 +506,7 @@ def submit_registration():
             "success": False,
             "error": "Có lỗi xảy ra, vui lòng thử lại sau"
         }), 500
-
+    
 # ============================================
 # MENU
 # ============================================
