@@ -13,6 +13,7 @@ from flask import redirect
 from flask import request
 import threading
 import time
+import queue
 
 # ============================================
 # LOAD ENV & INIT FLASK
@@ -257,32 +258,56 @@ mail = Mail(app)
 print(f"📧 Email: {app.config['MAIL_USERNAME']}")
 print(f"📧 Password: {'*' * len(app.config['MAIL_PASSWORD']) if app.config['MAIL_PASSWORD'] else 'Không có'}")
 
-@app.after_request
-def send_pending_email(response):
-    """Gửi email sau khi response đã được gửi về client"""
-    if hasattr(g, 'pending_email'):
-        print("=" * 50)
-        print(f"📧 BẮT ĐẦU GỬI EMAIL BACKGROUND")
-        print(f"⏱️ Thời gian: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"📧 Email: {g.pending_email.get('email')}")
-        print(f"👤 Họ tên: {g.pending_email.get('full_name')}")
-        print("=" * 50)
-        
+# ============================================
+# 👇 THÊM QUEUE & WORKER (BẮT ĐẦU)
+# ============================================
+
+# Queue toàn cục để xử lý email
+email_queue = queue.Queue()
+
+def email_worker():
+    """Worker xử lý email trong background"""
+    print("🚀 Email worker đã khởi động!")
+    while True:
         try:
-            start_time = time.time()
-            send_registration_email(g.pending_email)
-            elapsed = time.time() - start_time
-            print(f"✅ Gửi email thành công! Thời gian: {elapsed:.2f}s")
+            # Lấy email từ queue (timeout 5s)
+            data = email_queue.get(timeout=5)
+            if data is None:
+                break
+            
+            print(f"📧 Worker nhận email cho {data.get('email')}")
+            
+            # Gửi email với app context và retry
+            with app.app_context():
+                success = False
+                for attempt in range(3):
+                    try:
+                        send_registration_email(data)
+                        print(f"✅ Email gửi thành công cho {data.get('email')} (lần {attempt+1})")
+                        success = True
+                        break
+                    except Exception as e:
+                        print(f"⚠️ Lần {attempt+1} thất bại: {e}")
+                        if attempt < 2:
+                            time.sleep(2)
+                
+                if not success:
+                    print(f"❌ Email thất bại sau 3 lần thử cho {data.get('email')}")
+            
+            email_queue.task_done()
+            
+        except queue.Empty:
+            # Timeout, tiếp tục vòng lặp
+            continue
         except Exception as e:
-            print(f"❌ Lỗi gửi email after_request: {e}")
+            print(f"❌ Lỗi worker: {e}")
             import traceback
             traceback.print_exc()
-        
-        g.pending_email = None
-    else:
-        print("ℹ️ Không có email pending để gửi")
-    
-    return response
+
+# Khởi động worker khi app start
+worker_thread = threading.Thread(target=email_worker, daemon=True)
+worker_thread.start()
+print("🚀 Email worker thread đã khởi động!")
 
 def send_registration_email(data):
     """Gửi email xác nhận đăng ký"""
@@ -356,39 +381,6 @@ Ngày đăng ký: {data.get('created_at')}
 # ============================================
 
 def send_email_with_retry(data, max_retries=3):
-    """Gửi email với cơ chế retry"""
-    for attempt in range(max_retries):
-        try:
-            print(f"📧 Lần gửi thứ {attempt + 1}/{max_retries} cho {data.get('email')}")
-            send_registration_email(data)
-            print(f"✅ Email đã được gửi thành công cho {data.get('email')}!")
-            return True
-        except Exception as e:
-            print(f"⚠️ Lần {attempt + 1} thất bại: {e}")
-            if attempt < max_retries - 1:
-                time.sleep(2)  # Chờ 2s rồi thử lại
-            else:
-                print(f"❌ Gửi email thất bại sau {max_retries} lần thử cho {data.get('email')}")
-                return False
-
-def send_email_async(data):
-    """Gửi email trong background thread"""
-    try:
-        start_time = time.time()
-        success = send_email_with_retry(data)
-        elapsed = time.time() - start_time
-        if success:
-            print(f"✅ Email gửi thành công! Thời gian: {elapsed:.2f}s")
-        else:
-            print(f"❌ Email gửi thất bại sau {elapsed:.2f}s")
-    except Exception as e:
-        print(f"❌ Lỗi gửi email background: {e}")
-
-# ============================================
-# HÀM GỬI EMAIL BẤT ĐỒNG BỘ VỚI RETRY
-# ============================================
-
-def send_email_with_retry(data, max_retries=3):
     """Gửi email với cơ chế retry - CÓ APP CONTEXT"""
     for attempt in range(max_retries):
         try:
@@ -426,12 +418,12 @@ def send_email_async(data):
         traceback.print_exc()
 
 # ============================================
-# API ĐĂNG KÝ KHÓA HỌC (BẤT ĐỒNG BỘ)
+# API ĐĂNG KÝ KHÓA HỌC (DÙNG QUEUE)
 # ============================================
 
 @app.route('/api/dang-ky', methods=['POST'])
 def submit_registration():
-    """API nhận đăng ký từ form - KHÔNG BLOCK RESPONSE"""
+    """API nhận đăng ký từ form - DÙNG QUEUE"""
     try:
         data = request.get_json()
         print("📥 Dữ liệu nhận được:", data)
@@ -486,11 +478,9 @@ def submit_registration():
         save_data('registrations', registrations)
         print("✅ Đã lưu đăng ký thành công!")
         
-        # 👇 GỬI EMAIL BẤT ĐỒNG BỘ - KHÔNG CHỜ
-        thread = threading.Thread(target=send_email_async, args=(new_registration,))
-        thread.daemon = True
-        thread.start()
-        print("📧 Đã khởi tạo thread gửi email trong background (response sẽ về ngay)")
+        # 👇 ĐƯA VÀO QUEUE THAY VÌ THREAD
+        email_queue.put(new_registration)
+        print(f"📧 Đã đưa email vào queue (size: {email_queue.qsize()})")
         
         # 👇 TRẢ VỀ RESPONSE NGAY LẬP TỨC
         return jsonify({
@@ -2363,6 +2353,52 @@ def protect_admin_routes():
         return None
     
 app.secret_key = os.environ.get('SECRET_KEY', 'oyin-2024')
+
+# ============================================
+# ROUTE KIỂM TRA QUEUE (TÙY CHỌN)
+# ============================================
+
+@app.route('/queue-status')
+def queue_status():
+    """Kiểm tra trạng thái queue - Dùng để debug"""
+    return f"""
+    <h2>📊 Trạng thái Queue Email</h2>
+    <p>Số email đang chờ: <strong>{email_queue.qsize()}</strong></p>
+    <p>Worker đang chạy: <strong>{worker_thread.is_alive()}</strong></p>
+    <p>Worker thread ID: {worker_thread.ident}</p>
+    <hr>
+    <a href="/admin/dashboard">⬅️ Về Dashboard</a>
+    """
+
+@app.route('/test-email')
+def test_email():
+    """Test gửi email - Dùng để debug"""
+    try:
+        test_data = {
+            'full_name': 'Test User',
+            'email': 'lenhat94664@gmail.com',  # 👈 ĐỔI EMAIL CỦA BẠN
+            'phone': '0123456789',
+            'course': 'HSK 1 - Sơ Cấp',
+            'message': 'Test message from debug'
+        }
+        
+        print("📧 Bắt đầu test gửi email...")
+        with app.app_context():
+            send_registration_email(test_data)
+        
+        return """
+        <h2>✅ Email đã được gửi!</h2>
+        <p>Kiểm tra hộp thư của bạn (cả Spam folder)</p>
+        <a href="/">Về trang chủ</a>
+        """
+    except Exception as e:
+        import traceback
+        error_detail = traceback.format_exc()
+        return f"""
+        <h2>❌ Lỗi gửi email</h2>
+        <pre>{error_detail}</pre>
+        <a href="/">Về trang chủ</a>
+        """
 
 # ============================================
 # MAIN
