@@ -2285,6 +2285,85 @@ def test_email():
         """
 
 # ============================================
+# ROUTE TEST EMAIL TRỰC TIẾP (KHÔNG THREAD)
+# ============================================
+
+@app.route('/test-email-direct')
+def test_email_direct():
+    """Test gửi email trực tiếp - Dùng để debug"""
+    try:
+        test_data = {
+            'full_name': 'Test User Direct',
+            'email': 'lenhat94664@gmail.com',  # 👈 ĐỔI EMAIL NHẬN
+            'phone': '0123456789',
+            'course': 'HSK 1 - Sơ Cấp',
+            'message': 'Test direct email - Không dùng thread',
+            'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        
+        print("=" * 50)
+        print("📧 BẮT ĐẦU TEST GỬI EMAIL TRỰC TIẾP")
+        print(f"📧 Email nhận: {test_data['email']}")
+        print("=" * 50)
+        
+        with app.app_context():
+            send_registration_email(test_data)
+        
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Test Email</title>
+            <style>
+                body { font-family: Arial; padding: 50px; text-align: center; }
+                .success { color: green; font-size: 24px; }
+                .box { background: #f0f0f0; padding: 20px; border-radius: 10px; max-width: 500px; margin: 20px auto; }
+            </style>
+        </head>
+        <body>
+            <h1 class="success">✅ Email đã được gửi!</h1>
+            <div class="box">
+                <p><strong>Email nhận:</strong> lenhat94664@gmail.com</p>
+                <p><strong>Thời gian:</strong> """ + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + """</p>
+            </div>
+            <p>📬 Kiểm tra hộp thư của bạn (cả Spam folder)</p>
+            <br>
+            <a href="/" style="color: #e67e22;">⬅️ Về trang chủ</a>
+            <br><br>
+            <a href="/test-email-direct" style="color: #3498db;">🔄 Gửi lại</a>
+        </body>
+        </html>
+        """
+        
+    except Exception as e:
+        import traceback
+        error_detail = traceback.format_exc()
+        print("❌ LỖI TEST EMAIL:")
+        print(error_detail)
+        
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Test Email - Lỗi</title>
+            <style>
+                body {{ font-family: Arial; padding: 50px; }}
+                .error {{ color: red; }}
+                pre {{ background: #f5f5f5; padding: 15px; border-radius: 5px; overflow: auto; }}
+            </style>
+        </head>
+        <body>
+            <h1 class="error">❌ Lỗi gửi email</h1>
+            <div style="background: #f5f5f5; padding: 20px; border-radius: 10px;">
+                <pre>{error_detail}</pre>
+            </div>
+            <br>
+            <a href="/">⬅️ Về trang chủ</a>
+        </body>
+        </html>
+        """
+
+# ============================================
 # MAIN
 # ============================================
 
