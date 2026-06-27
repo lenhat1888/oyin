@@ -13,13 +13,11 @@ services:
         value: oyin_db
       - key: APP_URL
         value: https://ngoainguoyin.vn/
-      - key: MAIL_USERNAME
-        sync: false
-      - key: MAIL_PASSWORD
-        sync: false
       - key: MAIL_DEFAULT_SENDER
         sync: false
       - key: ADMIN_EMAIL
+        sync: false
+      - key: SENDGRID_API_KEY
         sync: false
 
   - type: cron

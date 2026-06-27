@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, render_template, jsonify, request, send_from_directory, render_template_string, g, current_app
+from flask import Flask, render_template, jsonify, request, send_from_directory, render_template_string
 import json
 import os
 import re
@@ -13,7 +13,6 @@ from flask import redirect
 from flask import request
 import threading
 import time
-import queue
 
 # ============================================
 # LOAD ENV & INIT FLASK
