@@ -32,7 +32,6 @@ app = Flask(__name__,
 
 @app.template_filter('fromjson')
 def fromjson_filter(value):
-    """Chuyển đổi JSON string thành object Python trong template"""
     if not value:
         return []
     try:
@@ -53,7 +52,6 @@ mongo_client = None
 db = None
 
 def get_db():
-    """Lấy kết nối MongoDB (tạo mới nếu chưa có)"""
     global db, mongo_client
     if db is not None:
         return db
@@ -78,12 +76,13 @@ def get_db():
         print("⚠️ Sử dụng JSON fallback")
         return None
 
+db = get_db()
+
 # ============================================
 # HÀM DÙNG CHUNG
 # ============================================
 
 def save_data(collection_name, data):
-    """Lưu dữ liệu vào MongoDB và JSON"""
     current_db = get_db()
     if current_db is not None:
         try:
@@ -101,7 +100,6 @@ def save_data(collection_name, data):
                         del item['_id']
                 collection.insert_many(items)
                 print(f"✅ Đã lưu {len(items)} items vào MongoDB: {collection_name}")
-            
             return True
         except Exception as e:
             print(f"⚠️ Lỗi lưu MongoDB {collection_name}: {e}")
@@ -118,7 +116,6 @@ def save_data(collection_name, data):
         return False
 
 def load_data(collection_name):
-    """Đọc dữ liệu từ MongoDB hoặc JSON"""
     current_db = get_db()
     if current_db is not None:
         try:
@@ -139,14 +136,12 @@ def load_data(collection_name):
                     return json_data
             
             return {"items": items} if items else {"items": []}
-            
         except Exception as e:
             print(f"⚠️ Lỗi đọc MongoDB {collection_name}: {e}")
     
     return load_data_json(collection_name)
 
 def get_default_categories():
-    """Danh mục mặc định"""
     return [
         {"id": "hsk", "name": "HSK", "icon": "fa-graduation-cap", "description": "Luyện thi HSK", "slug": "hsk", "active": True, "order": 1},
         {"id": "hsk30", "name": "HSK 3.0", "icon": "fa-star", "description": "HSK 3.0", "slug": "hsk30", "active": True, "order": 2},
@@ -155,14 +150,12 @@ def get_default_categories():
     ]
 
 def save_data_json(filename, data):
-    """Ghi dữ liệu vào file JSON trong thư mục data/"""
     os.makedirs('data', exist_ok=True)
     path = os.path.join('data', filename)
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-        
+
 def load_data_json(filename):
-    """Đọc dữ liệu từ file JSON trong thư mục data/"""
     path = os.path.join('data', filename)
     if not os.path.exists(path):
         default_data = {"items": []}
@@ -176,7 +169,6 @@ def load_data_json(filename):
         return json.load(f)
 
 def convert_objectid(data):
-    """Đệ quy chuyển đổi tất cả ObjectId trong dict/list thành string"""
     if isinstance(data, list):
         return [convert_objectid(item) for item in data]
     elif isinstance(data, dict):
@@ -212,12 +204,13 @@ print(f"📧 Email: {app.config['MAIL_USERNAME']}")
 print(f"📧 Password: {'*' * len(app.config['MAIL_PASSWORD']) if app.config['MAIL_PASSWORD'] else 'Không có'}")
 
 # ============================================
-# HÀM GỬI EMAIL (PHẢI ĐỊNH NGHĨA TRƯỚC KHI DÙNG)
+# HÀM GỬI EMAIL
 # ============================================
 
 def send_registration_email(data):
     """Gửi email xác nhận đăng ký"""
     try:
+        # Email cho người dùng
         user_msg = Message(
             subject="✅ Xác nhận đăng ký khóa học - Ngoại Ngữ O-Yin",
             recipients=[data.get('email')]
@@ -252,6 +245,7 @@ Sầm Sơn, Thanh Hóa
         mail.send(user_msg)
         print(f"✅ Đã gửi email xác nhận cho {data.get('email')}")
 
+        # Email cho Admin
         admin_email = os.environ.get('ADMIN_EMAIL', 'admin@oyin.edu.vn')
         if admin_email:
             admin_msg = Message(
@@ -282,8 +276,9 @@ Ngày đăng ký: {data.get('created_at')}
         traceback.print_exc()
         return False
 
-# Khởi tạo kết nối MongoDB
-db = get_db()
+# ============================================
+# HÀM GỬI EMAIL BẤT ĐỒNG BỘ (THREAD)
+# ============================================
 
 def send_email_async(data):
     """Gửi email trong background thread"""
@@ -307,21 +302,18 @@ def send_email_async(data):
             traceback.print_exc()
             return False
 
-# Khởi tạo kết nối MongoDB
-db = get_db()
-
 # ============================================
-# API ĐĂNG KÝ KHÓA HỌC (DÙNG THREADING)
+# API ĐĂNG KÝ KHÓA HỌC
 # ============================================
 
 @app.route('/api/dang-ky', methods=['POST'])
 def submit_registration():
-    """API nhận đăng ký từ form - DÙNG THREADING"""
+    """API nhận đăng ký từ form"""
     try:
         data = request.get_json()
         print("📥 Dữ liệu nhận được:", data)
         
-        # Validate required fields
+        # Validate
         required_fields = ['full_name', 'phone', 'email', 'course']
         for field in required_fields:
             if not data.get(field):
@@ -330,23 +322,15 @@ def submit_registration():
                     "error": f"Vui lòng nhập {field}"
                 }), 400
         
-        # Validate email
         email = data.get('email', '').strip()
         if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
-            return jsonify({
-                "success": False,
-                "error": "Email không hợp lệ"
-            }), 400
+            return jsonify({"success": False, "error": "Email không hợp lệ"}), 400
         
-        # Validate phone
         phone = data.get('phone', '').strip()
         if not re.match(r'^[0-9]{10,11}$', phone):
-            return jsonify({
-                "success": False,
-                "error": "Số điện thoại không hợp lệ (10-11 số)"
-            }), 400
+            return jsonify({"success": False, "error": "Số điện thoại không hợp lệ (10-11 số)"}), 400
         
-        # Load and save registration
+        # Lưu đăng ký
         registrations = load_data('registrations')
         if 'items' not in registrations:
             registrations['items'] = []
@@ -371,13 +355,12 @@ def submit_registration():
         save_data('registrations', registrations)
         print("✅ Đã lưu đăng ký thành công!")
         
-        # 👇 GỬI EMAIL BẰNG THREAD (KHÔNG DÙNG QUEUE)
+        # 👇 GỬI EMAIL BẰNG THREAD (KHÔNG BLOCK)
         thread = threading.Thread(target=send_email_async, args=(new_registration,))
         thread.daemon = True
         thread.start()
         print("📧 Đã khởi tạo thread gửi email (background)")
         
-        # 👇 TRẢ VỀ RESPONSE NGAY LẬP TỨC
         return jsonify({
             "success": True,
             "message": "Đăng ký thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất."
@@ -391,6 +374,32 @@ def submit_registration():
             "success": False,
             "error": "Có lỗi xảy ra, vui lòng thử lại sau"
         }), 500
+
+# ============================================
+# ROUTE TEST EMAIL
+# ============================================
+
+@app.route('/test-email')
+def test_email():
+    """Test gửi email"""
+    try:
+        test_data = {
+            'full_name': 'Test User',
+            'email': 'lenhat94664@gmail.com',
+            'phone': '0123456789',
+            'course': 'HSK 1 - Sơ Cấp',
+            'message': 'Test message',
+            'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        
+        print("📧 Test gửi email...")
+        with app.app_context():
+            send_registration_email(test_data)
+        
+        return "<h2>✅ Email test đã được gửi!</h2><a href='/'>Về trang chủ</a>"
+    except Exception as e:
+        import traceback
+        return f"<h2>❌ Lỗi: {e}</h2><pre>{traceback.format_exc()}</pre><a href='/'>Về trang chủ</a>"
 
 # ============================================
 # MENU
@@ -2249,119 +2258,6 @@ def protect_admin_routes():
         return None
     
 app.secret_key = os.environ.get('SECRET_KEY', 'oyin-2024')
-
-# ============================================
-# ROUTE KIỂM TRA QUEUE (TÙY CHỌN)
-# ============================================
-
-@app.route('/test-email')
-def test_email():
-    """Test gửi email - Dùng để debug"""
-    try:
-        test_data = {
-            'full_name': 'Test User',
-            'email': 'lenhat94664@gmail.com',  # 👈 ĐỔI EMAIL CỦA BẠN
-            'phone': '0123456789',
-            'course': 'HSK 1 - Sơ Cấp',
-            'message': 'Test message from debug'
-        }
-        
-        print("📧 Bắt đầu test gửi email...")
-        with app.app_context():
-            send_registration_email(test_data)
-        
-        return """
-        <h2>✅ Email đã được gửi!</h2>
-        <p>Kiểm tra hộp thư của bạn (cả Spam folder)</p>
-        <a href="/">Về trang chủ</a>
-        """
-    except Exception as e:
-        import traceback
-        error_detail = traceback.format_exc()
-        return f"""
-        <h2>❌ Lỗi gửi email</h2>
-        <pre>{error_detail}</pre>
-        <a href="/">Về trang chủ</a>
-        """
-
-# ============================================
-# ROUTE TEST EMAIL TRỰC TIẾP (KHÔNG THREAD)
-# ============================================
-
-@app.route('/test-email-direct')
-def test_email_direct():
-    """Test gửi email trực tiếp - Dùng để debug"""
-    try:
-        test_data = {
-            'full_name': 'Test User Direct',
-            'email': 'lenhat94664@gmail.com',  # 👈 ĐỔI EMAIL NHẬN
-            'phone': '0123456789',
-            'course': 'HSK 1 - Sơ Cấp',
-            'message': 'Test direct email - Không dùng thread',
-            'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
-        
-        print("=" * 50)
-        print("📧 BẮT ĐẦU TEST GỬI EMAIL TRỰC TIẾP")
-        print(f"📧 Email nhận: {test_data['email']}")
-        print("=" * 50)
-        
-        with app.app_context():
-            send_registration_email(test_data)
-        
-        return """
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Test Email</title>
-            <style>
-                body { font-family: Arial; padding: 50px; text-align: center; }
-                .success { color: green; font-size: 24px; }
-                .box { background: #f0f0f0; padding: 20px; border-radius: 10px; max-width: 500px; margin: 20px auto; }
-            </style>
-        </head>
-        <body>
-            <h1 class="success">✅ Email đã được gửi!</h1>
-            <div class="box">
-                <p><strong>Email nhận:</strong> lenhat94664@gmail.com</p>
-                <p><strong>Thời gian:</strong> """ + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + """</p>
-            </div>
-            <p>📬 Kiểm tra hộp thư của bạn (cả Spam folder)</p>
-            <br>
-            <a href="/" style="color: #e67e22;">⬅️ Về trang chủ</a>
-            <br><br>
-            <a href="/test-email-direct" style="color: #3498db;">🔄 Gửi lại</a>
-        </body>
-        </html>
-        """
-        
-    except Exception as e:
-        import traceback
-        error_detail = traceback.format_exc()
-        print("❌ LỖI TEST EMAIL:")
-        print(error_detail)
-        
-        return f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Test Email - Lỗi</title>
-            <style>
-                body {{ font-family: Arial; padding: 50px; }}
-                .error {{ color: red; }}
-                pre {{ background: #f5f5f5; padding: 15px; border-radius: 5px; overflow: auto; }}
-            </style>
-        </head>
-        <body>
-            <h1 class="error">❌ Lỗi gửi email</h1>
-            <div style="background: #f5f5f5; padding: 20px; border-radius: 10px;">
-                <pre>{error_detail}</pre>
-            </div>
-            <br>
-            <a href="/">⬅️ Về trang chủ</a>
-        </body>
-        </html>
-        """
 
 # ============================================
 # MAIN

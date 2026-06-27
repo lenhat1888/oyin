@@ -3,7 +3,7 @@ services:
     name: oyin-website
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn --timeout 120 --workers 2 --threads 4 app:app # 👈 THÊM TIMEOUT
+    startCommand: gunicorn --timeout 300 --workers 2 --threads 4 app:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
@@ -13,12 +13,19 @@ services:
         value: oyin_db
       - key: APP_URL
         value: https://ngoainguoyin.vn/
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_DEFAULT_SENDER
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
 
-  # ===== CRON JOB - GIỮ WEB KHÔNG BỊ SLEEP =====
   - type: cron
     name: keep-alive
     env: python
-    schedule: "*/5 * * * *" # Chạy mỗi 5 phút
+    schedule: "*/5 * * * *"
     buildCommand: pip install requests
     startCommand: python cron.py
     envVars:
