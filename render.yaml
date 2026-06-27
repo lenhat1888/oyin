@@ -13,11 +13,13 @@ services:
         value: oyin_db
       - key: APP_URL
         value: https://ngoainguoyin.vn/
+      - key: MAIL_USERNAME
+        value: b02984001@smtp-brevo.com
+      - key: MAIL_PASSWORD
+        value: vLp1jYJVJN3OkTtAq
       - key: MAIL_DEFAULT_SENDER
-        sync: false
+        value: riyue1808@gmail.com
       - key: ADMIN_EMAIL
-        sync: false
-      - key: SENDGRID_API_KEY
         sync: false
 
   - type: cron
