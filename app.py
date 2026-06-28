@@ -207,38 +207,40 @@ print(f"📧 Password: {'*' * len(app.config['MAIL_PASSWORD']) if app.config['MA
 # ============================================
 
 def send_registration_email(data):
-    """Gửi email xác nhận đăng ký qua API Brevo với HTML + Plain Text"""
+    """Gửi email xác nhận đăng ký qua API Brevo với header tối ưu"""
     try:
         print("=" * 60)
         print("📧 GỬI EMAIL QUA API BREVO")
         print(f"📧 Recipient: {data.get('email')}")
         print("=" * 60)
 
-        # Cấu hình API
         configuration = sib_api_v3_sdk.Configuration()
         configuration.api_key['api-key'] = os.environ.get('BREVO_API_KEY')
         api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
 
+        # Common headers để cải thiện deliverability
+        headers = {
+            "X-Priority": "1",
+            "X-Mailer": "NgoaiNguOYin",
+            "List-Unsubscribe": "<mailto:unsubscribe@oyin.edu.vn?subject=unsubscribe>",
+            "X-Transaction-ID": data.get('id', 'unknown'),
+        }
+
         # ---- Email cho người dùng ----
         user_html = f"""
         <html>
-        <head>
-            <meta charset="UTF-8">
-            <style>
-                body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
-                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }}
-                .header {{ background-color: #e67e22; color: white; padding: 15px; border-radius: 8px 8px 0 0; text-align: center; }}
-                .content {{ padding: 20px; }}
-                .footer {{ background: #f5f5f5; padding: 12px; text-align: center; font-size: 12px; color: #888; border-radius: 0 0 8px 8px; }}
-                .info {{ background: #f9f9f9; padding: 10px; margin: 10px 0; border-left: 4px solid #e67e22; }}
-                .highlight {{ font-weight: bold; color: #e67e22; }}
-            </style>
-        </head>
+        <head><meta charset="UTF-8"><style>
+            body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+            .container {{ max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }}
+            .header {{ background-color: #e67e22; color: white; padding: 15px; border-radius: 8px 8px 0 0; text-align: center; }}
+            .content {{ padding: 20px; }}
+            .footer {{ background: #f5f5f5; padding: 12px; text-align: center; font-size: 12px; color: #888; border-radius: 0 0 8px 8px; }}
+            .info {{ background: #f9f9f9; padding: 10px; margin: 10px 0; border-left: 4px solid #e67e22; }}
+            .highlight {{ font-weight: bold; color: #e67e22; }}
+        </style></head>
         <body>
             <div class="container">
-                <div class="header">
-                    <h2>📧 Xác nhận đăng ký khóa học</h2>
-                </div>
+                <div class="header"><h2>📧 Xác nhận đăng ký khóa học</h2></div>
                 <div class="content">
                     <p>Kính gửi <strong>{data.get('full_name')}</strong>,</p>
                     <p>Cảm ơn bạn đã đăng ký khóa học tại <span class="highlight">Ngoại Ngữ O-Yin</span>!</p>
@@ -246,18 +248,20 @@ def send_registration_email(data):
                         <p><strong>📋 Thông tin đăng ký:</strong></p>
                         <p><strong>Khóa học:</strong> {data.get('course')}</p>
                         <p><strong>Họ tên:</strong> {data.get('full_name')}</p>
-                        <p><strong>Số điện thoại:</strong> {data.get('phone')}</p>
+                        <p><strong>SĐT:</strong> {data.get('phone')}</p>
                         <p><strong>Email:</strong> {data.get('email')}</p>
                         <p><strong>Ghi chú:</strong> {data.get('message', 'Không có')}</p>
                     </div>
                     <p>✅ Chúng tôi sẽ liên hệ với bạn trong vòng <strong>24 giờ</strong> tới.</p>
                     <p>📞 Mọi thắc mắc vui lòng gọi: <strong>0971 306 143</strong></p>
                     <p>🌐 Website: <a href="https://ngoainguoyin.vn" target="_blank">ngoainguoyin.vn</a></p>
+                    <p style="font-size:14px; color:#999;">📌 Đây là email xác nhận tự động. Vui lòng không trả lời.</p>
                     <p>Trân trọng,<br><strong>Ngoại Ngữ O-Yin</strong></p>
                 </div>
                 <div class="footer">
+                    Công ty TNHH Ngoại Ngữ O-Yin<br>
                     Địa chỉ: Sầm Sơn, Thanh Hóa<br>
-                    Email: ngoainguoyin@gmail.com
+                    Email: info@oyin.edu.vn
                 </div>
             </div>
         </body>
@@ -281,6 +285,8 @@ def send_registration_email(data):
         📞 Hotline: 0971 306 143
         🌐 Website: https://ngoainguoyin.vn
 
+        📌 Đây là email xác nhận tự động. Vui lòng không trả lời.
+
         Trân trọng,
         Ngoại Ngữ O-Yin
         Sầm Sơn, Thanh Hóa
@@ -289,11 +295,11 @@ def send_registration_email(data):
         user_email = sib_api_v3_sdk.SendSmtpEmail(
             to=[{"email": data.get('email')}],
             sender={"email": os.environ.get('MAIL_DEFAULT_SENDER'), "name": "Ngoại Ngữ O-Yin"},
-            subject="✅ Xác nhận đăng ký khóa học - Ngoại Ngữ O-Yin",
+            subject=f"✅ Xác nhận đăng ký khóa học cho {data.get('full_name')}",
             html_content=user_html,
-            text_content=user_text
+            text_content=user_text,
+            headers=headers
         )
-
         api_instance.send_transac_email(user_email)
         print("✅ Đã gửi email xác nhận cho người dùng")
 
@@ -303,8 +309,7 @@ def send_registration_email(data):
             admin_email_list = [email.strip() for email in admin_emails_str.replace(';', ',').split(',') if email.strip()]
             if admin_email_list:
                 admin_html = f"""
-                <html>
-                <body style="font-family: Arial, sans-serif;">
+                <html><body style="font-family:Arial,sans-serif;">
                     <h3>📋 THÔNG BÁO ĐĂNG KÝ MỚI</h3>
                     <hr>
                     <p><b>Họ tên:</b> {data.get('full_name')}</p>
@@ -315,8 +320,7 @@ def send_registration_email(data):
                     <p><b>Ngày đăng ký:</b> {data.get('created_at')}</p>
                     <hr>
                     <p>👉 Vui lòng liên hệ sớm nhất!</p>
-                </body>
-                </html>
+                </body></html>
                 """
                 admin_text = f"""
                 THÔNG BÁO ĐĂNG KÝ MỚI
@@ -335,7 +339,8 @@ def send_registration_email(data):
                     sender={"email": os.environ.get('MAIL_DEFAULT_SENDER'), "name": "Ngoại Ngữ O-Yin"},
                     subject=f"📝 Đăng ký mới từ {data.get('full_name')}",
                     html_content=admin_html,
-                    text_content=admin_text
+                    text_content=admin_text,
+                    headers=headers
                 )
                 api_instance.send_transac_email(admin_email_obj)
                 print(f"✅ Đã gửi email thông báo cho {len(admin_email_list)} admin")
