@@ -334,13 +334,17 @@ async function deleteSlide(id) {
   if (!confirmed) return;
 
   try {
+    // Lấy thông tin slide để xóa ảnh
+    const data = await fetch("/api/data/slides").then((r) => r.json());
+    const slide = data.items.find((s) => s.id === id);
+    if (slide && slide.image) {
+      await deleteOldImage(slide.image);
+    }
+
     const response = await fetch(`/api/data/slides/${id}`, {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
     });
-
     const result = await response.json();
 
     if (response.ok && result.success) {
@@ -403,6 +407,10 @@ async function editSlide(id) {
 
   let imageUrl = slide.image;
   if (result.image) {
+    // 👇 XÓA ẢNH CŨ TRƯỚC KHI UPLOAD MỚI
+    if (slide.image) {
+      await deleteOldImage(slide.image);
+    }
     const formData = new FormData();
     formData.append("file", result.image);
     const uploadRes = await fetch("/api/upload/slide", {
@@ -599,6 +607,14 @@ async function deleteCategory(id) {
     "🗑️ Xác nhận xóa",
   );
   if (!confirmed) return;
+
+  // Lấy thông tin danh mục để xóa ảnh
+  const data = await fetch("/api/data/categories").then((r) => r.json());
+  const cat = data.categories.find((c) => c.id === id);
+  if (cat && cat.image) {
+    await deleteOldImage(cat.image);
+  }
+
   const response = await fetch(`/api/data/categories/${id}`, {
     method: "DELETE",
   });
@@ -610,41 +626,9 @@ async function deleteCategory(id) {
   }
 }
 
-async function editCategory(id) {
-  const data = await fetch("/api/data/categories").then((r) => r.json());
-  const cat = data.categories.find((c) => c.id === id);
-  if (!cat) {
-    await Modal.show("❌ Không tìm thấy danh mục!", "error");
-    return;
-  }
-
-  const newName = await Modal.prompt(
-    "✏️ Tên danh mục mới:",
-    cat.name,
-    "Sửa danh mục",
-  );
-  if (newName === null) return;
-
-  const response = await fetch(`/api/data/categories/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      name: newName.trim(),
-      icon: cat.icon || "fa-tag",
-      description: cat.description || "",
-      slug: newName.trim().toLowerCase().replace(/ /g, "-"),
-      active: cat.active,
-      image: cat.image || "",
-    }),
-  });
-
-  if (response.ok) {
-    await Modal.show("✅ Cập nhật danh mục thành công!", "success");
-    loadTabContent("categories");
-  } else {
-    await Modal.show("❌ Cập nhật thất bại!", "error");
-  }
-}
+// ============================================
+// QUẢN LÝ DANH MỤC - ĐẦY ĐỦ MODAL
+// ============================================
 
 async function addCategory() {
   const result = await Modal.form(
@@ -670,8 +654,18 @@ async function addCategory() {
         placeholder: "Mô tả danh mục...",
         rows: 60,
       },
-      { name: "image", label: "🖼️ Ảnh đại diện (tùy chọn)", type: "file" },
-      { name: "active", label: "✅ Hoạt động", type: "checkbox", value: true },
+      {
+        name: "image",
+        label: "🖼️ Ảnh đại diện (tùy chọn)",
+        type: "file",
+        accept: "image/*",
+      },
+      {
+        name: "active",
+        label: "✅ Hoạt động",
+        type: "checkbox",
+        value: true,
+      },
     ],
     "🏷️ Thêm Danh Mục Mới",
     "Thêm danh mục",
@@ -687,12 +681,17 @@ async function addCategory() {
   if (result.image) {
     const formData = new FormData();
     formData.append("file", result.image);
-    const uploadRes = await fetch("/api/upload/course-image", {
+    const uploadRes = await fetch("/api/upload/category-image", {
       method: "POST",
       body: formData,
     });
     const uploadResult = await uploadRes.json();
-    if (uploadResult.success) imageUrl = uploadResult.image_url;
+    if (uploadResult.success) {
+      imageUrl = uploadResult.image_url;
+    } else {
+      await Modal.show("❌ Upload ảnh thất bại!", "error");
+      return;
+    }
   }
 
   const response = await fetch("/api/data/categories/add", {
@@ -712,9 +711,126 @@ async function addCategory() {
     await Modal.show("✅ Thêm danh mục thành công!", "success");
     loadTabContent("categories");
   } else {
-    await Modal.show("❌ Thêm thất bại!", "error");
+    const error = await response.json();
+    await Modal.show(
+      "❌ Thêm thất bại: " + (error.error || "Lỗi không xác định"),
+      "error",
+    );
   }
 }
+
+async function editCategory(id) {
+  const data = await fetch("/api/data/categories").then((r) => r.json());
+  const cat = data.categories.find((c) => c.id === id);
+  if (!cat) {
+    await Modal.show("❌ Không tìm thấy danh mục!", "error");
+    return;
+  }
+
+  // Hiển thị modal form với các trường đầy đủ, có preview ảnh cũ
+  const result = await Modal.form(
+    [
+      {
+        name: "name",
+        label: "📝 Tên danh mục *",
+        type: "text",
+        value: cat.name || "",
+        required: true,
+        placeholder: "VD: HSK 3.0",
+      },
+      {
+        name: "icon",
+        label: "🎨 Icon FontAwesome",
+        type: "text",
+        value: cat.icon || "fa-tag",
+        placeholder: "VD: fa-star",
+      },
+      {
+        name: "description",
+        label: "📄 Mô tả",
+        type: "textarea",
+        value: cat.description || "",
+        placeholder: "Mô tả danh mục...",
+        rows: 60,
+      },
+      {
+        name: "image",
+        label: `🖼️ Ảnh đại diện ${cat.image ? "(hiện tại: " + cat.image.split("/").pop() + ")" : ""}`,
+        type: "file",
+        accept: "image/*",
+        help: cat.image
+          ? "Chọn ảnh mới để thay thế, bỏ trống để giữ ảnh cũ"
+          : "",
+      },
+      {
+        name: "active",
+        label: "✅ Hoạt động",
+        type: "checkbox",
+        value: cat.active !== false,
+      },
+    ],
+    "✏️ Sửa Danh Mục",
+    "Cập nhật",
+  );
+
+  if (!result) return;
+
+  // Validate
+  if (!result.name.trim()) {
+    await Modal.show("Vui lòng nhập tên danh mục!", "warning");
+    return editCategory(id);
+  }
+
+  let imageUrl = cat.image || "";
+  if (result.image) {
+    const formData = new FormData();
+    formData.append("file", result.image);
+    const uploadRes = await fetch("/api/upload/category-image", {
+      method: "POST",
+      body: formData,
+    });
+    const uploadResult = await uploadRes.json();
+    if (uploadResult.success) {
+      // 👇 XÓA ẢNH CŨ TRƯỚC KHI GÁN ẢNH MỚI
+      if (cat.image) {
+        await deleteOldImage(cat.image);
+      }
+      imageUrl = uploadResult.image_url;
+    } else {
+      await Modal.show("❌ Upload ảnh thất bại!", "error");
+      return;
+    }
+  }
+
+  const response = await fetch(`/api/data/categories/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: result.name.trim(),
+      icon: result.icon.trim() || "fa-tag",
+      description: result.description?.trim() || "",
+      slug: result.name.trim().toLowerCase().replace(/ /g, "-"),
+      active: result.active !== false,
+      image: imageUrl,
+    }),
+  });
+
+  if (response.ok) {
+    await Modal.show("✅ Cập nhật danh mục thành công!", "success");
+    loadTabContent("categories");
+  } else {
+    const err = await response.json();
+    await Modal.show(
+      "❌ Cập nhật thất bại: " + (err.error || "Lỗi không xác định"),
+      "error",
+    );
+  }
+}
+
+// Đảm bảo các hàm có thể gọi từ global
+window.addCategory = addCategory;
+window.editCategory = editCategory;
+window.deleteCategory = deleteCategory; // vẫn giữ nguyên
 
 // ============================================
 // THÊM CSS CHO BUTTON
@@ -912,6 +1028,14 @@ async function deleteReview(id) {
     "🗑️ Xác nhận xóa",
   );
   if (!confirmed) return;
+
+  // Lấy thông tin review để xóa avatar
+  const data = await fetch("/api/data/reviews").then((r) => r.json());
+  const review = data.items.find((r) => r.id === id);
+  if (review && review.avatar) {
+    await deleteOldImage(review.avatar);
+  }
+
   const response = await fetch(`/api/data/reviews/${id}`, { method: "DELETE" });
   if (response.ok) {
     await Modal.show("✅ Xóa thành công!", "success");
@@ -979,6 +1103,10 @@ async function editReview(id) {
 
   let avatarUrl = review.avatar || "";
   if (result.avatar) {
+    // 👇 XÓA ẢNH CŨ TRƯỚC KHI UPLOAD MỚI
+    if (review.avatar) {
+      await deleteOldImage(review.avatar);
+    }
     const formData = new FormData();
     formData.append("file", result.avatar);
     const uploadRes = await fetch("/api/upload/review-avatar", {
@@ -986,7 +1114,9 @@ async function editReview(id) {
       body: formData,
     });
     const uploadResult = await uploadRes.json();
-    if (uploadResult.success) avatarUrl = uploadResult.image_url;
+    if (uploadResult.success) {
+      avatarUrl = uploadResult.image_url;
+    }
   }
 
   const response = await fetch(`/api/data/reviews/${id}`, {
@@ -1865,11 +1995,21 @@ async function deleteCourse(courseId) {
   if (!confirmed) return;
 
   try {
+    // Lấy thông tin khóa học để xóa ảnh
+    const coursesRes = await fetch("/api/data/courses");
+    let coursesData = await coursesRes.json();
+    let courses = Array.isArray(coursesData)
+      ? coursesData
+      : coursesData.items || [];
+    const course = courses.find((c) => c.id === courseId);
+    if (course && (course.image || course.image_url)) {
+      await deleteOldImage(course.image || course.image_url);
+    }
+
     const response = await fetch(`/api/data/courses/${courseId}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });
-
     const result = await response.json();
 
     if (response.ok && result.success) {
@@ -2194,7 +2334,6 @@ async function editDocument(docId) {
       return;
     }
 
-    // Lấy danh mục
     const catsRes = await fetch("/api/data/categories");
     const catsData = await catsRes.json();
     const categories = catsData.categories || [];
@@ -2246,7 +2385,6 @@ async function editDocument(docId) {
           required: true,
           help: "Hệ thống sẽ tự động tạo link preview",
         },
-        // 👈 XÓA TRƯỜNG preview_url
         {
           name: "file_type",
           label: "📂 Loại tài liệu",
@@ -2298,7 +2436,6 @@ async function editDocument(docId) {
 
     if (!result) return;
 
-    // 👈 TỰ ĐỘNG TẠO PREVIEW URL
     let previewUrl = doc.preview_url || "";
     const fileUrl = result.file_url.trim();
     const fileIdMatch = fileUrl.match(/\/d\/([^\/]+)\//);
@@ -2306,9 +2443,12 @@ async function editDocument(docId) {
       previewUrl = `https://drive.google.com/file/d/${fileIdMatch[1]}/preview`;
     }
 
-    // Upload ảnh nếu có
     let imageUrl = doc.image || "";
     if (result.image) {
+      // 👇 XÓA ẢNH CŨ TRƯỚC KHI UPLOAD MỚI
+      if (doc.image) {
+        await deleteOldImage(doc.image);
+      }
       const formData = new FormData();
       formData.append("file", result.image);
       const uploadRes = await fetch("/api/upload/document-image", {
@@ -2321,7 +2461,6 @@ async function editDocument(docId) {
       }
     }
 
-    // Xử lý tags
     let tags = [];
     if (result.tags && result.tags.trim()) {
       tags = result.tags
@@ -2350,7 +2489,6 @@ async function editDocument(docId) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(docData),
     });
-
     const responseData = await response.json();
 
     if (responseData.success) {
@@ -2376,11 +2514,17 @@ async function deleteDocument(docId) {
   if (!confirmed) return;
 
   try {
+    // Lấy thông tin tài liệu để xóa ảnh
+    const data = await fetch("/api/data/documents").then((r) => r.json());
+    const doc = data.items.find((d) => d.id === docId);
+    if (doc && doc.image) {
+      await deleteOldImage(doc.image);
+    }
+
     const response = await fetch(`/api/data/documents/${docId}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });
-
     const result = await response.json();
 
     if (response.ok && result.success) {
@@ -2654,9 +2798,12 @@ async function editNews(newsId) {
 
     if (!result) return;
 
-    // Upload ảnh nếu có
     let imageUrl = item.image || "";
     if (result.image) {
+      // 👇 XÓA ẢNH CŨ TRƯỚC KHI UPLOAD MỚI
+      if (item.image) {
+        await deleteOldImage(item.image);
+      }
       const formData = new FormData();
       formData.append("file", result.image);
       const uploadRes = await fetch("/api/upload/news-image", {
@@ -2685,7 +2832,6 @@ async function editNews(newsId) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newsData),
     });
-
     const updateData = await updateRes.json();
 
     if (updateData.success) {
@@ -2711,11 +2857,17 @@ async function deleteNews(newsId) {
   if (!confirmed) return;
 
   try {
+    // Lấy thông tin tin tức để xóa ảnh
+    const data = await fetch("/api/data/news").then((r) => r.json());
+    const news = data.items.find((n) => n.id === newsId);
+    if (news && news.image) {
+      await deleteOldImage(news.image);
+    }
+
     const response = await fetch(`/api/data/news/${newsId}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });
-
     const result = await response.json();
 
     if (response.ok && result.success) {
@@ -2993,6 +3145,10 @@ async function editTeacher(teacherId) {
 
     let imageUrl = teacher.image || "";
     if (result.image) {
+      // 👇 XÓA ẢNH CŨ TRƯỚC KHI UPLOAD MỚI
+      if (teacher.image) {
+        await deleteOldImage(teacher.image);
+      }
       const formData = new FormData();
       formData.append("file", result.image);
       const uploadRes = await fetch("/api/upload/teacher-image", {
@@ -3000,7 +3156,9 @@ async function editTeacher(teacherId) {
         body: formData,
       });
       const uploadResult = await uploadRes.json();
-      if (uploadResult.success) imageUrl = uploadResult.image_url;
+      if (uploadResult.success) {
+        imageUrl = uploadResult.image_url;
+      }
     }
 
     const teacherData = {
@@ -3043,6 +3201,14 @@ async function deleteTeacher(teacherId) {
   if (!confirmed) return;
 
   try {
+    // Lấy thông tin giáo viên để xóa ảnh
+    const data = await fetch("/api/data/teachers").then((r) => r.json());
+    const teachers = data.items || [];
+    const teacher = teachers.find((t) => t.id === teacherId);
+    if (teacher && teacher.image) {
+      await deleteOldImage(teacher.image);
+    }
+
     const response = await fetch(`/api/data/teachers/${teacherId}`, {
       method: "DELETE",
     });

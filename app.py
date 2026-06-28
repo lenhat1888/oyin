@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, render_template, jsonify, request, send_from_directory, render_template_string
+from flask import Flask, render_template, jsonify, request, send_from_directory, render_template_string, Response
 import json
 import os
 import re
@@ -10,11 +10,12 @@ from pymongo import MongoClient
 from bson import ObjectId
 from flask_mail import Mail, Message
 from flask import redirect
-from flask import request
 import threading
 import time
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
+from bson.binary import Binary
+
 
 # ============================================
 # LOAD ENV & INIT FLASK
@@ -1252,46 +1253,7 @@ def api_delete_document(doc_id):
         return jsonify({"success": False, "error": str(e)}), 500
     
 
-# ============================================
-# API UPLOAD ẢNH TÀI LIỆU
-# ============================================
 
-UPLOAD_FOLDER_DOCUMENTS = 'static/img/documents'
-os.makedirs(UPLOAD_FOLDER_DOCUMENTS, exist_ok=True)
-
-@app.route('/api/upload/document-image', methods=['POST'])
-def upload_document_image():
-    """Upload ảnh đại diện cho tài liệu"""
-    try:
-        if 'file' not in request.files:
-            return jsonify({"success": False, "error": "Không có file"}), 400
-        
-        file = request.files['file']
-        if file.filename == '':
-            return jsonify({"success": False, "error": "Tên file rỗng"}), 400
-        
-        if not allowed_file(file.filename):
-            return jsonify({"success": False, "error": "Định dạng không hỗ trợ"}), 400
-        
-        filename = secure_filename(file.filename)
-        name, ext = os.path.splitext(filename)
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        new_filename = f"{name}_{timestamp}{ext}"
-        
-        file_path = os.path.join(UPLOAD_FOLDER_DOCUMENTS, new_filename)
-        file.save(file_path)
-        
-        image_url = f"/static/img/documents/{new_filename}"
-        
-        return jsonify({
-            "success": True,
-            "image_url": image_url,
-            "filename": new_filename
-        })
-        
-    except Exception as e:
-        print(f"❌ Upload document image error: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
 
 # ============================================
 # TIN TỨC
@@ -1411,166 +1373,6 @@ def api_delete_news(item_id):
         print(f"❌ Lỗi xóa tin tức: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
-
-# ============================================
-# API UPLOAD ẢNH TIN TỨC
-# ============================================
-
-UPLOAD_FOLDER_NEWS = 'static/img/news'
-os.makedirs(UPLOAD_FOLDER_NEWS, exist_ok=True)
-
-@app.route('/api/upload/news-image', methods=['POST'])
-def upload_news_image():
-    """Upload ảnh đại diện cho tin tức"""
-    try:
-        if 'file' not in request.files:
-            return jsonify({"success": False, "error": "Không có file"}), 400
-        
-        file = request.files['file']
-        if file.filename == '':
-            return jsonify({"success": False, "error": "Tên file rỗng"}), 400
-        
-        if not allowed_file(file.filename):
-            return jsonify({"success": False, "error": "Định dạng không hỗ trợ"}), 400
-        
-        filename = secure_filename(file.filename)
-        name, ext = os.path.splitext(filename)
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        new_filename = f"{name}_{timestamp}{ext}"
-        
-        file_path = os.path.join(UPLOAD_FOLDER_NEWS, new_filename)
-        file.save(file_path)
-        
-        image_url = f"/static/img/news/{new_filename}"
-        
-        return jsonify({
-            "success": True,
-            "image_url": image_url,
-            "filename": new_filename
-        })
-        
-    except Exception as e:
-        print(f"❌ Upload news image error: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
-
-# ============================================
-# API UPLOAD ẢNH
-# ============================================
-
-UPLOAD_FOLDER_COURSES = 'static/img/courses'
-UPLOAD_FOLDER_SLIDES = 'static/img/slides'
-UPLOAD_FOLDER_REVIEWS = 'static/img/reviews'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'}
-
-os.makedirs(UPLOAD_FOLDER_COURSES, exist_ok=True)
-os.makedirs(UPLOAD_FOLDER_SLIDES, exist_ok=True)
-os.makedirs(UPLOAD_FOLDER_REVIEWS, exist_ok=True)
-
-def allowed_file(filename):
-    """Kiểm tra định dạng file cho phép"""
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-@app.route('/api/upload/course-image', methods=['POST'])
-def upload_course_image():
-    """Upload ảnh khóa học"""
-    try:
-        if 'file' not in request.files:
-            return jsonify({"error": "Không có file"}), 400
-        
-        file = request.files['file']
-        if file.filename == '':
-            return jsonify({"error": "Tên file rỗng"}), 400
-        
-        if not allowed_file(file.filename):
-            return jsonify({"error": "Định dạng không hỗ trợ"}), 400
-        
-        filename = secure_filename(file.filename)
-        name, ext = os.path.splitext(filename)
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        new_filename = f"{name}_{timestamp}{ext}"
-        
-        file_path = os.path.join(UPLOAD_FOLDER_COURSES, new_filename)
-        file.save(file_path)
-        
-        image_url = f"/static/img/courses/{new_filename}"
-        
-        return jsonify({
-            "success": True,
-            "image_url": image_url,
-            "filename": new_filename
-        })
-        
-    except Exception as e:
-        print(f"❌ Upload course image error: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/upload/slide', methods=['POST'])
-def upload_slide():
-    """Upload ảnh slide"""
-    try:
-        if 'file' not in request.files:
-            return jsonify({"success": False, "error": "Không có file"}), 400
-        
-        file = request.files['file']
-        if file.filename == '':
-            return jsonify({"success": False, "error": "Tên file rỗng"}), 400
-        
-        if not allowed_file(file.filename):
-            return jsonify({"success": False, "error": "Định dạng không hỗ trợ"}), 400
-        
-        filename = secure_filename(file.filename)
-        name, ext = os.path.splitext(filename)
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        new_filename = f"{name}_{timestamp}{ext}"
-        
-        file_path = os.path.join(UPLOAD_FOLDER_SLIDES, new_filename)
-        file.save(file_path)
-        
-        image_url = f"/static/img/slides/{new_filename}"
-        
-        return jsonify({
-            "success": True,
-            "image_url": image_url,
-            "filename": new_filename
-        })
-        
-    except Exception as e:
-        print(f"❌ Upload slide error: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
-
-@app.route('/api/upload/review-avatar', methods=['POST'])
-def upload_review_avatar():
-    """Upload ảnh đại diện đánh giá"""
-    try:
-        if 'file' not in request.files:
-            return jsonify({"success": False, "error": "Không có file"}), 400
-        
-        file = request.files['file']
-        if file.filename == '':
-            return jsonify({"success": False, "error": "Tên file rỗng"}), 400
-        
-        if not allowed_file(file.filename):
-            return jsonify({"success": False, "error": "Định dạng không hỗ trợ"}), 400
-        
-        filename = secure_filename(file.filename)
-        name, ext = os.path.splitext(filename)
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        new_filename = f"{name}_{timestamp}{ext}"
-        
-        file_path = os.path.join(UPLOAD_FOLDER_REVIEWS, new_filename)
-        file.save(file_path)
-        
-        image_url = f"/static/img/reviews/{new_filename}"
-        
-        return jsonify({
-            "success": True,
-            "image_url": image_url,
-            "filename": new_filename
-        })
-        
-    except Exception as e:
-        print(f"❌ Upload review avatar error: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
 
 # ============================================
 # API THÊM/XÓA/SỬA CHO ADMIN
@@ -1745,30 +1547,36 @@ def api_update_category(cat_id):
     
     return jsonify({"error": "Category not found"}), 404
 
-
 # ============================================
 # API XÓA ẢNH CŨ
 # ============================================
 
 @app.route('/api/delete-image', methods=['POST'])
 def delete_image():
-    """Xóa ảnh cũ trên server"""
+    """Xóa ảnh khỏi MongoDB theo URL hoặc image_id"""
     try:
         data = request.get_json()
         image_url = data.get('image_url', '')
-        
         if not image_url:
             return jsonify({"success": False, "error": "Không có URL ảnh"}), 400
-        
-        file_path = image_url.lstrip('/')
-        
-        if os.path.exists(file_path):
-            os.remove(file_path)
-            return jsonify({"success": True, "message": "Đã xóa ảnh cũ"})
+
+        # Trích xuất image_id từ URL (ví dụ /api/image/66f7a9b4c0...)
+        image_id = image_url.split('/')[-1]
+        if not image_id:
+            return jsonify({"success": False, "error": "URL không hợp lệ"}), 400
+
+        db = get_db()
+        if db is None:
+            return jsonify({"success": False, "error": "Không kết nối được MongoDB"}), 500
+
+        result = db['images'].delete_one({"_id": ObjectId(image_id)})
+        if result.deleted_count == 1:
+            return jsonify({"success": True, "message": "Đã xóa ảnh thành công"})
         else:
-            return jsonify({"success": True, "message": "File không tồn tại"})
-            
+            return jsonify({"success": False, "error": "Không tìm thấy ảnh"}), 404
+
     except Exception as e:
+        print(f"❌ Lỗi xóa ảnh: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -1996,45 +1804,6 @@ def teacher_detail(teacher_id):
     except Exception as e:
         return f"Lỗi: {e}", 500
 
-# ============================================
-# API UPLOAD ẢNH GIÁO VIÊN
-# ============================================
-
-UPLOAD_FOLDER_TEACHERS = 'static/img/teachers'
-os.makedirs(UPLOAD_FOLDER_TEACHERS, exist_ok=True)
-
-@app.route('/api/upload/teacher-image', methods=['POST'])
-def upload_teacher_image():
-    """Upload ảnh đại diện cho giáo viên"""
-    try:
-        if 'file' not in request.files:
-            return jsonify({"success": False, "error": "Không có file"}), 400
-        
-        file = request.files['file']
-        if file.filename == '':
-            return jsonify({"success": False, "error": "Tên file rỗng"}), 400
-        
-        if not allowed_file(file.filename):
-            return jsonify({"success": False, "error": "Định dạng không hỗ trợ"}), 400
-        
-        filename = secure_filename(file.filename)
-        name, ext = os.path.splitext(filename)
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        new_filename = f"{name}_{timestamp}{ext}"
-        
-        file_path = os.path.join(UPLOAD_FOLDER_TEACHERS, new_filename)
-        file.save(file_path)
-        
-        image_url = f"/static/img/teachers/{new_filename}"
-        
-        return jsonify({
-            "success": True,
-            "image_url": image_url,
-            "filename": new_filename
-        })
-    except Exception as e:
-        print(f"❌ Upload teacher image error: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
 
 # ============================================
 # HỖ TRỢ
@@ -2195,6 +1964,204 @@ def api_update_schedule(schedule_id):
     except Exception as e:
         print(f"❌ Lỗi cập nhật lịch khai giảng: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
+
+# ============================================
+# API UPLOAD ẢNH - LƯU VÀO MONGODB (BINDATA)
+# ============================================
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'}
+
+def allowed_file(filename):
+    """Kiểm tra định dạng file cho phép"""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# ---------- Hàm lưu ảnh chung ----------
+def save_image_to_db(file, image_type):
+    """
+    Lưu file ảnh vào MongoDB collection 'images'
+    Trả về: (image_id, image_url) hoặc (None, None) nếu lỗi
+    """
+    try:
+        if not file or file.filename == '':
+            return None, None
+        if not allowed_file(file.filename):
+            return None, None
+
+        # Đọc dữ liệu binary
+        image_data = file.read()
+        filename = file.filename
+        content_type = file.content_type or 'image/jpeg'
+
+        db = get_db()
+        if db is None:
+            print("❌ Không kết nối được MongoDB")
+            return None, None
+
+        # Tạo document
+        doc = {
+            "filename": filename,
+            "content_type": content_type,
+            "data": Binary(image_data),
+            "type": image_type,           # 'course', 'slide', 'review', ...
+            "uploaded_at": datetime.now()
+        }
+        result = db['images'].insert_one(doc)
+        image_id = str(result.inserted_id)
+        image_url = f"/api/image/{image_id}"
+        print(f"✅ Đã lưu ảnh {image_type} vào MongoDB, id: {image_id}")
+        return image_id, image_url
+    except Exception as e:
+        print(f"❌ Lỗi lưu ảnh {image_type}: {e}")
+        return None, None
+
+# ---------- Route lấy ảnh ----------
+@app.route('/api/image/<image_id>')
+def get_image(image_id):
+    """Lấy ảnh từ MongoDB theo ID"""
+    try:
+        db = get_db()
+        if db is None:
+            return "MongoDB không kết nối", 500
+        doc = db['images'].find_one({"_id": ObjectId(image_id)})
+        if not doc:
+            return "Không tìm thấy ảnh", 404
+        return Response(doc['data'], mimetype=doc['content_type'])
+    except Exception as e:
+        print(f"❌ Lỗi lấy ảnh: {e}")
+        return "Lỗi", 500
+
+# ---------- Upload ảnh khóa học ----------
+@app.route('/api/upload/course-image', methods=['POST'])
+def upload_course_image():
+    try:
+        if 'file' not in request.files:
+            return jsonify({"error": "Không có file"}), 400
+        file = request.files['file']
+        image_id, image_url = save_image_to_db(file, 'course')
+        if image_id is None:
+            return jsonify({"error": "Lưu ảnh thất bại"}), 500
+        return jsonify({
+            "success": True,
+            "image_url": image_url,
+            "image_id": image_id
+        })
+    except Exception as e:
+        print(f"❌ Upload course image error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+# ---------- Upload ảnh slide ----------
+@app.route('/api/upload/slide', methods=['POST'])
+def upload_slide():
+    try:
+        if 'file' not in request.files:
+            return jsonify({"success": False, "error": "Không có file"}), 400
+        file = request.files['file']
+        image_id, image_url = save_image_to_db(file, 'slide')
+        if image_id is None:
+            return jsonify({"success": False, "error": "Lưu ảnh thất bại"}), 500
+        return jsonify({
+            "success": True,
+            "image_url": image_url,
+            "image_id": image_id
+        })
+    except Exception as e:
+        print(f"❌ Upload slide error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# ---------- Upload ảnh đánh giá ----------
+@app.route('/api/upload/review-avatar', methods=['POST'])
+def upload_review_avatar():
+    try:
+        if 'file' not in request.files:
+            return jsonify({"success": False, "error": "Không có file"}), 400
+        file = request.files['file']
+        image_id, image_url = save_image_to_db(file, 'review')
+        if image_id is None:
+            return jsonify({"success": False, "error": "Lưu ảnh thất bại"}), 500
+        return jsonify({
+            "success": True,
+            "image_url": image_url,
+            "image_id": image_id
+        })
+    except Exception as e:
+        print(f"❌ Upload review avatar error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# ---------- Upload ảnh giáo viên ----------
+@app.route('/api/upload/teacher-image', methods=['POST'])
+def upload_teacher_image():
+    try:
+        if 'file' not in request.files:
+            return jsonify({"success": False, "error": "Không có file"}), 400
+        file = request.files['file']
+        image_id, image_url = save_image_to_db(file, 'teacher')
+        if image_id is None:
+            return jsonify({"success": False, "error": "Lưu ảnh thất bại"}), 500
+        return jsonify({
+            "success": True,
+            "image_url": image_url,
+            "image_id": image_id
+        })
+    except Exception as e:
+        print(f"❌ Upload teacher image error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# ---------- Upload ảnh tài liệu ----------
+@app.route('/api/upload/document-image', methods=['POST'])
+def upload_document_image():
+    try:
+        if 'file' not in request.files:
+            return jsonify({"success": False, "error": "Không có file"}), 400
+        file = request.files['file']
+        image_id, image_url = save_image_to_db(file, 'document')
+        if image_id is None:
+            return jsonify({"success": False, "error": "Lưu ảnh thất bại"}), 500
+        return jsonify({
+            "success": True,
+            "image_url": image_url,
+            "image_id": image_id
+        })
+    except Exception as e:
+        print(f"❌ Upload document image error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# ---------- Upload ảnh tin tức ----------
+@app.route('/api/upload/news-image', methods=['POST'])
+def upload_news_image():
+    try:
+        if 'file' not in request.files:
+            return jsonify({"success": False, "error": "Không có file"}), 400
+        file = request.files['file']
+        image_id, image_url = save_image_to_db(file, 'news')
+        if image_id is None:
+            return jsonify({"success": False, "error": "Lưu ảnh thất bại"}), 500
+        return jsonify({
+            "success": True,
+            "image_url": image_url,
+            "image_id": image_id
+        })
+    except Exception as e:
+        print(f"❌ Upload news image error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# ---------- Upload ảnh danh mục ----------
+@app.route('/api/upload/category-image', methods=['POST'])
+def upload_category_image():
+    try:
+        if 'file' not in request.files:
+            return jsonify({"error": "Không có file"}), 400
+        file = request.files['file']
+        image_id, image_url = save_image_to_db(file, 'category')
+        if image_id is None:
+            return jsonify({"error": "Lưu ảnh thất bại"}), 500
+        return jsonify({
+            "success": True,
+            "image_url": image_url,
+            "image_id": image_id
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 from flask import request, redirect, url_for, session, render_template_string
 import hashlib
