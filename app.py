@@ -13,6 +13,8 @@ from flask import redirect
 from flask import request
 import threading
 import time
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
 
 # ============================================
 # LOAD ENV & INIT FLASK
@@ -205,70 +207,76 @@ print(f"📧 Password: {'*' * len(app.config['MAIL_PASSWORD']) if app.config['MA
 # ============================================
 
 def send_registration_email(data):
-    """Gửi email xác nhận đăng ký"""
+    """Gửi email xác nhận đăng ký qua API Brevo"""
     try:
-        # Email cho người dùng
-        user_msg = Message(
+        print("=" * 60)
+        print("📧 GỬI EMAIL QUA API BREVO")
+        print(f"📧 Recipient: {data.get('email')}")
+        print("=" * 60)
+
+        # Cấu hình API
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key['api-key'] = os.environ.get('BREVO_API_KEY')
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+
+        # Nội dung email cho người dùng
+        user_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=[{"email": data.get('email')}],
+            sender={"email": os.environ.get('MAIL_DEFAULT_SENDER'), "name": "Ngoại Ngữ O-Yin"},
             subject="✅ Xác nhận đăng ký khóa học - Ngoại Ngữ O-Yin",
-            recipients=[data.get('email')]
+            html_content=f"""
+            <h3>Kính gửi {data.get('full_name')},</h3>
+            <p>Cảm ơn bạn đã đăng ký khóa học tại Ngoại Ngữ O-Yin!</p>
+            <hr>
+            <p><b>Khóa học:</b> {data.get('course')}</p>
+            <p><b>Họ tên:</b> {data.get('full_name')}</p>
+            <p><b>Số điện thoại:</b> {data.get('phone')}</p>
+            <p><b>Email:</b> {data.get('email')}</p>
+            <p><b>Ghi chú:</b> {data.get('message', 'Không có')}</p>
+            <hr>
+            <p>✅ Chúng tôi sẽ liên hệ với bạn trong vòng 24 giờ tới.</p>
+            <p>📞 Mọi thắc mắc: 0971 306 143</p>
+            <p>🌐 Website: <a href="https://oyin.edu.vn">oyin.edu.vn</a></p>
+            <p>Trân trọng,<br>Ngoại Ngữ O-Yin</p>
+            """
         )
-        user_msg.body = f"""
-Kính gửi {data.get('full_name')},
 
-Cảm ơn bạn đã đăng ký khóa học tại Ngoại Ngữ O-Yin!
-
-📋 THÔNG TIN ĐĂNG KÝ:
-─────────────────────────────
-Khóa học: {data.get('course')}
-Họ tên: {data.get('full_name')}
-Số điện thoại: {data.get('phone')}
-Email: {data.get('email')}
-Ghi chú: {data.get('message', 'Không có')}
-─────────────────────────────
-
-✅ Chúng tôi sẽ liên hệ với bạn trong vòng 24 giờ tới.
-
-📞 Mọi thắc mắc vui lòng liên hệ:
-- Hotline: 0971 306 143
-- Zalo: 0971 306 143
-- Email: info@oyin.edu.vn
-
-🌐 Website: https://oyin.edu.vn
-
-Trân trọng,
-Ngoại Ngữ O-Yin
-Sầm Sơn, Thanh Hóa
-"""
-        mail.send(user_msg)
-        print(f"✅ Đã gửi email xác nhận cho {data.get('email')}")
+        # Gửi email người dùng
+        api_instance.send_transac_email(user_email)
+        print("✅ Đã gửi email xác nhận cho người dùng")
 
         # Email cho Admin
-        admin_email = os.environ.get('ADMIN_EMAIL', 'admin@oyin.edu.vn')
+        admin_email = os.environ.get('ADMIN_EMAIL')
         if admin_email:
-            admin_msg = Message(
+            admin_email_obj = sib_api_v3_sdk.SendSmtpEmail(
+                to=[{"email": admin_email}],
+                sender={"email": os.environ.get('MAIL_DEFAULT_SENDER'), "name": "Ngoại Ngữ O-Yin"},
                 subject=f"📝 Đăng ký mới từ {data.get('full_name')}",
-                recipients=[admin_email]
+                html_content=f"""
+                <h3>📋 THÔNG BÁO ĐĂNG KÝ MỚI</h3>
+                <hr>
+                <p><b>Họ tên:</b> {data.get('full_name')}</p>
+                <p><b>SĐT:</b> {data.get('phone')}</p>
+                <p><b>Email:</b> {data.get('email')}</p>
+                <p><b>Khóa học:</b> {data.get('course')}</p>
+                <p><b>Ghi chú:</b> {data.get('message', 'Không có')}</p>
+                <p><b>Ngày đăng ký:</b> {data.get('created_at')}</p>
+                <hr>
+                <p>👉 Vui lòng liên hệ sớm nhất!</p>
+                """
             )
-            admin_msg.body = f"""
-📋 THÔNG BÁO ĐĂNG KÝ MỚI
-─────────────────────────────
-Họ tên: {data.get('full_name')}
-Số điện thoại: {data.get('phone')}
-Email: {data.get('email')}
-Khóa học: {data.get('course')}
-Ghi chú: {data.get('message', 'Không có')}
-Ngày đăng ký: {data.get('created_at')}
-─────────────────────────────
-
-👉 Vui lòng liên hệ với học viên sớm nhất!
-"""
-            mail.send(admin_msg)
+            api_instance.send_transac_email(admin_email_obj)
             print(f"✅ Đã gửi email thông báo cho admin: {admin_email}")
 
         return True
 
+    except ApiException as e:
+        print(f"❌ Lỗi API Brevo: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
     except Exception as e:
-        print(f"❌ Lỗi gửi email: {e}")
+        print(f"❌ Lỗi không xác định: {e}")
         import traceback
         traceback.print_exc()
         return False
