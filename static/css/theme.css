@@ -1506,3 +1506,89 @@
     font-size: 15px;
   }
 }
+
+/* ============================================================
+   MOBILE MENU - THEME COLORS (đỏ/vàng)
+   ============================================================ */
+
+@media (max-width: 768px) {
+  /* Nền của menu chính khi mở */
+  .nav-main.active {
+    background: var(--red-darkest) !important; /* #73060c */
+    border-top: 3px solid var(--gold) !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  /* Dropdown cấp 1 */
+  .nav-main .dropdown {
+    background: #5a0409 !important; /* tối hơn red-darkest */
+    border-left: 3px solid var(--gold) !important;
+    border-radius: 0 8px 8px 0 !important;
+    margin: 4px 0 !important;
+    padding: 4px 0 !important;
+  }
+
+  .nav-main .dropdown li a {
+    color: #ffffff !important;
+    font-weight: 500 !important;
+    padding: 10px 20px !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .nav-main .dropdown li a:hover {
+    background: rgba(248, 221, 100, 0.12) !important;
+    color: var(--gold) !important;
+    padding-left: 28px !important;
+  }
+
+  /* Dropdown cấp 2 (sub) */
+  .nav-main .sub-dropdown {
+    background: #3d0206 !important;
+    border-left: 3px solid var(--gold-light) !important;
+    border-radius: 0 8px 8px 0 !important;
+    margin: 2px 0 !important;
+  }
+
+  .nav-main .sub-dropdown li a {
+    color: #f0e6d6 !important;
+    font-weight: 400 !important;
+    padding: 8px 24px !important;
+  }
+
+  .nav-main .sub-dropdown li a:hover {
+    background: rgba(248, 221, 100, 0.1) !important;
+    color: var(--gold) !important;
+    padding-left: 32px !important;
+  }
+
+  /* Mục cha có dropdown */
+  .dropdown-sub > span {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    padding: 10px 20px !important;
+    display: block !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .dropdown-sub > span:hover {
+    color: var(--gold) !important;
+    background: rgba(248, 221, 100, 0.05) !important;
+  }
+
+  .dropdown-sub > span::after {
+    color: var(--gold) !important;
+    content: " ▾" !important;
+    font-size: 14px !important;
+  }
+
+  .dropdown-sub > span[aria-expanded="true"]::after {
+    content: " ▴" !important;
+  }
+
+  /* Icon mũi tên cho menu chính (tuỳ chọn) */
+  .has-dropdown > a::after {
+    color: var(--gold) !important;
+    opacity: 0.7 !important;
+  }
+}

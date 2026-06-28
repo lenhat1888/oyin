@@ -4,6 +4,10 @@
 
 const API_BASE = "/api/data";
 
+// Đầu file admin.js, sau const API_BASE
+const DEFAULT_AVATAR =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23e67e22'/%3E%3Ccircle cx='100' cy='80' r='50' fill='%23ffffff' opacity='0.6'/%3E%3Ccircle cx='100' cy='180' r='60' fill='%23ffffff' opacity='0.6'/%3E%3Ctext x='100' y='110' text-anchor='middle' dy='.3em' fill='white' font-size='80' font-family='sans-serif'%3E👤%3C/text%3E%3C/svg%3E";
+
 // ============================================
 // LOAD TAB
 // ============================================
@@ -2938,7 +2942,7 @@ async function renderTeacherManager(container) {
             (teacher) => `
           <div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);border:1px solid #eee;transition:all 0.3s;">
             <div style="height:200px;overflow:hidden;background:#f0f0f0;">
-              <img src="${teacher.image || "/static/img/teachers/default.jpg"}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='/static/img/teachers/default.jpg'">
+              <img src="${teacher.image || DEFAULT_AVATAR}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null; this.src='${DEFAULT_AVATAR}'">
             </div>
             <div style="padding:16px;">
               <strong style="font-size:16px;display:block;">${teacher.name || "Chưa có tên"}</strong>
