@@ -207,7 +207,7 @@ print(f"📧 Password: {'*' * len(app.config['MAIL_PASSWORD']) if app.config['MA
 # ============================================
 
 def send_registration_email(data):
-    """Gửi email xác nhận đăng ký qua API Brevo"""
+    """Gửi email xác nhận đăng ký qua API Brevo với HTML + Plain Text"""
     try:
         print("=" * 60)
         print("📧 GỬI EMAIL QUA API BREVO")
@@ -219,54 +219,126 @@ def send_registration_email(data):
         configuration.api_key['api-key'] = os.environ.get('BREVO_API_KEY')
         api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
 
-        # Nội dung email cho người dùng
+        # ---- Email cho người dùng ----
+        user_html = f"""
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }}
+                .header {{ background-color: #e67e22; color: white; padding: 15px; border-radius: 8px 8px 0 0; text-align: center; }}
+                .content {{ padding: 20px; }}
+                .footer {{ background: #f5f5f5; padding: 12px; text-align: center; font-size: 12px; color: #888; border-radius: 0 0 8px 8px; }}
+                .info {{ background: #f9f9f9; padding: 10px; margin: 10px 0; border-left: 4px solid #e67e22; }}
+                .highlight {{ font-weight: bold; color: #e67e22; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h2>📧 Xác nhận đăng ký khóa học</h2>
+                </div>
+                <div class="content">
+                    <p>Kính gửi <strong>{data.get('full_name')}</strong>,</p>
+                    <p>Cảm ơn bạn đã đăng ký khóa học tại <span class="highlight">Ngoại Ngữ O-Yin</span>!</p>
+                    <div class="info">
+                        <p><strong>📋 Thông tin đăng ký:</strong></p>
+                        <p><strong>Khóa học:</strong> {data.get('course')}</p>
+                        <p><strong>Họ tên:</strong> {data.get('full_name')}</p>
+                        <p><strong>Số điện thoại:</strong> {data.get('phone')}</p>
+                        <p><strong>Email:</strong> {data.get('email')}</p>
+                        <p><strong>Ghi chú:</strong> {data.get('message', 'Không có')}</p>
+                    </div>
+                    <p>✅ Chúng tôi sẽ liên hệ với bạn trong vòng <strong>24 giờ</strong> tới.</p>
+                    <p>📞 Mọi thắc mắc vui lòng gọi: <strong>0971 306 143</strong></p>
+                    <p>🌐 Website: <a href="https://ngoainguoyin.vn" target="_blank">ngoainguoyin.vn</a></p>
+                    <p>Trân trọng,<br><strong>Ngoại Ngữ O-Yin</strong></p>
+                </div>
+                <div class="footer">
+                    Địa chỉ: Sầm Sơn, Thanh Hóa<br>
+                    Email: ngoainguoyin@gmail.com
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+
+        user_text = f"""
+        Kính gửi {data.get('full_name')},
+
+        Cảm ơn bạn đã đăng ký khóa học tại Ngoại Ngữ O-Yin!
+
+        THÔNG TIN ĐĂNG KÝ:
+        - Khóa học: {data.get('course')}
+        - Họ tên: {data.get('full_name')}
+        - SĐT: {data.get('phone')}
+        - Email: {data.get('email')}
+        - Ghi chú: {data.get('message', 'Không có')}
+
+        ✅ Chúng tôi sẽ liên hệ trong vòng 24 giờ tới.
+
+        📞 Hotline: 0971 306 143
+        🌐 Website: https://ngoainguoyin.vn
+
+        Trân trọng,
+        Ngoại Ngữ O-Yin
+        Sầm Sơn, Thanh Hóa
+        """
+
         user_email = sib_api_v3_sdk.SendSmtpEmail(
             to=[{"email": data.get('email')}],
             sender={"email": os.environ.get('MAIL_DEFAULT_SENDER'), "name": "Ngoại Ngữ O-Yin"},
             subject="✅ Xác nhận đăng ký khóa học - Ngoại Ngữ O-Yin",
-            html_content=f"""
-            <h3>Kính gửi {data.get('full_name')},</h3>
-            <p>Cảm ơn bạn đã đăng ký khóa học tại Ngoại Ngữ O-Yin!</p>
-            <hr>
-            <p><b>Khóa học:</b> {data.get('course')}</p>
-            <p><b>Họ tên:</b> {data.get('full_name')}</p>
-            <p><b>Số điện thoại:</b> {data.get('phone')}</p>
-            <p><b>Email:</b> {data.get('email')}</p>
-            <p><b>Ghi chú:</b> {data.get('message', 'Không có')}</p>
-            <hr>
-            <p>✅ Chúng tôi sẽ liên hệ với bạn trong vòng 24 giờ tới.</p>
-            <p>📞 Mọi thắc mắc: 0971 306 143</p>
-            <p>🌐 Website: <a href="https://oyin.edu.vn">oyin.edu.vn</a></p>
-            <p>Trân trọng,<br>Ngoại Ngữ O-Yin</p>
-            """
+            html_content=user_html,
+            text_content=user_text
         )
 
-        # Gửi email người dùng
         api_instance.send_transac_email(user_email)
         print("✅ Đã gửi email xác nhận cho người dùng")
 
-        # Email cho Admin
-        admin_email = os.environ.get('ADMIN_EMAIL')
-        if admin_email:
-            admin_email_obj = sib_api_v3_sdk.SendSmtpEmail(
-                to=[{"email": admin_email}],
-                sender={"email": os.environ.get('MAIL_DEFAULT_SENDER'), "name": "Ngoại Ngữ O-Yin"},
-                subject=f"📝 Đăng ký mới từ {data.get('full_name')}",
-                html_content=f"""
-                <h3>📋 THÔNG BÁO ĐĂNG KÝ MỚI</h3>
-                <hr>
-                <p><b>Họ tên:</b> {data.get('full_name')}</p>
-                <p><b>SĐT:</b> {data.get('phone')}</p>
-                <p><b>Email:</b> {data.get('email')}</p>
-                <p><b>Khóa học:</b> {data.get('course')}</p>
-                <p><b>Ghi chú:</b> {data.get('message', 'Không có')}</p>
-                <p><b>Ngày đăng ký:</b> {data.get('created_at')}</p>
-                <hr>
-                <p>👉 Vui lòng liên hệ sớm nhất!</p>
+        # ---- Email cho Admin ----
+        admin_emails_str = os.environ.get('ADMIN_EMAIL', '')
+        if admin_emails_str:
+            admin_email_list = [email.strip() for email in admin_emails_str.replace(';', ',').split(',') if email.strip()]
+            if admin_email_list:
+                admin_html = f"""
+                <html>
+                <body style="font-family: Arial, sans-serif;">
+                    <h3>📋 THÔNG BÁO ĐĂNG KÝ MỚI</h3>
+                    <hr>
+                    <p><b>Họ tên:</b> {data.get('full_name')}</p>
+                    <p><b>SĐT:</b> {data.get('phone')}</p>
+                    <p><b>Email:</b> {data.get('email')}</p>
+                    <p><b>Khóa học:</b> {data.get('course')}</p>
+                    <p><b>Ghi chú:</b> {data.get('message', 'Không có')}</p>
+                    <p><b>Ngày đăng ký:</b> {data.get('created_at')}</p>
+                    <hr>
+                    <p>👉 Vui lòng liên hệ sớm nhất!</p>
+                </body>
+                </html>
                 """
-            )
-            api_instance.send_transac_email(admin_email_obj)
-            print(f"✅ Đã gửi email thông báo cho admin: {admin_email}")
+                admin_text = f"""
+                THÔNG BÁO ĐĂNG KÝ MỚI
+                -------------------------
+                Họ tên: {data.get('full_name')}
+                SĐT: {data.get('phone')}
+                Email: {data.get('email')}
+                Khóa học: {data.get('course')}
+                Ghi chú: {data.get('message', 'Không có')}
+                Ngày đăng ký: {data.get('created_at')}
+                -------------------------
+                Vui lòng liên hệ sớm nhất!
+                """
+                admin_email_obj = sib_api_v3_sdk.SendSmtpEmail(
+                    to=[{"email": email} for email in admin_email_list],
+                    sender={"email": os.environ.get('MAIL_DEFAULT_SENDER'), "name": "Ngoại Ngữ O-Yin"},
+                    subject=f"📝 Đăng ký mới từ {data.get('full_name')}",
+                    html_content=admin_html,
+                    text_content=admin_text
+                )
+                api_instance.send_transac_email(admin_email_obj)
+                print(f"✅ Đã gửi email thông báo cho {len(admin_email_list)} admin")
 
         return True
 
