@@ -54,27 +54,37 @@ db = None
 
 def get_db():
     global db, mongo_client
-    if db is not None:
-        return db
-    
+    # Kiểm tra xem kết nối còn hoạt động không
     try:
-        if MONGO_URI:
+        if db is not None:
+            # Ping để kiểm tra kết nối
+            db.command('ping')
+            return db
+    except Exception:
+        # Kết nối đã đóng, tạo lại
+        db = None
+        mongo_client = None
+
+    if MONGO_URI:
+        try:
             mongo_client = MongoClient(
                 MONGO_URI,
                 serverSelectionTimeoutMS=5000,
                 socketTimeoutMS=5000,
                 connectTimeoutMS=5000
             )
+            # Ping để xác nhận kết nối
             mongo_client.admin.command('ping')
             db = mongo_client[MONGO_DB]
             print(f"✅ Kết nối MongoDB thành công! Database: {MONGO_DB}")
             return db
-        else:
-            print("⚠️ MONGO_URI không có trong .env, sử dụng JSON fallback")
+        except Exception as e:
+            print(f"❌ Lỗi kết nối MongoDB: {e}")
+            db = None
+            mongo_client = None
             return None
-    except Exception as e:
-        print(f"❌ Lỗi kết nối MongoDB: {e}")
-        print("⚠️ Sử dụng JSON fallback")
+    else:
+        print("⚠️ MONGO_URI không có, sử dụng JSON fallback")
         return None
 
 db = get_db()
@@ -83,8 +93,58 @@ db = get_db()
 # HÀM DÙNG CHUNG
 # ============================================
 
-def save_data(collection_name, data):
+def load_data(collection_name):
+    """Đọc dữ liệu từ MongoDB hoặc JSON fallback"""
     current_db = get_db()
+    if current_db is not None:
+        try:
+            collection = current_db[collection_name]
+            items = list(collection.find({}, {'_id': 0}))
+            items = convert_objectid(items)
+            print(f"📖 Đọc từ MongoDB: {collection_name} -> {len(items)} items")
+
+            if collection_name == 'categories':
+                if items:
+                    return {"categories": items}
+                else:
+                    print(f"ℹ️ Không có categories trong MongoDB, dùng mặc định")
+                    return {"categories": get_default_categories()}
+
+            if not items:
+                print(f"ℹ️ Không có items trong MongoDB {collection_name}, thử đọc JSON fallback")
+                json_data = load_data_json(collection_name)
+                if json_data and json_data.get('items'):
+                    print(f"📁 Đọc từ JSON fallback: {collection_name} -> {len(json_data['items'])} items")
+                    # Lưu JSON vào MongoDB (đồng bộ)
+                    save_data(collection_name, json_data)
+                    return json_data
+                else:
+                    return {"items": []}
+            
+            return {"items": items}
+        except Exception as e:
+            print(f"⚠️ Lỗi đọc MongoDB {collection_name}: {e}")
+    else:
+        print(f"⚠️ Không kết nối được MongoDB, dùng JSON fallback cho {collection_name}")
+
+    # Fallback: đọc JSON
+    json_data = load_data_json(collection_name)
+    if collection_name == 'categories':
+        if json_data and json_data.get('categories'):
+            return json_data
+        else:
+            return {"categories": get_default_categories()}
+    else:
+        if json_data and json_data.get('items'):
+            return json_data
+        else:
+            return {"items": []}
+
+
+def save_data(collection_name, data):
+    """Lưu dữ liệu vào MongoDB và JSON fallback"""
+    current_db = get_db()
+    saved_to_mongo = False
     if current_db is not None:
         try:
             collection = current_db[collection_name]
@@ -101,46 +161,27 @@ def save_data(collection_name, data):
                         del item['_id']
                 collection.insert_many(items)
                 print(f"✅ Đã lưu {len(items)} items vào MongoDB: {collection_name}")
-            return True
+            else:
+                print(f"ℹ️ Không có items để lưu vào MongoDB: {collection_name}")
+            saved_to_mongo = True
         except Exception as e:
             print(f"⚠️ Lỗi lưu MongoDB {collection_name}: {e}")
-    
+    else:
+        print(f"⚠️ Không kết nối được MongoDB, lưu JSON fallback cho {collection_name}")
+
+    # Luôn lưu JSON fallback (để đồng bộ và dự phòng)
     try:
         os.makedirs('data', exist_ok=True)
-        data = convert_objectid(data)
+        # Chuyển đổi ObjectId nếu có
+        data_to_save = convert_objectid(data)
         path = os.path.join('data', f'{collection_name}.json')
         with open(path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+            json.dump(data_to_save, f, ensure_ascii=False, indent=2)
+        print(f"✅ Đã lưu JSON fallback: {collection_name}")
         return True
     except Exception as e:
         print(f"⚠️ Lỗi lưu JSON {collection_name}: {e}")
         return False
-
-def load_data(collection_name):
-    current_db = get_db()
-    if current_db is not None:
-        try:
-            collection = current_db[collection_name]
-            items = list(collection.find({}, {'_id': 0}))
-            items = convert_objectid(items)
-            
-            if collection_name == 'categories':
-                if items:
-                    return {"categories": items}
-                else:
-                    return {"categories": get_default_categories()}
-            
-            if not items:
-                json_data = load_data_json(collection_name)
-                if json_data and json_data.get('items'):
-                    save_data(collection_name, json_data)
-                    return json_data
-            
-            return {"items": items} if items else {"items": []}
-        except Exception as e:
-            print(f"⚠️ Lỗi đọc MongoDB {collection_name}: {e}")
-    
-    return load_data_json(collection_name)
 
 def get_default_categories():
     return [
@@ -2340,6 +2381,48 @@ def protect_admin_routes():
         return None
     
 app.secret_key = os.environ.get('SECRET_KEY', 'oyin-2024')
+
+@app.route('/debug-db')
+def debug_db():
+    """Kiểm tra trạng thái kết nối và dữ liệu trong MongoDB"""
+    from pymongo.errors import ConnectionFailure
+    current_db = get_db()
+    if current_db is None:
+        return "<h3>❌ Không kết nối được MongoDB</h3>"
+    
+    # Kiểm tra kết nối
+    try:
+        current_db.command('ping')
+        status = "✅ Kết nối MongoDB hoạt động"
+    except Exception as e:
+        status = f"❌ Kết nối MongoDB lỗi: {e}"
+    
+    # Đếm số lượng collections
+    collections = current_db.list_collection_names()
+    
+    # Lấy số lượng items từ các collections chính
+    counts = {}
+    for col in ['registrations', 'courses', 'categories', 'documents', 'news']:
+        if col in collections:
+            counts[col] = current_db[col].count_documents({})
+        else:
+            counts[col] = 0
+    
+    html = f"""
+    <h2>📊 Debug Database</h2>
+    <p><strong>Status:</strong> {status}</p>
+    <p><strong>Database name:</strong> {MONGO_DB}</p>
+    <p><strong>Collections:</strong> {', '.join(collections)}</p>
+    <h3>📦 Số lượng items</h3>
+    <ul>
+    """
+    for key, val in counts.items():
+        html += f"<li><strong>{key}</strong>: {val}</li>"
+    html += """
+    </ul>
+    <p><a href="/">⬅️ Về trang chủ</a></p>
+    """
+    return html
 
 # ============================================
 # MAIN
